@@ -41,7 +41,7 @@ public class demo {
      *            gnuplot application
      */
     public static void main(String[] args) {
-        String path = "D:/gnuplot/bin/gnuplot.exe";
+        String path = "E:/gnuplot/bin/gnuplot.exe";
         if (args.length > 0) {
             path = args[0];
         }
@@ -61,7 +61,7 @@ public class demo {
 
     /* This is a very simple plot to demonstrate JavaPlot graphs */
     private static void simple() {
-        JavaPlot p = new JavaPlot("D:/gnuplot/bin/gnuplot.exe");
+        JavaPlot p = new JavaPlot("E:/gnuplot/bin/gnuplot.exe");
 
         p.addPlot("1/(2*pi*sqrt(0.99))*exp((-1/1.98)*((x-1)*(x-1)-0.2*(x-1)*(y-2)+(y-2)*(y-2))); pause 1000;");
 
@@ -72,7 +72,7 @@ public class demo {
 
     /* This is a very simple plot to demonstrate JavaPlot 3d graphs */
     private static void simple3D() {
-        JavaPlot p = new JavaPlot("D:/gnuplot/bin/gnuplot.exe", true);
+        JavaPlot p = new JavaPlot("E:/gnuplot/bin/gnuplot.exe", true);
 
         // p.newGraph3D();
 

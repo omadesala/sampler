@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
+import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import com.google.common.collect.Lists;
@@ -26,127 +27,132 @@ import com.sample.sampler.ISampler;
  * third,choose the constant a for sampler
  * </p>
  */
-public class MixdGaussMHSampler extends ISampler<Double> {
+public class MixdGaussMHSampler extends ISampler<Vector<Double>> {
 
-    static final long serialVersionUID = 1L;
-    private Random random = new Random();
-    ArrayList<Double> values = Lists.newArrayList();
+	static final long serialVersionUID = 1L;
+	private Random random = new Random();
+	ArrayList<Vector<Double>> values = Lists.newArrayList();
 
-    public MixdGaussMHSampler() {
-        super();
-        setTargetDistribution(new MixGaussDistribution());
+	public MixdGaussMHSampler() {
+		super();
+		setTargetDistribution(new MixGaussDistribution());
 
-        /**
-         * about the proposal distribution, the guass distribution will have
-         * different efficient with different vairance. in this sample, user can
-         * try different variance to get the effective
-         */
-        Distribution proposal = new GaussDistribution();
-        proposal.setMean(0);
-        proposal.setVariance(50);
-        setProposalDistribution(proposal);
-    }
+		/**
+		 * about the proposal distribution, the guass distribution will have
+		 * different efficient with different vairance. in this sample, user can
+		 * try different variance to get the effective
+		 */
+		Distribution proposal = new GaussDistribution();
+		proposal.setMean(0);
+		proposal.setVariance(50);
+		setProposalDistribution(proposal);
+	}
 
-    @Override
-    public void doSample() {
+	@Override
+	public void doSample() {
 
-        burnIn();
+		burnIn();
 
-        Handler();
+		Handler();
 
-    }
+	}
 
-    /**
-     * assume that the value is belong to interval [-5,5] and we display 100
-     * rectangle , to calculate the number in each rectangle, we expand interval
-     * to [0,100] ([-5]+5)*10->[0] ,([ 5]+5)*10->[100],because of the width is
-     * 500 pixels, so each rectangle width is 5 pixels.
-     */
-    private void Handler() {
+	/**
+	 * assume that the value is belong to interval [-5,5] and we display 100
+	 * rectangle , to calculate the number in each rectangle, we expand interval
+	 * to [0,100] ([-5]+5)*10->[0] ,([ 5]+5)*10->[100],because of the width is
+	 * 500 pixels, so each rectangle width is 5 pixels.
+	 */
+	private void Handler() {
 
-        Queue<Double> resultDoubles = new ArrayBlockingQueue<Double>(
-            getSamplePointNum());
-        Iterator<Double> iterator = getSampleValues().iterator();
+		Queue<Vector<Double>> resultDoubles = new ArrayBlockingQueue<Vector<Double>>(
+				getSamplePointNum());
+		Iterator<Vector<Double>> iterator = getSampleValues().iterator();
 
-        while (iterator.hasNext()) {
+		while (iterator.hasNext()) {
 
-            Double next = iterator.next();
-            double e = 10. * (next + 5.);
-            resultDoubles.add(e);
-        }
+			Vector<Double> dataItem = iterator.next();
 
-        setSampleValues(resultDoubles);
+			dataItem.add(10. * (dataItem.firstElement() + 5.));
+			resultDoubles.add(dataItem);
+		}
 
-        System.out.println("list size:" + values.size());
+		setSampleValues(resultDoubles);
 
-        List<Double> subList = values.subList(values.size()
-                - getSamplePointNum(), values.size() - 1);
-        ArrayList<Double> newArrayList = Lists.newArrayList();
-        // for test
+		System.out.println("list size:" + values.size());
 
-        for (Double pt : subList) {
-            newArrayList.add(10. * (pt + 5.));
-        }
-        Queue<Double> queue = Queues.newArrayDeque();
-        queue.addAll(newArrayList);
-        setSampleValues(queue);
-    }
+		List<Vector<Double>> subList = values.subList(values.size()
+				- getSamplePointNum(), values.size() - 1);
 
-    private void burnIn() {
+		ArrayList<Vector<Double>> newArrayList = Lists.newArrayList();
+		// for test
 
-        /**
-         * first, set the x0 to a initial value;
-         */
+		for (Vector<Double> pt : subList) {
+			Vector<Double> newpt = new Vector<Double>();
+			newpt.add(10. * (pt.firstElement() + 5.));
+			newArrayList.add(newpt);
+		}
+		Queue<Vector<Double>> queue = Queues.newArrayDeque();
+		queue.addAll(newArrayList);
+		setSampleValues(queue);
+	}
 
-        Queue<Double> sampleValues = getSampleValues();
+	private void burnIn() {
 
-        Double curValue = 0.5;
-        sampleValues.add(curValue);
+		/**
+		 * first, set the x0 to a initial value;
+		 */
 
-        for (int i = 0; i < 50000; i++) {
+		Queue<Vector<Double>> sampleValues = getSampleValues();
 
-            /**
-             * get the next point according to proposal distribution.
-             */
+		Vector<Double> curValue = new Vector<Double>();
+		curValue.add(0.5);
+		sampleValues.add(curValue);
 
-            Distribution proposalDistribution = getProposalDistribution();
-            proposalDistribution.setMean(curValue);
+		for (int i = 0; i < 50000; i++) {
 
-            double nextValue = proposalDistribution.sampleOnePoint();
+			/**
+			 * get the next point according to proposal distribution.
+			 */
 
-            double pdf_nextPoint = getTargetDistribution().densityFunction(
-                nextValue);
-            double pdf_curPoint = getTargetDistribution().densityFunction(
-                curValue);
+			Distribution proposalDistribution = getProposalDistribution();
 
-            double accept_ratio = Math.min(1, pdf_nextPoint / pdf_curPoint);
+			proposalDistribution.setMean(curValue.firstElement());
 
-            double uniform = random.nextDouble();
+			Vector<Double> nextValue = proposalDistribution.sampleOnePoint();
 
-            if (uniform < accept_ratio) {
-                /**
-                 * accept the new status
-                 */
-                curValue = nextValue;
+			Double pdf_nextPoint = getTargetDistribution().densityFunction(
+					nextValue);
+			Double pdf_curPoint = getTargetDistribution().densityFunction(
+					curValue);
 
-            }
+			Double accept_ratio = Math.min(1, pdf_nextPoint / pdf_curPoint);
 
-            values.add(curValue);
+			Double uniform = random.nextDouble();
 
-            /**
-             * save data
-             */
-            if (i < getSamplePointNum()) {
-                sampleValues.offer(curValue);
-            }
-            else {
-                // queue is full, remove head and re-add it.
-                sampleValues.remove();
-                sampleValues.offer(curValue);
+			if (uniform < accept_ratio) {
+				/**
+				 * accept the new status
+				 */
+				curValue = nextValue;
 
-            }
+			}
 
-        }
+			values.add(curValue);
 
-    }
+			/**
+			 * save data
+			 */
+			if (i < getSamplePointNum()) {
+				sampleValues.offer(curValue);
+			} else {
+				// queue is full, remove head and re-add it.
+				sampleValues.remove();
+				sampleValues.offer(curValue);
+
+			}
+
+		}
+
+	}
 }

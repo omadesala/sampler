@@ -1,34 +1,51 @@
 package com.sample.distribution;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
 public abstract class Distribution {
 
-    protected double mean = 0;
-    protected double variance = 1;
+	protected double mean = 0;
+	protected double variance = 1;
 
-    abstract public double densityFunction(double... x);
+	private List<Vector<Double>> param = new ArrayList<Vector<Double>>();
 
-    /**
-     * some times ,we need condition sample this is not a good understand but it
-     * suit to multi-variance random
-     *
-     * @param x
-     * @return
-     */
-    abstract public double sampleOnePoint(double... x);
+	abstract public void setParameter(Vector<Double> param);
 
-    public double getMean() {
-        return mean;
-    }
+	abstract public double densityFunction(Vector<Double> x);
 
-    public void setMean(double mean) {
-        this.mean = mean;
-    }
+	/**
+	 * some times ,we need condition sample this is not a good understand but it
+	 * suit to multi-variance random
+	 * 
+	 * @param x
+	 * @return
+	 */
+	abstract public Vector<Double> sampleOnePoint(double... x);
 
-    public double getVariance() {
-        return variance;
-    }
+	public double getMean() {
+		return mean;
+	}
 
-    public void setVariance(double variance) {
-        this.variance = variance;
-    }
+	public void setMean(double mean) {
+		this.mean = mean;
+	}
+
+	public double getVariance() {
+		return variance;
+	}
+
+	public void setVariance(double variance) {
+		this.variance = variance;
+	}
+
+	public List<Vector<Double>> getParam() {
+		return param;
+	}
+
+	public void setParam(List<Vector<Double>> param) {
+		this.param = param;
+	}
+
 }

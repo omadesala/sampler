@@ -1,7 +1,9 @@
 package com.sample.distribution.implement;
 
 import java.util.Random;
+import java.util.Vector;
 
+import com.google.common.base.Preconditions;
 import com.sample.distribution.Distribution;
 
 /**
@@ -10,52 +12,59 @@ import com.sample.distribution.Distribution;
  */
 public class TwoDimGaussDistribution extends Distribution {
 
-    private Random random = new Random();
+	private Random random = new Random();
 
-    private double mean1 = .0;
-    private double mean2 = .0;
-    private double delta1 = .0;
-    private double delta2 = .0;
-    private double rho = .0;
+	private double mean1 = .0;
+	private double mean2 = .0;
+	private double delta1 = .0;
+	private double delta2 = .0;
+	private double rho = .0;
 
-    public TwoDimGaussDistribution(double mu1, double mu2, double delta1,
-            double delta2, double rho) {
+	public TwoDimGaussDistribution(double mu1, double mu2, double delta1,
+			double delta2, double rho) {
 
-        this.mean1 = mu1;
-        this.mean2 = mu2;
-        this.delta1 = delta1;
-        this.delta2 = delta2;
-        this.rho = rho;
+		this.mean1 = mu1;
+		this.mean2 = mu2;
+		this.delta1 = delta1;
+		this.delta2 = delta2;
+		this.rho = rho;
 
-    }
+	}
 
-    @Override
-    public double densityFunction(double... x) {
+	@Override
+	public double densityFunction(Vector<Double> x) {
 
-        double x1 = x[0], x2 = x[1];
+		Double x1 = x.firstElement(), x2 = x.elementAt(1);
 
-        double constant = 1
-                / 2.
-                * Math.PI
-                * Math
-                    .sqrt(delta1 * delta1 * delta2 * delta2 * (1 - rho * rho));
+		double constant = 1
+				/ 2.
+				* Math.PI
+				* Math.sqrt(delta1 * delta1 * delta2 * delta2 * (1 - rho * rho));
 
-        return constant
-                * Math
-                    .exp(-1.
-                            / (2 * (1 - rho * rho))
-                            * ((x1 - mean1)
-                                    * (x1 - mean1)
-                                    / (delta1 * delta1)
-                                    - (2 * rho * (x1 - mean1) * (x2 - mean2) / (delta1 * delta2)) + (x2 - mean2)
-                                    * (x2 - mean2) / (delta2 * delta2)));
+		return constant
+				* Math.exp(-1.
+						/ (2 * (1 - rho * rho))
+						* ((x1 - mean1)
+								* (x1 - mean1)
+								/ (delta1 * delta1)
+								- (2 * rho * (x1 - mean1) * (x2 - mean2) / (delta1 * delta2)) + (x2 - mean2)
+								* (x2 - mean2) / (delta2 * delta2)));
 
-    }
+	}
 
-    @Override
-    public double sampleOnePoint(double... x) {
-        return 0;
-        // return random.nextGaussian() * variance + mean;
+	@Override
+	public Vector<Double> sampleOnePoint(double... x) {
+		return new Vector<Double>();
 
-    }
+	}
+
+	@Override
+	public void setParameter(Vector<Double> param) {
+		Preconditions.checkNotNull(param);
+		Preconditions.checkArgument(param.size() == 2);
+
+		mean = param.firstElement();
+		variance = param.elementAt(1);
+
+	}
 }

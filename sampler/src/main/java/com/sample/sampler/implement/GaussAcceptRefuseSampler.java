@@ -1,5 +1,7 @@
 package com.sample.sampler.implement;
 
+import java.util.Vector;
+
 import com.sample.distribution.Distribution;
 import com.sample.distribution.implement.GaussDistribution;
 import com.sample.distribution.implement.UniformDistribution;
@@ -17,53 +19,56 @@ import com.sample.sampler.ISampler;
  * third,choose the constant a for sampler
  * </p>
  */
-public class GaussAcceptRefuseSampler extends ISampler<Double> {
+public class GaussAcceptRefuseSampler extends ISampler<Vector<Double>> {
 
-    static final long serialVersionUID = 1L;
+	static final long serialVersionUID = 1L;
 
-    public GaussAcceptRefuseSampler() {
-        super();
-        Distribution standardGauss = new GaussDistribution();
+	public GaussAcceptRefuseSampler() {
+		super();
+		Distribution standardGauss = new GaussDistribution();
 
-        standardGauss.setMean(0);
-        standardGauss.setVariance(1.);
+		standardGauss.setMean(0);
+		standardGauss.setVariance(1.);
 
-        setTargetDistribution(standardGauss);
-        setProposalDistribution(new UniformDistribution());
-    }
+		setTargetDistribution(standardGauss);
+		setProposalDistribution(new UniformDistribution());
+	}
 
-    @Override
-    public void doSample() {
+	@Override
+	public void doSample() {
 
-        int k = 0;
-        while (k < getSamplePointNum()) {
+		int k = 0;
+		while (k < getSamplePointNum()) {
 
-            double a = calculateAlpha();
-            double x = getProposalDistribution().sampleOnePoint();
-            // a uniform variable is simulated
-            double u = Math.random();
-            // acceptance or rejection
+			Double a = calculateAlpha();
+			Vector<Double> x = getProposalDistribution().sampleOnePoint();
+			// a uniform variable is simulated
+			double u = Math.random();
+			// acceptance or rejection
 
-            if (u < getTargetDistribution().densityFunction(x)
-                    / (a * getProposalDistribution().densityFunction(x))) {
+			if (u < getTargetDistribution().densityFunction(x)
+					/ (a * getProposalDistribution().densityFunction(x))) {
 
-                getSampleValues().add((10. * (x + 5.)));
-            }
-            k++;
-        }
+				Vector<Double> dataItem = new Vector<Double>();
+				dataItem.add((10. * (x.firstElement() + 5.)));
 
-        System.out.println("accept num:" + getSampleValues().size());
+				getSampleValues().add(dataItem);
+			}
+			k++;
+		}
 
-    }
+		System.out.println("accept num:" + getSampleValues().size());
 
-    /**
-     * this is the constant for accept-reject sample.
-     *
-     * @return
-     */
-    private double calculateAlpha() {
-        double a = 10. / Math.sqrt(2. * Math.PI);
-        return a;
-    }
+	}
+
+	/**
+	 * this is the constant for accept-reject sample.
+	 * 
+	 * @return
+	 */
+	private double calculateAlpha() {
+		double a = 10. / Math.sqrt(2. * Math.PI);
+		return a;
+	}
 
 }
