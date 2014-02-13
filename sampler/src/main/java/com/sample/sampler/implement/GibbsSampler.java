@@ -35,7 +35,7 @@ import com.sample.sampler.ISampler;
 public class GibbsSampler extends ISampler<Double> {
 
     static final long serialVersionUID = 1L;
-    private final long N = 100000;
+    private static final long N = 100000;
     private Random random = new Random();
     private Map<Double, Double> record = new HashMap<Double, Double>();
 
@@ -53,6 +53,11 @@ public class GibbsSampler extends ISampler<Double> {
         displayData();
     }
 
+    /**
+     * 
+     * @Description: training until get the station phrase
+     * @throws
+     */
     private void burnIn() {
 
         // step 1. initinal x1 and x2 with zero
@@ -71,10 +76,24 @@ public class GibbsSampler extends ISampler<Double> {
 
     }
 
+    /**
+     * 
+     * @Description: save the sample point
+     * @param x1
+     * @param x2
+     * @throws
+     */
     private void saveSample(double x1, double x2) {
         record.put(x1, x2);
     }
 
+    /**
+     * 
+     * @Description: sample x1 by given x2
+     * @param x2
+     * @return double return sample point
+     * @throws
+     */
     private double sampleX1GivenX2(double x2) {
 
         double mu1 = 0.1 * x2 + 0.8;
@@ -128,7 +147,8 @@ public class GibbsSampler extends ISampler<Double> {
         i = 0;
         for (int k = 0; k < points.length; k++) {
 
-            if (k < N - 1000) continue;
+            if (k < N - 1000)
+                continue;
 
             sample[i][0] = points[k][0];
             sample[i++][1] = points[k][1];

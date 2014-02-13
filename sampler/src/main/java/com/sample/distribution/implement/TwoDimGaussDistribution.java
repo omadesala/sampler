@@ -1,7 +1,5 @@
 package com.sample.distribution.implement;
 
-import java.util.Random;
-
 import com.sample.distribution.Distribution;
 
 /**
@@ -10,7 +8,7 @@ import com.sample.distribution.Distribution;
  */
 public class TwoDimGaussDistribution extends Distribution {
 
-    private Random random = new Random();
+    // private Random random = new Random();
 
     private double mean1 = .0;
     private double mean2 = .0;
@@ -37,18 +35,16 @@ public class TwoDimGaussDistribution extends Distribution {
         double constant = 1
                 / 2.
                 * Math.PI
-                * Math
-                    .sqrt(delta1 * delta1 * delta2 * delta2 * (1 - rho * rho));
+                * Math.sqrt(delta1 * delta1 * delta2 * delta2 * (1 - rho * rho));
 
         return constant
-                * Math
-                    .exp(-1.
-                            / (2 * (1 - rho * rho))
-                            * ((x1 - mean1)
-                                    * (x1 - mean1)
-                                    / (delta1 * delta1)
-                                    - (2 * rho * (x1 - mean1) * (x2 - mean2) / (delta1 * delta2)) + (x2 - mean2)
-                                    * (x2 - mean2) / (delta2 * delta2)));
+                * Math.exp(-1.
+                        / (2 * (1 - rho * rho))
+                        * ((x1 - mean1)
+                                * (x1 - mean1)
+                                / (delta1 * delta1)
+                                - (2 * rho * (x1 - mean1) * (x2 - mean2) / (delta1 * delta2)) + (x2 - mean2)
+                                * (x2 - mean2) / (delta2 * delta2)));
 
     }
 

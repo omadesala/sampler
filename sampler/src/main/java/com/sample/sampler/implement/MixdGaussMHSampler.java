@@ -30,7 +30,7 @@ public class MixdGaussMHSampler extends ISampler<Double> {
 
     static final long serialVersionUID = 1L;
     private Random random = new Random();
-    ArrayList<Double> values = Lists.newArrayList();
+    private ArrayList<Double> values = Lists.newArrayList();
 
     public MixdGaussMHSampler() {
         super();
@@ -52,7 +52,7 @@ public class MixdGaussMHSampler extends ISampler<Double> {
 
         burnIn();
 
-        Handler();
+        handler();
 
     }
 
@@ -62,10 +62,10 @@ public class MixdGaussMHSampler extends ISampler<Double> {
      * to [0,100] ([-5]+5)*10->[0] ,([ 5]+5)*10->[100],because of the width is
      * 500 pixels, so each rectangle width is 5 pixels.
      */
-    private void Handler() {
+    private void handler() {
 
         Queue<Double> resultDoubles = new ArrayBlockingQueue<Double>(
-            getSamplePointNum());
+                getSamplePointNum());
         Iterator<Double> iterator = getSampleValues().iterator();
 
         while (iterator.hasNext()) {
@@ -92,6 +92,11 @@ public class MixdGaussMHSampler extends ISampler<Double> {
         setSampleValues(queue);
     }
 
+    /**
+     * 
+     * @Description: training until get the station phrase
+     * @throws
+     */
     private void burnIn() {
 
         /**
@@ -114,16 +119,16 @@ public class MixdGaussMHSampler extends ISampler<Double> {
 
             double nextValue = proposalDistribution.sampleOnePoint();
 
-            double pdf_nextPoint = getTargetDistribution().densityFunction(
-                nextValue);
-            double pdf_curPoint = getTargetDistribution().densityFunction(
-                curValue);
+            double pdfNextPoint = getTargetDistribution().densityFunction(
+                    nextValue);
+            double pdfCurPoint = getTargetDistribution().densityFunction(
+                    curValue);
 
-            double accept_ratio = Math.min(1, pdf_nextPoint / pdf_curPoint);
+            double acceptRatio = Math.min(1, pdfNextPoint / pdfCurPoint);
 
             double uniform = random.nextDouble();
 
-            if (uniform < accept_ratio) {
+            if (uniform < acceptRatio) {
                 /**
                  * accept the new status
                  */
@@ -138,8 +143,7 @@ public class MixdGaussMHSampler extends ISampler<Double> {
              */
             if (i < getSamplePointNum()) {
                 sampleValues.offer(curValue);
-            }
-            else {
+            } else {
                 // queue is full, remove head and re-add it.
                 sampleValues.remove();
                 sampleValues.offer(curValue);
