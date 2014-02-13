@@ -26,6 +26,9 @@ public class GaussDistribution extends Distribution {
     public double sampleOnePoint(double... x) {
 
         /**
+         * there are some mess code problem.
+         */
+        /**
          * X��N(��,��^2),��Y=(X-��)/�ҡ�N(0,1).
          * <p>
          * proof: because X��N(��,��^2), so
