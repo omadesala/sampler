@@ -14,7 +14,7 @@ import com.sample.distribution.implement.MVNDistribution;
  * @Description: this calss is use EM (expected maximise) to estimate the
  *               parameter of mixtured gaussian model
  * @author omadesala@msn.com
- * @date 2014-1-29 ÉÏÎç9:41:46
+ * @date 2014-1-29 9:41:46
  * 
  */
 public class MixGanssianEM {
@@ -67,7 +67,7 @@ public class MixGanssianEM {
 	 * @Title: E
 	 * @Description: calcute the x point is sample from k component
 	 * @param
-	 * @return void ·µ»ØÀàÐÍ
+	 * @return void ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * @throws
 	 */
 	private void E() {

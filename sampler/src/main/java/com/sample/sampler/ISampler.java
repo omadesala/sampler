@@ -16,6 +16,12 @@ public abstract class ISampler<T> {
     private Distribution targetDistribution = null;
     private Distribution proposalDistribution = null;
 
+    /**
+     * 
+     * @Description: sample
+     * @param 参数描述
+     * @throws
+     */
     public abstract void doSample();
 
     public Distribution getTargetDistribution() {

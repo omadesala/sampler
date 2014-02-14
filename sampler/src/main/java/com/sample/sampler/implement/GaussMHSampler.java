@@ -50,10 +50,16 @@ public class GaussMHSampler extends ISampler<Vector<Double>> {
     public void doSample() {
 
         burnIn();
-        Handler();
+        handler();
     }
 
-    private void Handler() {
+    /**
+     * 
+     * @Description: do the real job for sampler
+     * @param 参数描述
+     * @throws
+     */
+    private void handler() {
 
         Queue<Vector<Double>> sampleValues = getSampleValues();
         Queue<Vector<Double>> resultDoubles = new ArrayBlockingQueue<Vector<Double>>(
@@ -75,6 +81,12 @@ public class GaussMHSampler extends ISampler<Vector<Double>> {
 
     }
 
+    /**
+     * 
+     * @Description: run until get the station distribution.
+     * @param 参数描述
+     * @throws
+     */
     private void burnIn() {
 
         /**
@@ -98,25 +110,25 @@ public class GaussMHSampler extends ISampler<Vector<Double>> {
 
             proposalDistribution.setMean(x0.firstElement());
 
-            Vector<Double> x_t = new Vector<Double>();
-            x_t.add(proposalDistribution.sampleOnePoint().firstElement());
+            Vector<Double> xt = new Vector<Double>();
+            xt.add(proposalDistribution.sampleOnePoint().firstElement());
 
-            Double p_xt = getTargetDistribution().densityFunction(x_t);
-            Double p_x0 = getTargetDistribution().densityFunction(x0);
+            Double pointXt = getTargetDistribution().densityFunction(xt);
+            Double pointX0 = getTargetDistribution().densityFunction(x0);
 
-            Double accept_ratio = Math.min(1, p_xt / p_x0);
+            Double acceptRatio = Math.min(1, pointXt / pointX0);
 
             Double uniform = Math.random();
 
-            if (uniform < accept_ratio) {
+            if (uniform < acceptRatio) {
 
-                if (!sampleValues.offer(x_t)) {
+                if (!sampleValues.offer(xt)) {
                     // queue is full, remove head and re-add it.
                     sampleValues.remove();
-                    sampleValues.offer(x_t);
+                    sampleValues.offer(xt);
                 }
 
-                x0 = x_t;
+                x0 = xt;
             } else {
                 if (!sampleValues.offer(x0)) {
                     // queue is full, remove head and re-add it.

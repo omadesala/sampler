@@ -31,7 +31,7 @@ public class MixdGaussMHSampler extends ISampler<Vector<Double>> {
 
     static final long serialVersionUID = 1L;
     private Random random = new Random();
-    ArrayList<Vector<Double>> values = Lists.newArrayList();
+    private ArrayList<Vector<Double>> values = Lists.newArrayList();
 
     public MixdGaussMHSampler() {
         super();
@@ -53,17 +53,22 @@ public class MixdGaussMHSampler extends ISampler<Vector<Double>> {
 
         burnIn();
 
-        Handler();
+        handler();
 
     }
 
     /**
-     * assume that the value is belong to interval [-5,5] and we display 100
-     * rectangle , to calculate the number in each rectangle, we expand interval
-     * to [0,100] ([-5]+5)*10->[0] ,([ 5]+5)*10->[100],because of the width is
-     * 500 pixels, so each rectangle width is 5 pixels.
+     * 
+     * @Description: * assume that the value is belong to interval [-5,5] and we
+     *               display 100 rectangle , to calculate the number in each
+     *               rectangle, we expand interval to [0,100] ([-5]+5)*10->[0]
+     *               ,([ 5]+5)*10->[100],because of the width is 500 pixels, so
+     *               each rectangle width is 5 pixels.
+     * 
+     * @param 参数描述
+     * @throws
      */
-    private void Handler() {
+    private void handler() {
 
         Queue<Vector<Double>> resultDoubles = new ArrayBlockingQueue<Vector<Double>>(
                 getSamplePointNum());
@@ -97,6 +102,12 @@ public class MixdGaussMHSampler extends ISampler<Vector<Double>> {
         setSampleValues(queue);
     }
 
+    /**
+     * 
+     * @Description: training until get the station distribution.
+     * @param 参数描述
+     * @throws
+     */
     private void burnIn() {
 
         /**
@@ -121,16 +132,16 @@ public class MixdGaussMHSampler extends ISampler<Vector<Double>> {
 
             Vector<Double> nextValue = proposalDistribution.sampleOnePoint();
 
-            Double pdf_nextPoint = getTargetDistribution().densityFunction(
+            Double pdfNextPoint = getTargetDistribution().densityFunction(
                     nextValue);
-            Double pdf_curPoint = getTargetDistribution().densityFunction(
+            Double pdfCurPoint = getTargetDistribution().densityFunction(
                     curValue);
 
-            Double accept_ratio = Math.min(1, pdf_nextPoint / pdf_curPoint);
+            Double acceptRatio = Math.min(1, pdfNextPoint / pdfCurPoint);
 
             Double uniform = random.nextDouble();
 
-            if (uniform < accept_ratio) {
+            if (uniform < acceptRatio) {
                 /**
                  * accept the new status
                  */

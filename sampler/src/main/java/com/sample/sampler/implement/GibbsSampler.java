@@ -3,20 +3,10 @@ package com.sample.sampler.implement;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
 
-import com.google.common.collect.Queues;
 import com.panayotis.gnuplot.JavaPlot;
-import com.panayotis.gnuplot.plot.AbstractPlot;
 import com.panayotis.gnuplot.plot.DataSetPlot;
-import com.panayotis.gnuplot.style.FillStyle;
-import com.panayotis.gnuplot.style.NamedPlotColor;
-import com.panayotis.gnuplot.style.PlotStyle;
-import com.panayotis.gnuplot.style.Style;
-import com.panayotis.gnuplot.style.FillStyle.Fill;
 import com.sample.distribution.implement.TwoDimGaussDistribution;
 import com.sample.sampler.ISampler;
 
@@ -103,6 +93,13 @@ public class GibbsSampler extends ISampler<Double> {
 
     }
 
+    /**
+     * 
+     * @Description: sample x2 when give x1
+     * @param x1
+     * @return double 返回类型
+     * @throws
+     */
     private double sampleX2GivenX1(double x1) {
 
         double mu2 = 0.1 * x1 + 1.9;
@@ -110,6 +107,12 @@ public class GibbsSampler extends ISampler<Double> {
         return random.nextGaussian() * delta2 + mu2;
     }
 
+    /**
+     * 
+     * @Description: display the result
+     * @param 参数描述
+     * @throws
+     */
     private void displayData() {
 
         JavaPlot p = new JavaPlot("E:/gnuplot/bin/gnuplot.exe", false);
@@ -123,11 +126,11 @@ public class GibbsSampler extends ISampler<Double> {
 
         int size = record.size();
 
-        double points[][] = new double[size][2];
+        double[][] points = new double[size][2];
 
         Iterator<Double> iterator = record.keySet().iterator();
 
-        int i = 0, j = 0;
+        int i = 0;
         while (iterator.hasNext()) {
 
             Double x = iterator.next();
@@ -138,17 +141,18 @@ public class GibbsSampler extends ISampler<Double> {
             i++;
         }
 
-        double[][] plot = { { 1, 1.1 }, { 2, 2.2 }, { 3, 3.3 }, { 4, 4.3 } };
+        // double[][] plot = { { 1, 1.1 }, { 2, 2.2 }, { 3, 3.3 }, { 4, 4.3 } };
 
         // points.
 
-        double sample[][] = new double[1000][2];
+        double[][] sample = new double[1000][2];
 
         i = 0;
         for (int k = 0; k < points.length; k++) {
 
-            if (k < N - 1000)
+            if (k < N - 1000) {
                 continue;
+            }
 
             sample[i][0] = points[k][0];
             sample[i++][1] = points[k][1];

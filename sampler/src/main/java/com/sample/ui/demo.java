@@ -9,7 +9,6 @@ import com.panayotis.gnuplot.GNUPlotParameters;
 import com.panayotis.gnuplot.JavaPlot;
 import com.panayotis.gnuplot.dataset.FileDataSet;
 import com.panayotis.gnuplot.layout.StripeLayout;
-import com.panayotis.iodebug.Debug;
 import com.panayotis.gnuplot.plot.AbstractPlot;
 import com.panayotis.gnuplot.plot.DataSetPlot;
 import com.panayotis.gnuplot.plot.FunctionPlot;
@@ -31,13 +30,14 @@ import javax.swing.JFrame;
 
 /**
  * This Object is used to demonstrate JavaPlot library
- *
+ * 
  * @author teras
  */
 public class demo {
 
     /**
-     * @param args the command line arguments. First argument is the path of
+     * @param args
+     *            the command line arguments. First argument is the path of
      *            gnuplot application
      */
     public static void main(String[] args) {
@@ -77,7 +77,7 @@ public class demo {
         // p.newGraph3D();
 
         FunctionPlot fPlot = new FunctionPlot(
-            "1/(2*pi*sqrt(0.99))*exp((-1/1.98)*((x-1)*(x-1)-0.2*(x-1)*(y-2)+(y-2)*(y-2))); pause 1000;");
+                "1/(2*pi*sqrt(0.99))*exp((-1/1.98)*((x-1)*(x-1)-0.2*(x-1)*(y-2)+(y-2)*(y-2))); pause 1000;");
 
         // PlotStyle style = new PlotStyle(Style.PM3D);
         // fPlot.setPlotStyle(style);
@@ -111,7 +111,6 @@ public class demo {
     private static JavaPlot defaultTerminal(String gnuplotpath) {
 
         JavaPlot p = new JavaPlot(gnuplotpath);
-        JavaPlot.getDebugger().setLevel(Debug.VERBOSE);
 
         p.setTitle("Default Terminal Title");
         p.getAxis("x").setLabel("X axis", "Arial", 20);
@@ -156,8 +155,8 @@ public class demo {
         JavaPlot p = new JavaPlot();
 
         PostscriptTerminal epsf = new PostscriptTerminal(
-            System.getProperty("user.home")
-                    + System.getProperty("file.separator") + "output.eps");
+                System.getProperty("user.home")
+                        + System.getProperty("file.separator") + "output.eps");
         epsf.setColor(true);
         p.setTerminal(epsf);
 
@@ -192,7 +191,6 @@ public class demo {
     /* This demo code displays plot on screen using SVG commands (only b&w) */
     private static JavaPlot SVGTerminal(String gnuplotpath) {
         JavaPlot p = new JavaPlot();
-        JavaPlot.getDebugger().setLevel(Debug.VERBOSE);
 
         SVGTerminal svg = new SVGTerminal();
         p.setTerminal(svg);
@@ -208,10 +206,9 @@ public class demo {
             f.setLocationRelativeTo(null);
             f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             f.setVisible(true);
-        }
-        catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             System.err
-                .println("Error: Library SVGSalamander not properly installed?");
+                    .println("Error: Library SVGSalamander not properly installed?");
         }
 
         return p;
@@ -227,18 +224,14 @@ public class demo {
             in = new ObjectInputStream(new FileInputStream("koko.lala"));
             JavaPlot q = new JavaPlot((GNUPlotParameters) in.readObject());
             q.plot();
-        }
-        catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
-        }
-        finally {
+        } finally {
             try {
                 out.close();
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
@@ -250,8 +243,7 @@ public class demo {
             JavaPlot p = new JavaPlot();
             p.addPlot(new FileDataSet(new File("lala")));
             p.plot();
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
