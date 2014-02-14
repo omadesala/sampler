@@ -47,7 +47,7 @@ public class Demo {
         }
 
         System.out.println("test for gnuplot");
-        System.out.println("test for gnuplot");
+        System.out.println("test for gnuplot modify in test1 branch");
         // simple();
         // simple3D();
         defaultTerminal(path);
