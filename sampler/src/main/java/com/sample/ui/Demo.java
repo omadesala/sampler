@@ -33,7 +33,7 @@ import javax.swing.JFrame;
  * 
  * @author teras
  */
-public class demo {
+public class Demo {
 
     /**
      * @param args
