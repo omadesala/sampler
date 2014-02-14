@@ -41,7 +41,7 @@ public class Demo {
      *            gnuplot application
      */
     public static void main(String[] args) {
-        String path = "E:/gnuplot/bin/gnuplot.exe";
+        String path = "/usr/bin/gnuplot";
         if (args.length > 0) {
             path = args[0];
         }
