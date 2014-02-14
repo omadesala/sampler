@@ -42,6 +42,7 @@ public class Demo {
      */
     public static void main(String[] args) {
         String path = "/usr/bin/gnuplot";
+        System.out.println("dev1");
         if (args.length > 0) {
             path = args[0];
         }
