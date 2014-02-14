@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
+import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import com.google.common.collect.Lists;
@@ -26,11 +27,11 @@ import com.sample.sampler.ISampler;
  * third,choose the constant a for sampler
  * </p>
  */
-public class MixdGaussMHSampler extends ISampler<Double> {
+public class MixdGaussMHSampler extends ISampler<Vector<Double>> {
 
     static final long serialVersionUID = 1L;
     private Random random = new Random();
-    private ArrayList<Double> values = Lists.newArrayList();
+    ArrayList<Vector<Double>> values = Lists.newArrayList();
 
     public MixdGaussMHSampler() {
         super();
@@ -52,7 +53,7 @@ public class MixdGaussMHSampler extends ISampler<Double> {
 
         burnIn();
 
-        handler();
+        Handler();
 
     }
 
@@ -62,50 +63,50 @@ public class MixdGaussMHSampler extends ISampler<Double> {
      * to [0,100] ([-5]+5)*10->[0] ,([ 5]+5)*10->[100],because of the width is
      * 500 pixels, so each rectangle width is 5 pixels.
      */
-    private void handler() {
+    private void Handler() {
 
-        Queue<Double> resultDoubles = new ArrayBlockingQueue<Double>(
+        Queue<Vector<Double>> resultDoubles = new ArrayBlockingQueue<Vector<Double>>(
                 getSamplePointNum());
-        Iterator<Double> iterator = getSampleValues().iterator();
+        Iterator<Vector<Double>> iterator = getSampleValues().iterator();
 
         while (iterator.hasNext()) {
 
-            Double next = iterator.next();
-            double e = 10. * (next + 5.);
-            resultDoubles.add(e);
+            Vector<Double> dataItem = iterator.next();
+
+            dataItem.add(10. * (dataItem.firstElement() + 5.));
+            resultDoubles.add(dataItem);
         }
 
         setSampleValues(resultDoubles);
 
         System.out.println("list size:" + values.size());
 
-        List<Double> subList = values.subList(values.size()
+        List<Vector<Double>> subList = values.subList(values.size()
                 - getSamplePointNum(), values.size() - 1);
-        ArrayList<Double> newArrayList = Lists.newArrayList();
+
+        ArrayList<Vector<Double>> newArrayList = Lists.newArrayList();
         // for test
 
-        for (Double pt : subList) {
-            newArrayList.add(10. * (pt + 5.));
+        for (Vector<Double> pt : subList) {
+            Vector<Double> newpt = new Vector<Double>();
+            newpt.add(10. * (pt.firstElement() + 5.));
+            newArrayList.add(newpt);
         }
-        Queue<Double> queue = Queues.newArrayDeque();
+        Queue<Vector<Double>> queue = Queues.newArrayDeque();
         queue.addAll(newArrayList);
         setSampleValues(queue);
     }
 
-    /**
-     * 
-     * @Description: training until get the station phrase
-     * @throws
-     */
     private void burnIn() {
 
         /**
          * first, set the x0 to a initial value;
          */
 
-        Queue<Double> sampleValues = getSampleValues();
+        Queue<Vector<Double>> sampleValues = getSampleValues();
 
-        Double curValue = 0.5;
+        Vector<Double> curValue = new Vector<Double>();
+        curValue.add(0.5);
         sampleValues.add(curValue);
 
         for (int i = 0; i < 50000; i++) {
@@ -115,20 +116,21 @@ public class MixdGaussMHSampler extends ISampler<Double> {
              */
 
             Distribution proposalDistribution = getProposalDistribution();
-            proposalDistribution.setMean(curValue);
 
-            double nextValue = proposalDistribution.sampleOnePoint();
+            proposalDistribution.setMean(curValue.firstElement());
 
-            double pdfNextPoint = getTargetDistribution().densityFunction(
+            Vector<Double> nextValue = proposalDistribution.sampleOnePoint();
+
+            Double pdf_nextPoint = getTargetDistribution().densityFunction(
                     nextValue);
-            double pdfCurPoint = getTargetDistribution().densityFunction(
+            Double pdf_curPoint = getTargetDistribution().densityFunction(
                     curValue);
 
-            double acceptRatio = Math.min(1, pdfNextPoint / pdfCurPoint);
+            Double accept_ratio = Math.min(1, pdf_nextPoint / pdf_curPoint);
 
-            double uniform = random.nextDouble();
+            Double uniform = random.nextDouble();
 
-            if (uniform < acceptRatio) {
+            if (uniform < accept_ratio) {
                 /**
                  * accept the new status
                  */
@@ -153,4 +155,5 @@ public class MixdGaussMHSampler extends ISampler<Double> {
         }
 
     }
+
 }

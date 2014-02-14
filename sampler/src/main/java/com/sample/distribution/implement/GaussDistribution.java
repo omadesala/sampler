@@ -1,7 +1,9 @@
 package com.sample.distribution.implement;
 
 import java.util.Random;
+import java.util.Vector;
 
+import com.google.common.base.Preconditions;
 import com.sample.distribution.Distribution;
 
 /**
@@ -9,25 +11,22 @@ import com.sample.distribution.Distribution;
  * 1/(sqrt(2*pi)*variance)exp(-(x-mean)^2/(2*variance^2))
  */
 public class GaussDistribution extends Distribution {
-
     private Random random = new Random();
 
     @Override
-    public double densityFunction(double... x) {
+    public double densityFunction(Vector<Double> x) {
 
         double constant = 1 / (Math.sqrt(2. * Math.PI) * variance);
 
         return constant
-                * Math.exp(-(x[0] - mean) * (x[0] - mean)
+                * Math.exp(-(x.firstElement() - mean)
+                        * (x.firstElement() - mean)
                         / (2. * variance * variance));
     }
 
     @Override
-    public double sampleOnePoint(double... x) {
+    public Vector<Double> sampleOnePoint(double... x) {
 
-        /**
-         * there are some mess code problem.
-         */
         /**
          * X��N(��,��^2),��Y=(X-��)/�ҡ�N(0,1).
          * <p>
@@ -58,7 +57,31 @@ public class GaussDistribution extends Distribution {
          * </p>
          * 
          */
-        return random.nextGaussian() * variance + mean;
+
+        Vector<Double> point = new Vector<Double>();
+        point.add(random.nextGaussian() * variance + mean);
+        return point;
+
+    }
+
+    /**
+     * (�� Javadoc)
+     * <p>
+     * Title: setParameter
+     * </p>
+     * <p>
+     * Description:0 for mean,1 for variance
+     * </p>
+     * 
+     * @param param
+     * @see com.sample.distribution.Distribution#setParameter(double[])
+     */
+    @Override
+    public void setParameter(Vector<Double> param) {
+        Preconditions.checkNotNull(param);
+
+        mean = param.firstElement();
+        variance = param.elementAt(1);
 
     }
 }

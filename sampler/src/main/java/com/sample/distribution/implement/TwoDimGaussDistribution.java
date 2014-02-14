@@ -1,5 +1,8 @@
 package com.sample.distribution.implement;
 
+import java.util.Vector;
+
+import com.google.common.base.Preconditions;
 import com.sample.distribution.Distribution;
 
 /**
@@ -28,9 +31,9 @@ public class TwoDimGaussDistribution extends Distribution {
     }
 
     @Override
-    public double densityFunction(double... x) {
+    public double densityFunction(Vector<Double> x) {
 
-        double x1 = x[0], x2 = x[1];
+        Double x1 = x.firstElement(), x2 = x.elementAt(1);
 
         double constant = 1
                 / 2.
@@ -49,9 +52,18 @@ public class TwoDimGaussDistribution extends Distribution {
     }
 
     @Override
-    public double sampleOnePoint(double... x) {
-        return 0;
-        // return random.nextGaussian() * variance + mean;
+    public Vector<Double> sampleOnePoint(double... x) {
+        return new Vector<Double>();
+
+    }
+
+    @Override
+    public void setParameter(Vector<Double> param) {
+        Preconditions.checkNotNull(param);
+        Preconditions.checkArgument(param.size() == 2);
+
+        mean = param.firstElement();
+        variance = param.elementAt(1);
 
     }
 }

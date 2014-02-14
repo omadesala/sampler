@@ -2,6 +2,7 @@ package com.sample.sampler.implement;
 
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import com.sample.distribution.Distribution;
@@ -20,7 +21,7 @@ import com.sample.sampler.ISampler;
  * third,choose the constant a for sampler
  * </p>
  */
-public class GaussMHSampler extends ISampler<Double> {
+public class GaussMHSampler extends ISampler<Vector<Double>> {
 
     static final long serialVersionUID = 1L;
 
@@ -49,43 +50,42 @@ public class GaussMHSampler extends ISampler<Double> {
     public void doSample() {
 
         burnIn();
-        handler();
+        Handler();
     }
 
-    /**
-     * 
-     * @Description: do the real work
-     * @throws
-     */
-    private void handler() {
+    private void Handler() {
 
-        Queue<Double> sampleValues = getSampleValues();
-        Queue<Double> resultDoubles = new ArrayBlockingQueue<Double>(
+        Queue<Vector<Double>> sampleValues = getSampleValues();
+        Queue<Vector<Double>> resultDoubles = new ArrayBlockingQueue<Vector<Double>>(
                 getSamplePointNum());
-        Iterator<Double> iterator = sampleValues.iterator();
+        Iterator<Vector<Double>> iterator = sampleValues.iterator();
 
         while (iterator.hasNext()) {
-            resultDoubles.add(10. * (iterator.next() + 5.));
+
+            Vector<Double> dataItem = iterator.next();
+            Double data = 10. * dataItem.firstElement() + 5.;
+
+            Vector<Double> newData = new Vector<Double>();
+            newData.add(data);
+
+            resultDoubles.add(newData);
         }
 
         setSampleValues(resultDoubles);
 
     }
 
-    /**
-     * 
-     * @Description: this function is train until get the station
-     * @throws
-     */
     private void burnIn() {
 
         /**
          * first, set the x0 to a initial value;
          */
 
-        Queue<Double> sampleValues = getSampleValues();
+        Queue<Vector<Double>> sampleValues = getSampleValues();
 
-        Double x0 = 0.5;
+        Vector<Double> x0 = new Vector<Double>();
+        x0.add(0.5);
+
         sampleValues.add(x0);
 
         for (int i = 0; i < 250000; i++) {
@@ -95,26 +95,28 @@ public class GaussMHSampler extends ISampler<Double> {
              */
 
             Distribution proposalDistribution = getProposalDistribution();
-            proposalDistribution.setMean(x0);
 
-            double xt = proposalDistribution.sampleOnePoint();
+            proposalDistribution.setMean(x0.firstElement());
 
-            double pxt = getTargetDistribution().densityFunction(xt);
-            double px0 = getTargetDistribution().densityFunction(x0);
+            Vector<Double> x_t = new Vector<Double>();
+            x_t.add(proposalDistribution.sampleOnePoint().firstElement());
 
-            double acceptRatio = Math.min(1, pxt / px0);
+            Double p_xt = getTargetDistribution().densityFunction(x_t);
+            Double p_x0 = getTargetDistribution().densityFunction(x0);
 
-            double uniform = Math.random();
+            Double accept_ratio = Math.min(1, p_xt / p_x0);
 
-            if (uniform < acceptRatio) {
+            Double uniform = Math.random();
 
-                if (!sampleValues.offer(xt)) {
+            if (uniform < accept_ratio) {
+
+                if (!sampleValues.offer(x_t)) {
                     // queue is full, remove head and re-add it.
                     sampleValues.remove();
-                    sampleValues.offer(xt);
+                    sampleValues.offer(x_t);
                 }
 
-                x0 = xt;
+                x0 = x_t;
             } else {
                 if (!sampleValues.offer(x0)) {
                     // queue is full, remove head and re-add it.
@@ -126,4 +128,5 @@ public class GaussMHSampler extends ISampler<Double> {
         }
 
     }
+
 }
