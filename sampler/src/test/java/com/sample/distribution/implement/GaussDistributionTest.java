@@ -25,11 +25,10 @@
 
 package com.sample.distribution.implement;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.Vector;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -37,30 +36,41 @@ import com.sample.distribution.Distribution;
 
 public class GaussDistributionTest {
 
-	private Distribution distribution = new GaussDistribution();
+    private Distribution distribution = new GaussDistribution();
 
-	@Test
-	public void testDensityFunction() {
+    /**
+     * 
+     * @Description: test the pdf
+     * @param 参数描述
+     */
+    @Test
+    public void testDensityFunction() {
 
-		// Distribution proposal = new GaussDistribution();
-		distribution.setMean(0);
-		distribution.setVariance(0.05);
+        // Distribution proposal = new GaussDistribution();
+        distribution.setMean(0);
+        distribution.setVariance(0.05);
 
-		ArrayList<Double> result = Lists.newArrayList();
-		for (int i = 0; i < 100; i++) {
+        ArrayList<Double> result = Lists.newArrayList();
+        for (int i = 0; i < 100; i++) {
 
-			Vector<Double> vector = new Vector<Double>();
-			vector.add(0.2 * i);
+            Vector<Double> vector = new Vector<Double>();
+            vector.add(0.2 * i);
 
-			result.add(distribution.densityFunction(vector));
-			System.out.println("i== " + i + "value: " + result.get(i));
-		}
+            result.add(distribution.densityFunction(vector));
+            System.out.println("i== " + i + "value: " + result.get(i));
+        }
 
-	}
+    }
 
-	@Test
-	public void testSampleOnePoint() {
-		fail("Not yet implemented");
-	}
+    /**
+     * 
+     * @Description: test the pdf
+     * @param 参数描述
+     */
+    @Test
+    public void testSampleOnePoint() {
+
+        Assert.fail("Not yet implemented");
+    }
 
 }

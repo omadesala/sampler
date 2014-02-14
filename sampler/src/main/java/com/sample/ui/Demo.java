@@ -59,7 +59,13 @@ public class Demo {
 
     }
 
-    /* This is a very simple plot to demonstrate JavaPlot graphs */
+    /**
+     * 
+     * @Description: This is a very simple plot to demonstrate JavaPlot graphs
+     * @param 参数描述
+     * @throws
+     */
+    @SuppressWarnings("unused")
     private static void simple() {
         JavaPlot p = new JavaPlot("E:/gnuplot/bin/gnuplot.exe");
 
@@ -70,7 +76,13 @@ public class Demo {
         p.plot();
     }
 
-    /* This is a very simple plot to demonstrate JavaPlot 3d graphs */
+    /**
+     * 
+     * @Description: This is a very simple plot to demonstrate JavaPlot 3d
+     *               graphs
+     * @throws
+     */
+    @SuppressWarnings("unused")
     private static void simple3D() {
         JavaPlot p = new JavaPlot("E:/gnuplot/bin/gnuplot.exe", true);
 
@@ -104,9 +116,13 @@ public class Demo {
 
     }
 
-    /*
-     * This demo code uses default terminal. Use it as reference for other
-     * javaplot arguments
+    /**
+     * 
+     * @Description: This demo code uses default terminal. Use it as reference
+     *               for other javaplot arguments
+     * @param gnuplotpath
+     * @return JavaPlot 返回类型
+     * @throws
      */
     private static JavaPlot defaultTerminal(String gnuplotpath) {
 
@@ -135,7 +151,7 @@ public class Demo {
 
         p.newGraph3D();
         double[][] plot3d = { { 1, 1.1, 3 }, { 2, 2.2, 3 }, { 3, 3.3, 3.4 },
-                { 4, 4.3, 5 } };
+                { 4, 4.3, 5 }, };
         p.addPlot(plot3d);
 
         p.newGraph3D();
@@ -150,8 +166,15 @@ public class Demo {
         return p;
     }
 
-    /* This demo code creates a EPS file on home directory */
-    private static JavaPlot EPSTerminal(String gnuplotpath) {
+    /**
+     * 
+     * @Description: This demo code creates a EPS file on home directory
+     * @param gnuplotpath
+     * @return JavaPlot 返回类型
+     * @throws
+     */
+    @SuppressWarnings("unused")
+    private static JavaPlot epsTerminal(String gnuplotpath) {
         JavaPlot p = new JavaPlot();
 
         PostscriptTerminal epsf = new PostscriptTerminal(
@@ -171,8 +194,15 @@ public class Demo {
         return p;
     }
 
-    /* This demo code displays plot on screen using image terminal */
-    private static JavaPlot JPlotTerminal(String gnuplotpath) {
+    /**
+     * 
+     * @Description: This demo code displays plot on screen using image terminal
+     * @param gnuplotpath
+     * @return JavaPlot 返回类型
+     * @throws
+     */
+    @SuppressWarnings("unused")
+    private static JavaPlot jPlotTerminal(String gnuplotpath) {
         JPlot plot = new JPlot();
         plot.getJavaPlot().addPlot("sqrt(x)/x");
         plot.getJavaPlot().addPlot("x*sin(x)");
@@ -188,8 +218,17 @@ public class Demo {
         return plot.getJavaPlot();
     }
 
-    /* This demo code displays plot on screen using SVG commands (only b&w) */
-    private static JavaPlot SVGTerminal(String gnuplotpath) {
+    /**
+     * 
+     * @Description: This demo code displays plot on screen using SVG commands
+     *               (only b&w)
+     * @param gnuplotpath
+     * @return JavaPlot 返回类型
+     * @throws
+     */
+
+    @SuppressWarnings("unused")
+    private static JavaPlot svgTerminal(String gnuplotpath) {
         JavaPlot p = new JavaPlot();
 
         SVGTerminal svg = new SVGTerminal();
@@ -214,6 +253,13 @@ public class Demo {
         return p;
     }
 
+    /**
+     * 
+     * @Description: serialization fot javaplot
+     * @param 参数描述
+     * @throws
+     */
+    @SuppressWarnings("unused")
     private static void serialization(JavaPlot p) {
         ObjectOutputStream out = null;
         ObjectInputStream in = null;
@@ -237,7 +283,13 @@ public class Demo {
         }
     }
 
-    /* This is a simple plot to demonstrate file datasets */
+    /**
+     * 
+     * @Description: This is a simple plot to demonstrate file datasets
+     * @param 参数描述
+     * @throws
+     */
+    @SuppressWarnings("unused")
     private static void file() {
         try {
             JavaPlot p = new JavaPlot();

@@ -125,7 +125,8 @@ public class TwoDimGaussSampler extends ISampler<Vector<Double>> {
         preInit.add("set yrange [-5:5]");// draw contour
         preInit.add("set size square");// draw contour
 
-        JavaPlot p = new JavaPlot(param, "E:/gnuplot/bin/gnuplot.exe", null);
+//        JavaPlot p = new JavaPlot(param, "E:/gnuplot/bin/gnuplot.exe", null);
+        JavaPlot p = new JavaPlot(param, "/usr/bin/gnuplot", null);
 
         p.setTitle("two dim gaussian Sample Demo");
         p.getAxis("x").setLabel("X1 axis", "Arial", 20);

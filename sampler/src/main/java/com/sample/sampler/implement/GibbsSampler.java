@@ -115,7 +115,8 @@ public class GibbsSampler extends ISampler<Double> {
      */
     private void displayData() {
 
-        JavaPlot p = new JavaPlot("E:/gnuplot/bin/gnuplot.exe", false);
+        // JavaPlot p = new JavaPlot("E:/gnuplot/bin/gnuplot.exe", false);
+        JavaPlot p = new JavaPlot("/usr/bin/gnuplot", false);
 
         p.setTitle("Gibbs Sample Demo");
         p.getAxis("x").setLabel("X1 axis", "Arial", 20);
