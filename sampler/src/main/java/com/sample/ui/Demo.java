@@ -42,7 +42,7 @@ public class Demo {
 	 */
 	public static void main(String[] args) {
 		String path = "/usr/bin/gnuplot";
-		System.out.println("always!");
+		System.out.println("always!always!");
 		if (args.length > 0) {
 			path = args[0];
 		}
