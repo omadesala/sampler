@@ -16,16 +16,15 @@ public class MatrixUtils {
     /**
      * @Title: getMatrix
      * @Description: get the input point as the column matrix such as N x 1
-     * @param input
-     *            data point
+     * @param input data point
      * @return Matrix Column is one ,and arrow is N, N is the size of input
      * @throws
      */
     public static Matrix getPointOfMatrix(Vector<Double> input) {
 
-        Matrix matrix = new Matrix(1, input.size());
+        Matrix matrix = new Matrix(input.size(), 1);
         for (int i = 0; i < input.size(); i++) {
-            matrix.set(i, 1, input.get(i));
+            matrix.set(i, 0, input.get(i));
         }
         return matrix;
     }
@@ -56,10 +55,8 @@ public class MatrixUtils {
     /**
      * @Title: getMatrixColumn
      * @Description: get the k-th column form input matrix
-     * @param input
-     *            input matrix
-     * @param columnIndex
-     *            column index
+     * @param input input matrix
+     * @param columnIndex column index
      * @return Matrix 返回类型
      * @throws
      */
