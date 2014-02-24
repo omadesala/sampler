@@ -16,11 +16,12 @@ public class MatrixUtils {
     /**
      * @Title: getMatrix
      * @Description: get the input point as the column matrix such as N x 1
-     * @param input data point
+     * @param input
+     *            data point
      * @return Matrix Column is one ,and arrow is N, N is the size of input
      * @throws
      */
-    public static Matrix getMatrix(Vector<Double> input) {
+    public static Matrix getPointOfMatrix(Vector<Double> input) {
 
         Matrix matrix = new Matrix(1, input.size());
         for (int i = 0; i < input.size(); i++) {
@@ -31,8 +32,12 @@ public class MatrixUtils {
 
     public static List<Vector<Double>> getListVector(Matrix input) {
 
+        Preconditions.checkNotNull(input);
+
         int rowDimension = input.getRowDimension();
         int columnDimension = input.getColumnDimension();
+
+        Preconditions.checkState(rowDimension > 0 && columnDimension > 0);
 
         List<Vector<Double>> datas = Lists.newArrayList();
 
@@ -51,8 +56,10 @@ public class MatrixUtils {
     /**
      * @Title: getMatrixColumn
      * @Description: get the k-th column form input matrix
-     * @param input input matrix
-     * @param columnIndex column index
+     * @param input
+     *            input matrix
+     * @param columnIndex
+     *            column index
      * @return Matrix 返回类型
      * @throws
      */
@@ -61,6 +68,7 @@ public class MatrixUtils {
         int columnNumber = input.getColumnDimension();
         int rowNumber = input.getRowDimension();
 
+        Preconditions.checkNotNull(input);
         Preconditions.checkArgument(columnIndex >= 0
                 && columnIndex < columnNumber);
 
@@ -73,9 +81,66 @@ public class MatrixUtils {
         int columnNumber = input.getColumnDimension();
         int rowNumber = input.getRowDimension();
 
+        Preconditions.checkNotNull(input);
         Preconditions.checkArgument(rowIndex >= 0 && rowIndex < rowNumber);
 
         return input.getMatrix(rowIndex, rowIndex, 0, columnNumber - 1);
+
+    }
+
+    public static Double getSumOfMatrixRow(Matrix row) {
+
+        Preconditions.checkNotNull(row);
+        Preconditions.checkArgument(row.getColumnDimension() > 1
+                && row.getRowDimension() == 1);
+
+        Double sum = 0.;
+        for (int i = 0; i < row.getColumnDimension(); i++) {
+            sum += row.get(0, i);
+        }
+
+        return sum;
+
+    }
+
+    public static Double getSumOfMatrixColumn(Matrix col) {
+
+        Preconditions.checkNotNull(col);
+        Preconditions.checkArgument(col.getRowDimension() > 1
+                && col.getColumnDimension() == 1);
+
+        Double sum = 0.;
+        for (int i = 0; i < col.getRowDimension(); i++) {
+            sum += col.get(i, 0);
+        }
+
+        return sum;
+
+    }
+
+    public static Double getMatrixColumnElementAt(Matrix col, Integer index) {
+
+        Preconditions.checkNotNull(col);
+        Preconditions.checkState(col.getRowDimension() == 1
+                && col.getColumnDimension() > 1
+                && (index >= 0 && index < col.getColumnDimension()));
+
+        Double element = col.get(0, index);
+
+        return element;
+
+    }
+
+    public static Double getMatrixRowElementAt(Matrix row, Integer index) {
+
+        Preconditions.checkNotNull(row);
+        Preconditions.checkState(row.getRowDimension() > 1
+                && row.getColumnDimension() == 1
+                && (index >= 0 && index < row.getColumnDimension()));
+
+        Double element = row.get(index, 0);
+
+        return element;
 
     }
 
