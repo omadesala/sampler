@@ -62,8 +62,9 @@ public class MixGanssianEM {
      * @Title: train
      * @Description: train the data to get the parameter for maxmize the log
      *               likehood.
-     * @param input data is D x N matrix ,each point is have D elements, and
-     *            total N points
+     * @param input
+     *            data is D x N matrix ,each point is have D elements, and total
+     *            N points
      * @return void 返回类型
      * @throws
      */
@@ -94,7 +95,11 @@ public class MixGanssianEM {
 
         for (int k = 0; k < componentNumber; k++) {
 
-            
+            Double numerator = MatrixUtils.getSumOfMatrixRow(MatrixUtils
+                    .getMatrixRow(kComponentEachPointEstiamation, k));
+
+            this.component.set(0, k,
+                    numerator / this.inputData.getColumnDimension());
         }
 
     }
@@ -214,8 +219,10 @@ public class MixGanssianEM {
      * @Title: getPosteriorPdfForLatentVar
      * @Description: calculate the current point belongs to the k-th component
      *               probability
-     * @param point current point x_i i = 1,2,3,...,n
-     * @param kComponent it's the k-th component
+     * @param point
+     *            current point x_i i = 1,2,3,...,n
+     * @param kComponent
+     *            it's the k-th component
      * @return Double the pdf value
      * @throws
      */
