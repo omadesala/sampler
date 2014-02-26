@@ -7,6 +7,7 @@ import java.util.Random;
 
 import com.panayotis.gnuplot.JavaPlot;
 import com.panayotis.gnuplot.plot.DataSetPlot;
+import com.probablity.utils.Constant;
 import com.sample.distribution.implement.TwoDimGaussDistribution;
 import com.sample.sampler.ISampler;
 
@@ -44,7 +45,6 @@ public class GibbsSampler extends ISampler<Double> {
     }
 
     /**
-     * 
      * @Description: training until get the station phrase
      * @throws
      */
@@ -67,7 +67,6 @@ public class GibbsSampler extends ISampler<Double> {
     }
 
     /**
-     * 
      * @Description: save the sample point
      * @param x1
      * @param x2
@@ -78,7 +77,6 @@ public class GibbsSampler extends ISampler<Double> {
     }
 
     /**
-     * 
      * @Description: sample x1 by given x2
      * @param x2
      * @return double return sample point
@@ -94,7 +92,6 @@ public class GibbsSampler extends ISampler<Double> {
     }
 
     /**
-     * 
      * @Description: sample x2 when give x1
      * @param x1
      * @return double 返回类型
@@ -108,15 +105,13 @@ public class GibbsSampler extends ISampler<Double> {
     }
 
     /**
-     * 
      * @Description: display the result
      * @param 参数描述
      * @throws
      */
     private void displayData() {
 
-        // JavaPlot p = new JavaPlot("E:/gnuplot/bin/gnuplot.exe", false);
-        JavaPlot p = new JavaPlot("/usr/bin/gnuplot", false);
+        JavaPlot p = new JavaPlot(Constant.GNUPLOT_PATH, false);
 
         p.setTitle("Gibbs Sample Demo");
         p.getAxis("x").setLabel("X1 axis", "Arial", 20);

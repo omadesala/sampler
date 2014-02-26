@@ -9,16 +9,15 @@ import java.util.Vector;
 import com.panayotis.gnuplot.GNUPlotParameters;
 import com.panayotis.gnuplot.JavaPlot;
 import com.panayotis.gnuplot.plot.DataSetPlot;
+import com.probablity.utils.Constant;
 import com.sample.sampler.ISampler;
 
 /**
- * 
  * @ClassName: TwoDStandardGaussSampler
  * @Description: this class is a sampler to generate tow dimension standard
  *               gaussian sample by inverse method
  * @author omadesala@msn.com
  * @date 2014-1-27 11:55:24
- * 
  */
 public class TwoDimStandardGaussSampler extends ISampler<Vector<Double>> {
 
@@ -50,7 +49,6 @@ public class TwoDimStandardGaussSampler extends ISampler<Vector<Double>> {
     }
 
     /**
-     * 
      * @Description: generate the sample for the given distribution
      * @param 参数描述
      */
@@ -78,7 +76,6 @@ public class TwoDimStandardGaussSampler extends ISampler<Vector<Double>> {
     }
 
     /**
-     * 
      * @Description: display the data for user
      * @throws
      */
@@ -93,8 +90,7 @@ public class TwoDimStandardGaussSampler extends ISampler<Vector<Double>> {
         preInit.add("set yrange [-5:5]");// draw contour
         preInit.add("set size square");// draw contour
 
-        // JavaPlot p = new JavaPlot(param, "E:/gnuplot/bin/gnuplot.exe", null);
-        JavaPlot p = new JavaPlot(param, "/usr/bin/gnuplot", null);
+        JavaPlot p = new JavaPlot(param, Constant.GNUPLOT_PATH, null);
 
         p.setTitle("two dim gaussian Sample Demo");
         p.getAxis("x").setLabel("X1 axis", "Arial", 20);

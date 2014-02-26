@@ -11,6 +11,9 @@ import Jama.Matrix;
 import com.panayotis.gnuplot.GNUPlotParameters;
 import com.panayotis.gnuplot.JavaPlot;
 import com.panayotis.gnuplot.plot.DataSetPlot;
+import com.probablity.utils.Constant;
+import com.probablity.utils.MatrixUtils;
+import com.sample.classify.MixGanssianEM;
 import com.sample.sampler.ISampler;
 import com.sample.sampler.implement.inverse.TwoDimGaussSampler;
 
@@ -29,10 +32,8 @@ public class MixGaussianSample {
     private ISampler<Vector<Double>> sampler;
 
     /**
-     * 
      * @Description: main method for entry point
-     * @param args
-     *            参数描述
+     * @param args 参数描述
      * @throws
      */
     public static void main(String[] args) {
@@ -43,7 +44,6 @@ public class MixGaussianSample {
     }
 
     /**
-     * 
      * @Description: start to do some real work
      * @param 参数描述
      * @throws
@@ -76,12 +76,14 @@ public class MixGaussianSample {
             getSamples().add(iterator.next());
         }
 
-        displayData();
+        // displayData();
+
+        MixGanssianEM mixGanssianEM = new MixGanssianEM();
+        mixGanssianEM.train(getSampleMatrix());
 
     }
 
     /**
-     * 
      * @Description: initial the state
      * @throws
      */
@@ -120,7 +122,7 @@ public class MixGaussianSample {
     }
 
     /**
-     * 
+     * @return TODO
      * @Description: display the data
      * @param 参数描述
      * @throws
@@ -136,11 +138,21 @@ public class MixGaussianSample {
         preInit.add("set yrange [-5:20]");// draw contour
         preInit.add("set size square");// draw contour
 
-        JavaPlot p = new JavaPlot(param, "E:/gnuplot/bin/gnuplot.exe", null);
+        JavaPlot p = new JavaPlot(param, Constant.GNUPLOT_PATH, null);
 
         p.setTitle("two dim gaussian Sample Demo");
         p.getAxis("x").setLabel("X1 axis", "Arial", 20);
         p.getAxis("y").setLabel("X2 axis");
+
+        DataSetPlot s = new DataSetPlot(getSampleArray());
+        p.addPlot(s);
+
+        p.addPlot("0; pause 1000;");
+        p.plot();
+
+    }
+
+    private double[][] getSampleArray() {
 
         Queue<Vector<Double>> sampleValues = getSamples();
 
@@ -158,12 +170,28 @@ public class MixGaussianSample {
 
             i++;
         }
+        return points;
+    }
 
-        DataSetPlot s = new DataSetPlot(points);
-        p.addPlot(s);
+    private Matrix getSampleMatrix() {
 
-        p.addPlot("0; pause 1000;");
-        p.plot();
+        Queue<Vector<Double>> sampleValues = getSamples();
+
+        double[][] points = new double[2][sampleValues.size()];
+
+        Iterator<Vector<Double>> iterator = sampleValues.iterator();
+
+        int i = 0;
+        while (iterator.hasNext()) {
+
+            Vector<Double> next = iterator.next();
+
+            points[0][i] = next.firstElement();
+            points[1][i] = next.lastElement();
+
+            i++;
+        }
+        return new Matrix(points);
     }
 
     public Queue<Vector<Double>> getSamples() {

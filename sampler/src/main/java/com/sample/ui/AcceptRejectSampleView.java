@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import com.sample.sampler.ISampler;
-import com.sample.sampler.implement.inverse.TwoDimStandardGaussSampler;
+import com.sample.sampler.implement.inverse.TwoDimGaussSampler;
 
 public class AcceptRejectSampleView extends Applet {
 
@@ -25,8 +25,8 @@ public class AcceptRejectSampleView extends Applet {
 
     public AcceptRejectSampleView() throws HeadlessException {
         super();
-        // this.sampler = new TwoDimGaussSampler();
-        this.sampler = new TwoDimStandardGaussSampler();
+        this.sampler = new TwoDimGaussSampler();
+        // this.sampler = new TwoDimStandardGaussSampler();
         // this.sampler = new MixdGaussMHSampler();
         // this.sampler = new GaussMHSampler();
         // this.sampler = new DoubleGaussSampler();
@@ -47,10 +47,8 @@ public class AcceptRejectSampleView extends Applet {
     }
 
     /**
-     * 
      * @Description: draw the sample efficiency for display
-     * @param g
-     *            参数描述
+     * @param g 参数描述
      * @throws
      */
     private void displayEfficiency(Graphics g) {
@@ -62,7 +60,6 @@ public class AcceptRejectSampleView extends Applet {
     }
 
     /**
-     * 
      * @Description: calculate the accept ratio
      * @return long 返回类型
      * @throws
@@ -75,10 +72,8 @@ public class AcceptRejectSampleView extends Applet {
     }
 
     /**
-     * 
      * @Description: display the target distribution
-     * @param g
-     *            参数描述
+     * @param g 参数描述
      * @throws
      */
     private void displaTargetDistribution(Graphics g) {
@@ -112,10 +107,8 @@ public class AcceptRejectSampleView extends Applet {
     }
 
     /**
-     * 
      * @Description: display the simulator distribution
-     * @param g
-     *            参数描述
+     * @param g 参数描述
      * @throws
      */
     private void displaySimulatorDistribution(Graphics g) {
@@ -141,7 +134,6 @@ public class AcceptRejectSampleView extends Applet {
     }
 
     /**
-     * 
      * @Description:set view point
      * @param 参数描述
      * @throws
@@ -162,7 +154,6 @@ public class AcceptRejectSampleView extends Applet {
     }
 
     /**
-     * 
      * @Description: init the view point
      * @param 参数描述
      * @throws
@@ -175,7 +166,6 @@ public class AcceptRejectSampleView extends Applet {
     }
 
     /**
-     * 
      * @Description: find the max value
      * @param 参数描述
      * @throws
