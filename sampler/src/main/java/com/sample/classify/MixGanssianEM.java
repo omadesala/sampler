@@ -2,7 +2,6 @@ package com.sample.classify;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Vector;
 
 import Jama.Matrix;

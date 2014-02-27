@@ -12,7 +12,6 @@ import com.panayotis.gnuplot.GNUPlotParameters;
 import com.panayotis.gnuplot.JavaPlot;
 import com.panayotis.gnuplot.plot.DataSetPlot;
 import com.probablity.utils.Constant;
-import com.probablity.utils.MatrixUtils;
 import com.sample.classify.MixGanssianEM;
 import com.sample.sampler.ISampler;
 import com.sample.sampler.implement.inverse.TwoDimGaussSampler;

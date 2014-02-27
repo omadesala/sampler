@@ -22,6 +22,8 @@ public class MatrixUtils {
      */
     public static Matrix getPointOfMatrix(Vector<Double> input) {
 
+        Preconditions.checkState(!input.isEmpty());
+
         Matrix matrix = new Matrix(input.size(), 1);
         for (int i = 0; i < input.size(); i++) {
             matrix.set(i, 0, input.get(i));

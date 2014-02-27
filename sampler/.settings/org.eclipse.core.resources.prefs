@@ -1,0 +1,5 @@
+eclipse.preferences.version=1
+encoding//src/main/java/com/sample/classify/MixGanssianEM.java=UTF-8
+encoding//src/main/java/com/sample/sampler/implement/inverse/TwoDimGaussSampler.java=UTF-8
+encoding//src/main/java/com/sample/ui/AcceptRejectSampleView.java=UTF-8
+encoding//src/main/java/com/sample/ui/MixGaussianSample.java=UTF-8
