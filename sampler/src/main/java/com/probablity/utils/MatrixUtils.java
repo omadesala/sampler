@@ -16,7 +16,8 @@ public class MatrixUtils {
     /**
      * @Title: getMatrix
      * @Description: get the input point as the column matrix such as N x 1
-     * @param input data point
+     * @param input
+     *            data point
      * @return Matrix Column is one ,and arrow is N, N is the size of input
      * @throws
      */
@@ -57,8 +58,10 @@ public class MatrixUtils {
     /**
      * @Title: getMatrixColumn
      * @Description: get the k-th column form input matrix
-     * @param input input matrix
-     * @param columnIndex column index
+     * @param input
+     *            input matrix
+     * @param columnIndex
+     *            column index
      * @return Matrix 返回类型
      * @throws
      */
@@ -68,8 +71,7 @@ public class MatrixUtils {
         int rowNumber = input.getRowDimension();
 
         Preconditions.checkNotNull(input);
-        Preconditions.checkArgument(columnIndex >= 0
-                && columnIndex < columnNumber);
+        Preconditions.checkArgument(columnIndex >= 0 && columnIndex < columnNumber);
 
         return input.getMatrix(0, rowNumber - 1, columnIndex, columnIndex);
 
@@ -90,8 +92,7 @@ public class MatrixUtils {
     public static Double getSumOfMatrixRow(Matrix row) {
 
         Preconditions.checkNotNull(row);
-        Preconditions.checkArgument(row.getColumnDimension() > 1
-                && row.getRowDimension() == 1);
+        Preconditions.checkArgument(row.getColumnDimension() > 1 && row.getRowDimension() == 1);
 
         Double sum = 0.;
         for (int i = 0; i < row.getColumnDimension(); i++) {
@@ -105,8 +106,7 @@ public class MatrixUtils {
     public static Double getSumOfMatrixColumn(Matrix col) {
 
         Preconditions.checkNotNull(col);
-        Preconditions.checkArgument(col.getRowDimension() > 1
-                && col.getColumnDimension() == 1);
+        Preconditions.checkArgument(col.getRowDimension() > 1 && col.getColumnDimension() == 1);
 
         Double sum = 0.;
         for (int i = 0; i < col.getRowDimension(); i++) {
@@ -117,27 +117,25 @@ public class MatrixUtils {
 
     }
 
-    public static Double getMatrixColumnElementAt(Matrix col, Integer index) {
+    public static Double getRowMatrixElementAt(Matrix rowMat, Integer index) {
 
-        Preconditions.checkNotNull(col);
-        Preconditions.checkState(col.getRowDimension() == 1
-                && col.getColumnDimension() > 1
-                && (index >= 0 && index < col.getColumnDimension()));
+        Preconditions.checkNotNull(rowMat);
+        Preconditions.checkState(rowMat.getRowDimension() == 1 && rowMat.getColumnDimension() > 1
+                && (index >= 0 && index < rowMat.getColumnDimension()));
 
-        Double element = col.get(0, index);
+        Double element = rowMat.get(0, index);
 
         return element;
 
     }
 
-    public static Double getMatrixRowElementAt(Matrix row, Integer index) {
+    public static Double getColumnMatrixElementAt(Matrix colMat, Integer index) {
 
-        Preconditions.checkNotNull(row);
-        Preconditions.checkState(row.getRowDimension() > 1
-                && row.getColumnDimension() == 1
-                && (index >= 0 && index < row.getColumnDimension()));
+        Preconditions.checkNotNull(colMat);
+        Preconditions.checkState(colMat.getRowDimension() > 1 && colMat.getColumnDimension() == 1
+                && (index >= 0 && index < colMat.getRowDimension()));
 
-        Double element = row.get(index, 0);
+        Double element = colMat.get(index, 0);
 
         return element;
 
@@ -154,6 +152,14 @@ public class MatrixUtils {
             }
             System.out.println("  ");
         }
+
+    }
+
+    public static boolean isColumn(Matrix input) {
+
+        Preconditions.checkNotNull(input);
+
+        return input.getColumnDimension() == 1 && input.getRowDimension() >= 1;
 
     }
 
