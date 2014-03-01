@@ -126,6 +126,7 @@ public class MixGaussianSample {
      * @param 参数描述
      * @throws
      */
+    @SuppressWarnings("unused")
     private void displayData() {
 
         GNUPlotParameters param = new GNUPlotParameters(false);

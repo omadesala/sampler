@@ -5,6 +5,7 @@ import java.util.Vector;
 import Jama.Matrix;
 
 import com.google.common.base.Preconditions;
+import com.probablity.utils.MatrixUtils;
 import com.sample.distribution.Distribution;
 
 /**
@@ -16,39 +17,29 @@ public class MVNDistribution extends Distribution {
     private Matrix var;
     private int dimension;
 
-    public MVNDistribution() {
-
-    }
-
     public MVNDistribution(Matrix mu, Matrix var) {
         this.mean = mu;
         this.var = var;
 
-        dimension = this.mean.getRowDimension();
+        this.dimension = this.mean.getRowDimension();
 
     }
 
     @Override
-    public double densityFunction(Vector<Double> point) {
+    public Double densityFunction(Vector<Double> pointVector) {
+        Preconditions.checkNotNull(pointVector);
 
-        Preconditions.checkNotNull(point);
+        Matrix pointMatrix = MatrixUtils.getPointOfMatrix(pointVector);
 
-        int dimension = mean.getRowDimension();
-        Matrix pt = new Matrix(dimension, 1);
+        double dominator = Math.pow((2. * Math.PI), dimension / 2.)
+                * Math.sqrt(var.det());
+        double constant = 1. / dominator;
 
-        for (int i = 0; i < dimension; i++) {
-            pt.set(i, 0, point.elementAt(i));
-        }
-
-        double dominator = Math.pow((2. * Math.PI), dimension / 2);
-        double vardet = var.det();
-        double constant = 1. / (dominator * Math.sqrt(vardet));
-
-        Matrix times = pt.minus(mean).transpose().times(var.inverse()).times(pt.minus(mean));
-        Double exponent = Math.exp(times.get(0, 0));
+        Matrix times = pointMatrix.minus(mean).transpose().times(var.inverse())
+                .times(pointMatrix.minus(mean));
+        Double exponent = Math.exp(-(1. / 2) * times.get(0, 0));
 
         return constant * exponent;
-
     }
 
     @Override
@@ -65,7 +56,6 @@ public class MVNDistribution extends Distribution {
      * <p>
      * Description:0 for mean,1 for variance
      * </p>
-     * 
      * @param param
      * @see com.sample.distribution.Distribution#setParameter(double[])
      */
@@ -77,4 +67,5 @@ public class MVNDistribution extends Distribution {
         // variance = param.elementAt(1);
 
     }
+
 }

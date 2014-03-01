@@ -99,6 +99,42 @@ public class MatrixUtilsTest {
     }
 
     @Test
+    public void testGetMatrix() {
+
+        System.out.println("testGetMatrix");
+        // 1.1 1.2 1.3
+        // 2.1 2.2 2.3
+        // 3.1 3.2 3.3
+
+        double[][] a = new double[3][3];
+        a[0][0] = 1.1;
+        a[0][1] = 1.2;
+        a[0][2] = 1.3;
+
+        a[1][0] = 2.1;
+        a[1][1] = 2.2;
+        a[1][2] = 2.3;
+
+        a[2][0] = 3.1;
+        a[2][1] = 3.2;
+        a[2][2] = 3.3;
+
+        Matrix input = new Matrix(a);
+
+        MatrixUtils.printMatrix(input);
+
+        List<Vector<Double>> listVector = MatrixUtils.getListVector(input);
+
+        Matrix matrix = MatrixUtils.getMatrix(listVector);
+
+        Assert.assertEquals(3, matrix.getRowDimension());
+        Assert.assertEquals(3, matrix.getColumnDimension());
+
+        MatrixUtils.printMatrix(matrix);
+
+    }
+
+    @Test
     public void testGetMatrixColumn() {
 
         System.out.println("testGetMatrixColumn");
@@ -250,7 +286,8 @@ public class MatrixUtilsTest {
         a[1][0] = 1.2;
         a[2][0] = 1.3;
 
-        Double sumOfMatrixColumn = MatrixUtils.getSumOfMatrixColumn(new Matrix(a));
+        Double sumOfMatrixColumn = MatrixUtils.getSumOfMatrixColumn(new Matrix(
+                a));
 
         Assert.assertEquals(3.6, sumOfMatrixColumn, 0.00001);
 
@@ -352,6 +389,121 @@ public class MatrixUtilsTest {
 
         MatrixUtils.getColumnMatrixElementAt(input, 5);
 
+    }
+
+    @Test
+    public void testMatrixIsColumnIsTrue() {
+
+        System.out.println("testMatrixIsColumn");
+
+        double[][] a = new double[3][1];
+        a[0][0] = 1.1;
+        a[1][0] = 1.2;
+        a[2][0] = 1.3;
+
+        boolean column = MatrixUtils.isColumn(new Matrix(a));
+        Assert.assertEquals(true, column);
+
+    }
+
+    @Test
+    public void testMatrixIsRowIsTrue() {
+
+        System.out.println("testMatrixIsRowIsTrue");
+
+        double[][] a = new double[1][3];
+        a[0][0] = 1.1;
+        a[0][1] = 1.2;
+        a[0][2] = 1.3;
+
+        boolean isRow = MatrixUtils.isRow(new Matrix(a));
+        Assert.assertEquals(true, isRow);
+
+    }
+
+    @Test
+    public void testMatrixIsColumnFalse() {
+
+        System.out.println("testMatrixIsColumnFalse");
+
+        double[][] a = new double[1][3];
+        a[0][0] = 1.1;
+        a[0][1] = 1.2;
+        a[0][2] = 1.3;
+
+        boolean column = MatrixUtils.isColumn(new Matrix(a));
+        Assert.assertEquals(false, column);
+
+        double[][] b = new double[2][2];
+        b[0][0] = 1.1;
+        b[0][1] = 1.2;
+        b[1][0] = 1.3;
+        b[1][1] = 1.3;
+
+        column = MatrixUtils.isColumn(new Matrix(b));
+        Assert.assertEquals(false, column);
+
+    }
+
+    @Test
+    public void testMatrixIsRowFalse() {
+
+        System.out.println("testMatrixIsRowFalse");
+
+        double[][] a = new double[3][1];
+        a[0][0] = 1.1;
+        a[1][0] = 1.2;
+        a[2][0] = 1.3;
+
+        boolean isRow = MatrixUtils.isRow(new Matrix(a));
+        Assert.assertEquals(false, isRow);
+
+        double[][] b = new double[2][2];
+        b[0][0] = 1.1;
+        b[0][1] = 1.2;
+        b[1][0] = 1.3;
+        b[1][1] = 1.3;
+
+        isRow = MatrixUtils.isColumn(new Matrix(b));
+        Assert.assertEquals(false, isRow);
+
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testMatrixIsColumnNullInput() {
+
+        System.out.println("testMatrixIsColumnNullInput");
+        MatrixUtils.isColumn(null);
+
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testMatrixIsRowNullInput() {
+
+        System.out.println("testMatrixIsRowNullInput");
+        MatrixUtils.isRow(null);
+
+    }
+
+    @Test
+    public void testrowMultiColumn() {
+
+        System.out.println("testMatrixIsRowNullInput");
+
+        double[][] row = new double[1][3];
+        row[0][0] = 1.1;
+        row[0][1] = 1.2;
+        row[0][2] = 1.3;
+        double[][] col = new double[3][1];
+        col[0][0] = 1.1;
+        col[1][0] = 1.2;
+        col[2][0] = 1.3;
+
+        Matrix rowMatrix = new Matrix(row);
+        Matrix colMatrix = new Matrix(col);
+        Double prod = MatrixUtils.rowMultiColumn(rowMatrix, colMatrix);
+
+        Assert.assertEquals(4.34, prod, 0.00001);
     }
 
     @Test

@@ -31,11 +31,11 @@ public class TwoDimGaussDistribution extends Distribution {
     }
 
     @Override
-    public double densityFunction(Vector<Double> x) {
+    public Double densityFunction(Vector<Double> x) {
 
         Double x1 = x.firstElement(), x2 = x.elementAt(1);
 
-        double constant = 1
+        double constant = 1.
                 / 2.
                 * Math.PI
                 * Math.sqrt(delta1 * delta1 * delta2 * delta2 * (1 - rho * rho));

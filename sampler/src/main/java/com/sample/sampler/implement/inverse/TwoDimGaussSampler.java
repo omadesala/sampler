@@ -12,7 +12,9 @@ import Jama.Matrix;
 import com.panayotis.gnuplot.GNUPlotParameters;
 import com.panayotis.gnuplot.JavaPlot;
 import com.panayotis.gnuplot.plot.DataSetPlot;
+import com.probablity.utils.CollectionUtils;
 import com.probablity.utils.Constant;
+import com.probablity.utils.GnuPlotDisplay;
 import com.sample.sampler.ISampler;
 
 /**
@@ -57,7 +59,7 @@ public class TwoDimGaussSampler extends ISampler<Vector<Double>> {
     public void doSample() {
 
         generate();
-        // displayData();
+        // GnuPlotDisplay.display(CollectionUtils.getList(getSampleValues()));
     }
 
     /**
@@ -103,53 +105,6 @@ public class TwoDimGaussSampler extends ISampler<Vector<Double>> {
 
             sampleValues.add(element);
         }
-    }
-
-    /**
-     * @Description: display the result
-     * @param 参数描述
-     * @throws
-     */
-    @SuppressWarnings("unused")
-    private void displayData() {
-
-        GNUPlotParameters param = new GNUPlotParameters(false);
-
-        ArrayList<String> preInit = param.getPreInit();
-
-        // preInit.add("set contour base");// draw contour
-        preInit.add("set xrange [-5:5]");// draw contour
-        preInit.add("set yrange [-5:5]");// draw contour
-        preInit.add("set size square");// draw contour
-
-        JavaPlot p = new JavaPlot(param, Constant.GNUPLOT_PATH, null);
-
-        p.setTitle("two dim gaussian Sample Demo");
-        p.getAxis("x").setLabel("X1 axis", "Arial", 20);
-        p.getAxis("y").setLabel("X2 axis");
-
-        Queue<Vector<Double>> sampleValues = getSampleValues();
-
-        double[][] points = new double[sampleValues.size()][2];
-
-        Iterator<Vector<Double>> iterator = sampleValues.iterator();
-
-        int i = 0;
-        while (iterator.hasNext()) {
-
-            Vector<Double> next = iterator.next();
-
-            points[i][0] = next.firstElement();
-            points[i][1] = next.lastElement();
-
-            i++;
-        }
-
-        DataSetPlot s = new DataSetPlot(points);
-        p.addPlot(s);
-
-        p.addPlot("0; pause 1000;");
-        p.plot();
     }
 
     public Matrix getMean() {

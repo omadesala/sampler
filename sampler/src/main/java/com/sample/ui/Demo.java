@@ -41,17 +41,12 @@ public class Demo {
      *            gnuplot application
      */
     public static void main(String[] args) {
-        String path = "/usr/bin/gnuplot";
-        System.out.println("always!always!");
-        if (args.length > 0) {
-            path = args[0];
-        }
 
         System.out.println("test for gnuplot");
         System.out.println("test for gnuplot modify in test1 branch");
         // simple();
-        // simple3D();
-        defaultTerminal(path);
+        simple3D();
+        // defaultTerminal(Constant.GNUPLOT_PATH);
         // EPSTerminal(path);
         // SVGTerminal(path);
         // JPlotTerminal(path);
