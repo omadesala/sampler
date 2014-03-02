@@ -1,7 +1,5 @@
 package com.sample.sampler.implement.inverse;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Vector;
@@ -9,12 +7,6 @@ import java.util.Vector;
 import Jama.CholeskyDecomposition;
 import Jama.Matrix;
 
-import com.panayotis.gnuplot.GNUPlotParameters;
-import com.panayotis.gnuplot.JavaPlot;
-import com.panayotis.gnuplot.plot.DataSetPlot;
-import com.probablity.utils.CollectionUtils;
-import com.probablity.utils.Constant;
-import com.probablity.utils.GnuPlotDisplay;
 import com.sample.sampler.ISampler;
 
 /**

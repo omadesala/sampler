@@ -1,6 +1,5 @@
 package com.sample.distribution.implement;
 
-import java.util.List;
 import java.util.Random;
 import java.util.Vector;
 
@@ -11,7 +10,6 @@ import org.junit.Test;
 import Jama.Matrix;
 
 import com.probablity.utils.GnuPlotDisplay;
-import com.probablity.utils.MatrixUtils;
 import com.sample.distribution.Distribution;
 
 public class MVNDistributionTest {

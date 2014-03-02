@@ -33,11 +33,14 @@ public class MVNDistribution extends Distribution {
 
         double dominator = Math.pow((2. * Math.PI), dimension / 2.)
                 * Math.sqrt(var.det());
+
         double constant = 1. / dominator;
+        System.out.println("constant : " + constant);
 
         Matrix times = pointMatrix.minus(mean).transpose().times(var.inverse())
                 .times(pointMatrix.minus(mean));
         Double exponent = Math.exp(-(1. / 2) * times.get(0, 0));
+        System.out.println("exponent : " + exponent);
 
         return constant * exponent;
     }

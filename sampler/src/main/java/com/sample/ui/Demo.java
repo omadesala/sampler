@@ -76,7 +76,6 @@ public class Demo {
      *               graphs
      * @throws
      */
-    @SuppressWarnings("unused")
     private static void simple3D() {
         JavaPlot p = new JavaPlot(Constant.GNUPLOT_PATH, true);
 
@@ -111,6 +110,7 @@ public class Demo {
      * @return JavaPlot 返回类型
      * @throws
      */
+    @SuppressWarnings("unused")
     private static JavaPlot defaultTerminal(String gnuplotpath) {
 
         JavaPlot p = new JavaPlot(gnuplotpath);
