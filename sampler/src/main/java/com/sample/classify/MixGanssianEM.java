@@ -48,8 +48,7 @@ public class MixGanssianEM {
         this.var = new ArrayList<Matrix>();
     }
 
-    public MixGanssianEM(List<Matrix> mu, List<Matrix> var,
-            int numberOfcomponent) {
+    public MixGanssianEM(List<Matrix> mu, List<Matrix> var, int numberOfcomponent) {
 
         this.componentNumber = numberOfcomponent;
         this.mean = mu;
@@ -60,8 +59,9 @@ public class MixGanssianEM {
      * @Title: train
      * @Description: train the data to get the parameter for maxmize the log
      *               likehood.
-     * @param input data is D x N matrix ,each point is have D elements, and
-     *            total N points
+     * @param input
+     *            data is D x N matrix ,each point is have D elements, and total
+     *            N points
      * @return void 返回类型
      * @throws
      */
@@ -72,9 +72,13 @@ public class MixGanssianEM {
         System.out.println(" start to train ... ");
         InitialContext();
 
+        printInfo();
+
         // the times is just for test
         // the convergence condition need optimal
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10; i++) {
+
+            System.out.println("train times: " + i);
             System.out.println("step E");
             stepE();
             System.out.println("step M");
@@ -130,11 +134,10 @@ public class MixGanssianEM {
         System.out.println("updateComponent");
         for (int k = 0; k < componentNumber; k++) {
 
-            Double numerator = MatrixUtils.getSumOfMatrixRow(MatrixUtils
-                    .getMatrixRow(iPointBelongKComponent, k));
+            Matrix iPointIsComponentK = MatrixUtils.getMatrixRow(iPointBelongKComponent, k);
+            Double numerator = MatrixUtils.getSumOfMatrixRow(iPointIsComponentK);
 
-            this.component.set(0, k,
-                    numerator / this.inputData.getColumnDimension());
+            this.component.set(0, k, numerator / this.inputData.getColumnDimension());
         }
 
     }
@@ -145,21 +148,22 @@ public class MixGanssianEM {
         Matrix numerator = new Matrix(pointDimension, pointDimension);
 
         for (int k = 0; k < componentNumber; k++) {
+
+            Matrix iPointIsComponentK = MatrixUtils.getMatrixRow(iPointBelongKComponent, k);
+            Matrix meanOfComponentK = this.mean.get(k);
+
             for (int i = 0; i < inputData.getColumnDimension(); i++) {
 
-                Matrix dataPoint = MatrixUtils.getMatrixColumn(inputData, i);
+                Matrix iPoint = MatrixUtils.getMatrixColumn(inputData, i);
 
-                Matrix minusMean = dataPoint.minus(this.mean.get(k));
+                Matrix minusMean = iPoint.minus(meanOfComponentK);
                 Matrix var1 = minusMean.times(minusMean.transpose());
 
-                double d = MatrixUtils.getMatrixRow(iPointBelongKComponent, k)
-                        .get(0, i);
-
-                numerator.plus(var1.times(d));
+                Double probablity = MatrixUtils.getRowMatrixElementAt(iPointIsComponentK, i);
+                numerator = numerator.plus(var1.times(probablity));
             }
 
-            Double denominator = MatrixUtils.getSumOfMatrixRow(MatrixUtils
-                    .getMatrixRow(iPointBelongKComponent, k));
+            Double denominator = MatrixUtils.getSumOfMatrixRow(iPointIsComponentK);
 
             this.var.set(k, numerator.times(1. / denominator));
 
@@ -174,21 +178,18 @@ public class MixGanssianEM {
         Matrix numerator = new Matrix(pointDimension, 1);
 
         for (int k = 0; k < componentNumber; k++) {
+
+            Matrix iPointIsComponentK = MatrixUtils.getMatrixRow(iPointBelongKComponent, k);
+
             for (int i = 0; i < inputData.getColumnDimension(); i++) {
 
-                Matrix row = MatrixUtils
-                        .getMatrixRow(iPointBelongKComponent, k);
+                Double probablity = MatrixUtils.getRowMatrixElementAt(iPointIsComponentK, i);
+                Matrix iPoint = MatrixUtils.getMatrixColumn(inputData, i);
 
-                MatrixUtils.printMatrix(row);
-
-                Matrix dataPoint = MatrixUtils.getMatrixColumn(inputData, i);
-                MatrixUtils.printMatrix(dataPoint);
-
-                numerator.plus(row.times(dataPoint));
+                numerator = numerator.plus(iPoint.times(probablity));
             }
 
-            denominator = MatrixUtils.getSumOfMatrixRow(MatrixUtils
-                    .getMatrixRow(iPointBelongKComponent, k));
+            denominator = MatrixUtils.getSumOfMatrixRow(iPointIsComponentK);
 
             this.mean.set(k, numerator.times(1. / denominator));
         }
@@ -203,8 +204,7 @@ public class MixGanssianEM {
      */
     private void stepE() {
 
-        List<Vector<Double>> listDataVector = MatrixUtils
-                .getListVector(inputData);
+        List<Vector<Double>> listDataVector = MatrixUtils.getListVector(inputData);
 
         for (int k = 0; k < componentNumber; k++) {
 
@@ -222,8 +222,7 @@ public class MixGanssianEM {
 
         pointDimension = this.inputData.getRowDimension();
 
-        iPointBelongKComponent = new Matrix(componentNumber,
-                inputData.getColumnDimension());
+        iPointBelongKComponent = new Matrix(componentNumber, inputData.getColumnDimension());
 
         /**
          * initial component
@@ -246,6 +245,7 @@ public class MixGanssianEM {
              */
 
             Matrix varK = Matrix.random(pointDimension, pointDimension);
+
             this.var.add(varK);
 
         }
@@ -256,18 +256,18 @@ public class MixGanssianEM {
      * @Title: getPosteriorPdfForLatentVar
      * @Description: calculate the current point belongs to the k-th component
      *               probability
-     * @param point current point x_i i = 1,2,3,...,n
-     * @param kComponent it's the k-th component
+     * @param point
+     *            current point x_i i = 1,2,3,...,n
+     * @param kComponent
+     *            it's the k-th component
      * @return Double the pdf value
      * @throws
      */
-    private Double getLatentVarPosterior(Vector<Double> point,
-                                         int componentIndexK) {
+    private Double getLatentVarPosterior(Vector<Double> point, int componentIndexK) {
 
         Preconditions.checkNotNull(point);
 
-        Preconditions.checkArgument(componentIndexK >= 0
-                && componentIndexK < componentNumber);
+        Preconditions.checkArgument(componentIndexK >= 0 && componentIndexK < componentNumber);
 
         Double denominator = 0.;
 
@@ -275,8 +275,7 @@ public class MixGanssianEM {
         Matrix varOfComponentK = this.var.get(componentIndexK);
         Double componentK = this.component.get(0, componentIndexK);
 
-        Distribution distributionOfcomponentK = new MVNDistribution(
-                meanOfComponentK, varOfComponentK);
+        Distribution distributionOfcomponentK = new MVNDistribution(meanOfComponentK, varOfComponentK);
         double probablity = distributionOfcomponentK.densityFunction(point);
 
         Double numerator = probablity * componentK;
@@ -286,8 +285,7 @@ public class MixGanssianEM {
             // the i-th component value
             double componentI = this.component.get(0, i);
             // the i-th component distribution
-            Distribution distributionOfcomponentI = new MVNDistribution(
-                    this.mean.get(i), this.var.get(i));
+            Distribution distributionOfcomponentI = new MVNDistribution(this.mean.get(i), this.var.get(i));
             // calculate the posterior value
             double prob = distributionOfcomponentI.densityFunction(point);
 

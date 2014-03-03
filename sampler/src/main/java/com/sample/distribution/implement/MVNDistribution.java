@@ -29,18 +29,14 @@ public class MVNDistribution extends Distribution {
     public Double densityFunction(Vector<Double> pointVector) {
         Preconditions.checkNotNull(pointVector);
 
-        Matrix pointMatrix = MatrixUtils.getPointOfMatrix(pointVector);
+        Matrix point = MatrixUtils.getPointOfMatrix(pointVector);
 
-        double dominator = Math.pow((2. * Math.PI), dimension / 2.)
-                * Math.sqrt(var.det());
+        Double dominator = Math.pow((2. * Math.PI), dimension / 2.) * Math.sqrt(Math.abs(var.det()));
 
-        double constant = 1. / dominator;
-        System.out.println("constant : " + constant);
+        Double constant = 1. / dominator;
 
-        Matrix times = pointMatrix.minus(mean).transpose().times(var.inverse())
-                .times(pointMatrix.minus(mean));
+        Matrix times = point.minus(mean).transpose().times(var.inverse()).times(point.minus(mean));
         Double exponent = Math.exp(-(1. / 2) * times.get(0, 0));
-        System.out.println("exponent : " + exponent);
 
         return constant * exponent;
     }
@@ -59,6 +55,7 @@ public class MVNDistribution extends Distribution {
      * <p>
      * Description:0 for mean,1 for variance
      * </p>
+     * 
      * @param param
      * @see com.sample.distribution.Distribution#setParameter(double[])
      */

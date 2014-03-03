@@ -44,23 +44,28 @@ public class MVNDistributionTest {
     @Test
     public void testDensityFunction() {
 
-        int length = 1000;
+        int length = 10;
         double[][] samples = new double[length][3];
 
         Random random = new Random();
         for (int i = 0; i < length; i++) {
 
-            samples[i][0] = random.nextDouble() * 10. - 5.;
-            samples[i][1] = random.nextDouble() * 10. - 5.;
+            samples[i][0] = random.nextDouble() - 0.5;// * 10. - 5.;
+            samples[i][1] = random.nextDouble() - 0.5;// * 10. - 5.;
 
             Vector<Double> pointDoubles = new Vector<Double>();
             pointDoubles.add(samples[i][0]);
             pointDoubles.add(samples[i][1]);
 
             samples[i][2] = mvn.densityFunction(pointDoubles);
+
+            System.out.println("v1:" + samples[i][0]);
+            System.out.println("v2:" + samples[i][1]);
+            System.out.println("p:" + samples[i][2]);
+
         }
 
-        GnuPlotDisplay.display3D(samples);
+        // GnuPlotDisplay.display3D(samples);
 
     }
 }

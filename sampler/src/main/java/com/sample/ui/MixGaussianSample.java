@@ -1,6 +1,5 @@
 package com.sample.ui;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.Vector;
@@ -8,11 +7,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 import Jama.Matrix;
 
-import com.panayotis.gnuplot.GNUPlotParameters;
-import com.panayotis.gnuplot.JavaPlot;
-import com.panayotis.gnuplot.plot.DataSetPlot;
-import com.probablity.utils.Constant;
-import com.sample.classify.MixGanssianEM;
+import com.probablity.utils.GnuPlotDisplay;
 import com.sample.sampler.ISampler;
 import com.sample.sampler.implement.inverse.TwoDimGaussSampler;
 
@@ -32,7 +27,8 @@ public class MixGaussianSample {
 
     /**
      * @Description: main method for entry point
-     * @param args 参数描述
+     * @param args
+     *            参数描述
      * @throws
      */
     public static void main(String[] args) {
@@ -76,9 +72,6 @@ public class MixGaussianSample {
         }
 
         // displayData();
-
-        MixGanssianEM mixGanssianEM = new MixGanssianEM();
-        mixGanssianEM.train(getSampleMatrix());
 
     }
 
@@ -129,26 +122,28 @@ public class MixGaussianSample {
     @SuppressWarnings("unused")
     private void displayData() {
 
-        GNUPlotParameters param = new GNUPlotParameters(false);
+        GnuPlotDisplay.display2D(getSampleArray());
 
-        ArrayList<String> preInit = param.getPreInit();
-
-        // preInit.add("set contour base");// draw contour
-        preInit.add("set xrange [-5:20]");// draw contour
-        preInit.add("set yrange [-5:20]");// draw contour
-        preInit.add("set size square");// draw contour
-
-        JavaPlot p = new JavaPlot(param, Constant.GNUPLOT_PATH, null);
-
-        p.setTitle("two dim gaussian Sample Demo");
-        p.getAxis("x").setLabel("X1 axis", "Arial", 20);
-        p.getAxis("y").setLabel("X2 axis");
-
-        DataSetPlot s = new DataSetPlot(getSampleArray());
-        p.addPlot(s);
-
-        p.addPlot("0; pause 1000;");
-        p.plot();
+        // GNUPlotParameters param = new GNUPlotParameters(false);
+        //
+        // ArrayList<String> preInit = param.getPreInit();
+        //
+        // // preInit.add("set contour base");// draw contour
+        // preInit.add("set xrange [-5:20]");// draw contour
+        // preInit.add("set yrange [-5:20]");// draw contour
+        // preInit.add("set size square");// draw contour
+        //
+        // JavaPlot p = new JavaPlot(param, Constant.GNUPLOT_PATH, null);
+        //
+        // p.setTitle("two dim gaussian Sample Demo");
+        // p.getAxis("x").setLabel("X1 axis", "Arial", 20);
+        // p.getAxis("y").setLabel("X2 axis");
+        //
+        // DataSetPlot s = new DataSetPlot(getSampleArray());
+        // p.addPlot(s);
+        //
+        // p.addPlot("0; pause 1000;");
+        // p.plot();
 
     }
 
@@ -173,6 +168,7 @@ public class MixGaussianSample {
         return points;
     }
 
+    @SuppressWarnings("unused")
     private Matrix getSampleMatrix() {
 
         Queue<Vector<Double>> sampleValues = getSamples();

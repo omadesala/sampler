@@ -286,8 +286,7 @@ public class MatrixUtilsTest {
         a[1][0] = 1.2;
         a[2][0] = 1.3;
 
-        Double sumOfMatrixColumn = MatrixUtils.getSumOfMatrixColumn(new Matrix(
-                a));
+        Double sumOfMatrixColumn = MatrixUtils.getSumOfMatrixColumn(new Matrix(a));
 
         Assert.assertEquals(3.6, sumOfMatrixColumn, 0.00001);
 
@@ -504,6 +503,26 @@ public class MatrixUtilsTest {
         Double prod = MatrixUtils.rowMultiColumn(rowMatrix, colMatrix);
 
         Assert.assertEquals(4.34, prod, 0.00001);
+    }
+
+    @Test
+    public void testPrintVectorPoint() {
+
+        Vector<Double> point = new Vector<Double>();
+        point.add(0.1);
+        point.add(0.2);
+        point.add(0.3);
+
+        Long dimension = MatrixUtils.printVectorPoint(point);
+
+        Assert.assertEquals(3, dimension, 0.00001);
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPrintVectorPointNullInput() {
+
+        MatrixUtils.printVectorPoint(null);
     }
 
     @Test
