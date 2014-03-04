@@ -113,8 +113,8 @@ public class GaussMHSampler extends ISampler<Vector<Double>> {
             Vector<Double> xt = new Vector<Double>();
             xt.add(proposalDistribution.sampleOnePoint().firstElement());
 
-            Double pointXt = getTargetDistribution().densityFunction(xt);
-            Double pointX0 = getTargetDistribution().densityFunction(x0);
+            Double pointXt = getTargetDistribution().pdf(xt);
+            Double pointX0 = getTargetDistribution().pdf(x0);
 
             Double acceptRatio = Math.min(1, pointXt / pointX0);
 

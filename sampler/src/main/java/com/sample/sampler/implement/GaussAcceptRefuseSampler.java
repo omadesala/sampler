@@ -46,8 +46,8 @@ public class GaussAcceptRefuseSampler extends ISampler<Vector<Double>> {
 			double u = Math.random();
 			// acceptance or rejection
 
-			if (u < getTargetDistribution().densityFunction(x)
-					/ (a * getProposalDistribution().densityFunction(x))) {
+			if (u < getTargetDistribution().pdf(x)
+					/ (a * getProposalDistribution().pdf(x))) {
 
 				Vector<Double> dataItem = new Vector<Double>();
 				dataItem.add((10. * (x.firstElement() + 5.)));

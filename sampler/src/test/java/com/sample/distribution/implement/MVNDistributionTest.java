@@ -4,36 +4,45 @@ import java.util.Random;
 import java.util.Vector;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import Jama.Matrix;
 
 import com.probablity.utils.GnuPlotDisplay;
+import com.probablity.utils.MatrixUtils;
 import com.sample.distribution.Distribution;
 
 public class MVNDistributionTest {
 
-    Distribution mvn = null;
+    private Random random = new Random();
+    private Distribution mvn = null;
+    private Distribution towDimGaussion = null;
 
     @Before
     public void setUp() throws Exception {
 
         double[][] mean = new double[2][1];
 
-        mean[0][0] = 1.;
-        mean[1][0] = 1.;
+        mean[0][0] = 0.;
+        mean[1][0] = 0.;
 
         double[][] variance = new double[2][2];
 
-        variance[0][0] = 0.9;
-        variance[0][1] = 0.;
-        variance[1][0] = 0.;
-        variance[1][1] = 0.9;
+        variance[0][0] = 0.09;
+        variance[0][1] = 0.001;
+        variance[1][0] = 0.001;
+        variance[1][1] = 0.09;
 
         Matrix mu = new Matrix(mean);
         Matrix var = new Matrix(variance);
         mvn = new MVNDistribution(mu, var);
+        // notice that -1=<rho <= 1
+        double rho = variance[0][1] / (Math.sqrt(variance[0][0] * variance[1][1]));
+
+        towDimGaussion = new TwoDimGaussDistribution(mean[0][0], mean[1][0], Math.sqrt(variance[0][0]),
+                Math.sqrt(variance[1][1]), rho);
 
     }
 
@@ -44,28 +53,21 @@ public class MVNDistributionTest {
     @Test
     public void testDensityFunction() {
 
-        int length = 10;
-        double[][] samples = new double[length][3];
+        Vector<Double> point = new Vector<Double>();
 
-        Random random = new Random();
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < 100; i++) {
 
-            samples[i][0] = random.nextDouble() - 0.5;// * 10. - 5.;
-            samples[i][1] = random.nextDouble() - 0.5;// * 10. - 5.;
+            point = new Vector<Double>();
+            point.add(random.nextDouble() * 0.1);
+            point.add(random.nextDouble() * 0.1);
 
-            Vector<Double> pointDoubles = new Vector<Double>();
-            pointDoubles.add(samples[i][0]);
-            pointDoubles.add(samples[i][1]);
+            MatrixUtils.printVectorPoint(point);
 
-            samples[i][2] = mvn.densityFunction(pointDoubles);
+            double actural = mvn.pdf(point);
+            double expected = towDimGaussion.pdf(point);
 
-            System.out.println("v1:" + samples[i][0]);
-            System.out.println("v2:" + samples[i][1]);
-            System.out.println("p:" + samples[i][2]);
-
+            Assert.assertEquals(expected, actural, 1E-10);
         }
-
-        // GnuPlotDisplay.display3D(samples);
 
     }
 }

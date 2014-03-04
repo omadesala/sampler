@@ -96,10 +96,10 @@ public class AcceptRejectSampleView extends Applet {
 
             int y1 = displayHeight
                     - (int) (b * sampler.getTargetDistribution()
-                            .densityFunction(x1));
+                            .pdf(x1));
             int y2 = displayHeight
                     - (int) (b * sampler.getTargetDistribution()
-                            .densityFunction(x2));
+                            .pdf(x2));
 
             g.drawLine(i, y1, i + 1, y2);
 

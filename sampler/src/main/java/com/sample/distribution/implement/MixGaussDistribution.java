@@ -11,7 +11,7 @@ import com.sample.distribution.Distribution;
 public class MixGaussDistribution extends Distribution {
 
     @Override
-    public Double densityFunction(Vector<Double> x) {
+    public Double pdf(Vector<Double> x) {
 
         Distribution gauss1 = new GaussDistribution();
         gauss1.setMean(3);
@@ -27,8 +27,8 @@ public class MixGaussDistribution extends Distribution {
         point1.add(x.firstElement() + 0.7);
         point1.add(x.firstElement());
 
-        return 0.3 * gauss1.densityFunction(point1)
-                * gauss2.densityFunction(point2);
+        return 0.3 * gauss1.pdf(point1)
+                * gauss2.pdf(point2);
     }
 
     @Override

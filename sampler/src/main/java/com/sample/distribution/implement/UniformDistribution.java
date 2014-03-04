@@ -14,7 +14,7 @@ public class UniformDistribution extends Distribution {
     private Random random = new Random();
 
     @Override
-    public Double densityFunction(Vector<Double> x) {
+    public Double pdf(Vector<Double> x) {
         // the special distribute is uniform distribution which across the
         // interval [-5,5]
         return 1. / (b - a);

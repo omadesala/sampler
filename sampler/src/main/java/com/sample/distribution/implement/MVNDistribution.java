@@ -26,16 +26,16 @@ public class MVNDistribution extends Distribution {
     }
 
     @Override
-    public Double densityFunction(Vector<Double> pointVector) {
-        Preconditions.checkNotNull(pointVector);
+    public Double pdf(Vector<Double> pointVector) {
 
+        Preconditions.checkNotNull(pointVector);
         Matrix point = MatrixUtils.getPointOfMatrix(pointVector);
 
         Double dominator = Math.pow((2. * Math.PI), dimension / 2.) * Math.sqrt(Math.abs(var.det()));
-
         Double constant = 1. / dominator;
 
         Matrix times = point.minus(mean).transpose().times(var.inverse()).times(point.minus(mean));
+
         Double exponent = Math.exp(-(1. / 2) * times.get(0, 0));
 
         return constant * exponent;

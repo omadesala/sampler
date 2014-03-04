@@ -46,7 +46,7 @@ public class GaussDistributionTest {
             Vector<Double> vector = new Vector<Double>();
             vector.add(0.2 * i);
 
-            result.add(distribution.densityFunction(vector));
+            result.add(distribution.pdf(vector));
             System.out.println("i== " + i + "value: " + result.get(i));
         }
 

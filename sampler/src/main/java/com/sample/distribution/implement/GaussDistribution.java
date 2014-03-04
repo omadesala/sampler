@@ -14,7 +14,7 @@ public class GaussDistribution extends Distribution {
     private Random random = new Random();
 
     @Override
-    public Double densityFunction(Vector<Double> x) {
+    public Double pdf(Vector<Double> x) {
         Double constant = 1. / (Math.sqrt(2. * Math.PI) * variance);
 
         return constant

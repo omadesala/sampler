@@ -132,9 +132,9 @@ public class MixdGaussMHSampler extends ISampler<Vector<Double>> {
 
             Vector<Double> nextValue = proposalDistribution.sampleOnePoint();
 
-            Double pdfNextPoint = getTargetDistribution().densityFunction(
+            Double pdfNextPoint = getTargetDistribution().pdf(
                     nextValue);
-            Double pdfCurPoint = getTargetDistribution().densityFunction(
+            Double pdfCurPoint = getTargetDistribution().pdf(
                     curValue);
 
             Double acceptRatio = Math.min(1, pdfNextPoint / pdfCurPoint);

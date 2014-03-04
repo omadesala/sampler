@@ -30,7 +30,8 @@ public class MixGanssianEM {
      * mean and varience
      */
     private List<Matrix> mean; // the size as same with componentNumber
-    private List<Matrix> var; // the size as same with componentNumber
+    private List<Matrix> var; // the size as same with componentNumber, an it's
+                              // a symmetric matrix
 
     /**
      * input data and dimension of point
@@ -76,7 +77,7 @@ public class MixGanssianEM {
 
         // the times is just for test
         // the convergence condition need optimal
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 500; i++) {
 
             System.out.println("train times: " + i);
             System.out.println("step E");
@@ -202,7 +203,7 @@ public class MixGanssianEM {
      * @return void 返回类型
      * @throws
      */
-    private void stepE() {
+    public void stepE() {
 
         List<Vector<Double>> listDataVector = MatrixUtils.getListVector(inputData);
 
@@ -218,7 +219,7 @@ public class MixGanssianEM {
         }
     }
 
-    private void InitialContext() {
+    public void InitialContext() {
 
         pointDimension = this.inputData.getRowDimension();
 
@@ -245,6 +246,12 @@ public class MixGanssianEM {
              */
 
             Matrix varK = Matrix.random(pointDimension, pointDimension);
+            for (int i = 0; i < pointDimension; i++) {
+                for (int j = 0; j < pointDimension; j++) {
+
+                    varK.set(j, i, varK.get(i, j));
+                }
+            }
 
             this.var.add(varK);
 
@@ -276,7 +283,7 @@ public class MixGanssianEM {
         Double componentK = this.component.get(0, componentIndexK);
 
         Distribution distributionOfcomponentK = new MVNDistribution(meanOfComponentK, varOfComponentK);
-        double probablity = distributionOfcomponentK.densityFunction(point);
+        Double probablity = distributionOfcomponentK.pdf(point);
 
         Double numerator = probablity * componentK;
 
@@ -287,8 +294,9 @@ public class MixGanssianEM {
             // the i-th component distribution
             Distribution distributionOfcomponentI = new MVNDistribution(this.mean.get(i), this.var.get(i));
             // calculate the posterior value
-            double prob = distributionOfcomponentI.densityFunction(point);
+            double prob = distributionOfcomponentI.pdf(point);
 
+            // MatrixUtils.printVectorPoint(point);
             denominator += prob * componentI;
 
         }

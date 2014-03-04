@@ -28,7 +28,7 @@ public abstract class Distribution {
      * @return double 返回类型
      * @throws
      */
-    public abstract Double densityFunction(Vector<Double> x);
+    public abstract Double pdf(Vector<Double> x);
 
     /**
      * some times ,we need condition sample this is not a good understand but it
