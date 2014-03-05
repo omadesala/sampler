@@ -38,6 +38,7 @@ public class MixGanssianEM {
      */
     private Matrix inputData; // D x N
     private Integer pointDimension;
+    private Integer dataLength;
 
     // p(C_k|X_i)
     // component row and N column
@@ -68,10 +69,10 @@ public class MixGanssianEM {
      */
     public void train(Matrix data) {
 
-        this.inputData = data;
+        this.setInputData(data);
 
         System.out.println(" start to train ... ");
-        InitialContext();
+        InitialContext(this.getInputData().getRowDimension(), this.getInputData().getColumnDimension());
 
         printInfo();
 
@@ -122,7 +123,7 @@ public class MixGanssianEM {
 
     }
 
-    private void stepM() {
+    public void stepM() {
 
         updateMean();
         updateVar();
@@ -135,27 +136,29 @@ public class MixGanssianEM {
         System.out.println("updateComponent");
         for (int k = 0; k < componentNumber; k++) {
 
-            Matrix iPointIsComponentK = MatrixUtils.getMatrixRow(iPointBelongKComponent, k);
+            Matrix iPointIsComponentK = MatrixUtils.getMatrixRow(getiPointBelongKComponent(), k);
             Double numerator = MatrixUtils.getSumOfMatrixRow(iPointIsComponentK);
 
-            this.component.set(0, k, numerator / this.inputData.getColumnDimension());
+            this.component.set(0, k, numerator / this.getInputData().getColumnDimension());
         }
 
     }
 
-    private void updateVar() {
+    public void updateVar() {
 
         System.out.println("updateVar");
-        Matrix numerator = new Matrix(pointDimension, pointDimension);
 
+        Matrix numerator = null;
         for (int k = 0; k < componentNumber; k++) {
 
-            Matrix iPointIsComponentK = MatrixUtils.getMatrixRow(iPointBelongKComponent, k);
+            numerator = new Matrix(pointDimension, pointDimension);
+            Matrix iPointIsComponentK = MatrixUtils.getMatrixRow(getiPointBelongKComponent(), k);
             Matrix meanOfComponentK = this.mean.get(k);
 
-            for (int i = 0; i < inputData.getColumnDimension(); i++) {
+            System.out.println("var of component: " + k);
+            for (int i = 0; i < getInputData().getColumnDimension(); i++) {
 
-                Matrix iPoint = MatrixUtils.getMatrixColumn(inputData, i);
+                Matrix iPoint = MatrixUtils.getMatrixColumn(getInputData(), i);
 
                 Matrix minusMean = iPoint.minus(meanOfComponentK);
                 Matrix var1 = minusMean.times(minusMean.transpose());
@@ -166,33 +169,43 @@ public class MixGanssianEM {
 
             Double denominator = MatrixUtils.getSumOfMatrixRow(iPointIsComponentK);
 
-            this.var.set(k, numerator.times(1. / denominator));
+            Matrix updatedVar = numerator.times(1. / denominator);
+
+            MatrixUtils.printMatrix(updatedVar);
+
+            this.var.set(k, updatedVar);
 
         }
 
     }
 
-    private void updateMean() {
+    public void updateMean() {
 
         System.out.println("updateMean");
         Double denominator = 0.;
-        Matrix numerator = new Matrix(pointDimension, 1);
 
         for (int k = 0; k < componentNumber; k++) {
 
-            Matrix iPointIsComponentK = MatrixUtils.getMatrixRow(iPointBelongKComponent, k);
+            Matrix numerator = new Matrix(pointDimension, 1);
+            Matrix iPointIsComponentK = MatrixUtils.getMatrixRow(getiPointBelongKComponent(), k);
 
-            for (int i = 0; i < inputData.getColumnDimension(); i++) {
+            // System.out.println("mean of component:" + k);
+            for (int i = 0; i < this.dataLength; i++) {
 
                 Double probablity = MatrixUtils.getRowMatrixElementAt(iPointIsComponentK, i);
-                Matrix iPoint = MatrixUtils.getMatrixColumn(inputData, i);
+                Matrix iPoint = MatrixUtils.getMatrixColumn(getInputData(), i);
 
-                numerator = numerator.plus(iPoint.times(probablity));
+                Matrix times = iPoint.times(probablity);
+                numerator = numerator.plus(times);
+
             }
 
             denominator = MatrixUtils.getSumOfMatrixRow(iPointIsComponentK);
 
-            this.mean.set(k, numerator.times(1. / denominator));
+            Matrix updatedMean = numerator.times(1. / denominator);
+            // MatrixUtils.printMatrix(updatedMean);
+
+            this.mean.set(k, updatedMean);
         }
     }
 
@@ -205,7 +218,7 @@ public class MixGanssianEM {
      */
     public void stepE() {
 
-        List<Vector<Double>> listDataVector = MatrixUtils.getListVector(inputData);
+        List<Vector<Double>> listDataVector = MatrixUtils.getListVector(getInputData());
 
         for (int k = 0; k < componentNumber; k++) {
 
@@ -214,27 +227,28 @@ public class MixGanssianEM {
                 Vector<Double> point = listDataVector.get(i);
                 Double kComponentGeneratePoint = getLatentVarPosterior(point, k);
 
-                iPointBelongKComponent.set(k, i, kComponentGeneratePoint);
+                getiPointBelongKComponent().set(k, i, kComponentGeneratePoint);
             }
         }
     }
 
-    public void InitialContext() {
+    public void InitialContext(int pointDimension, int length) {
 
-        pointDimension = this.inputData.getRowDimension();
+        this.pointDimension = pointDimension;
+        this.dataLength = length;
 
-        iPointBelongKComponent = new Matrix(componentNumber, inputData.getColumnDimension());
+        this.iPointBelongKComponent = new Matrix(this.componentNumber, this.dataLength);
 
         /**
          * initial component
          */
-        component = Matrix.random(1, componentNumber);
+        this.component = Matrix.random(1, this.componentNumber);
 
         // regular to one
         Double totalNumberDouble = MatrixUtils.getSumOfMatrixRow(component);
-        component = component.times(1. / totalNumberDouble);
+        this.component = this.component.times(1. / totalNumberDouble);
 
-        for (int k = 0; k < componentNumber; k++) {
+        for (int k = 0; k < this.componentNumber; k++) {
             /**
              * initial mean vector
              */
@@ -270,7 +284,7 @@ public class MixGanssianEM {
      * @return Double the pdf value
      * @throws
      */
-    private Double getLatentVarPosterior(Vector<Double> point, int componentIndexK) {
+    public Double getLatentVarPosterior(Vector<Double> point, int componentIndexK) {
 
         Preconditions.checkNotNull(point);
 
@@ -304,4 +318,23 @@ public class MixGanssianEM {
         return numerator / denominator;
 
     }
+
+    public Matrix getiPointBelongKComponent() {
+
+        return iPointBelongKComponent;
+
+    }
+
+    public Matrix getInputData() {
+
+        return inputData;
+
+    }
+
+    public void setInputData(Matrix inputData) {
+
+        this.inputData = inputData;
+
+    }
+
 }
