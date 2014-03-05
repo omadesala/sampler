@@ -167,10 +167,15 @@ public class MixGanssianEM {
                 numerator = numerator.plus(var1.times(probablity));
             }
 
+            System.out.println("var numerator: ");
+            MatrixUtils.printMatrix(numerator);
+
             Double denominator = MatrixUtils.getSumOfMatrixRow(iPointIsComponentK);
 
+            System.out.println("var denominator: " + denominator);
             Matrix updatedVar = numerator.times(1. / denominator);
 
+            System.out.println("var updated: ");
             MatrixUtils.printMatrix(updatedVar);
 
             this.var.set(k, updatedVar);
