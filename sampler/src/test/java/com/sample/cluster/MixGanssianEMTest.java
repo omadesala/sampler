@@ -1,4 +1,4 @@
-package com.sample.classify;
+package com.sample.cluster;
 
 import java.util.List;
 import java.util.Vector;
@@ -12,6 +12,7 @@ import Jama.Matrix;
 
 import com.probablity.utils.CollectionUtils;
 import com.probablity.utils.MatrixUtils;
+import com.sample.cluster.MixGanssianEM;
 import com.sample.ui.MixGaussianSample;
 
 public class MixGanssianEMTest {
@@ -24,7 +25,6 @@ public class MixGanssianEMTest {
     }
 
     @Test
-    @Ignore
     public void testTrain() {
 
         MixGaussianSample mix = new MixGaussianSample();
@@ -71,7 +71,16 @@ public class MixGanssianEMTest {
         for (int m = 0; m < length; m++) {
 
             Matrix matrixColumn = MatrixUtils.getMatrixColumn(componentret, m);
+
+            if (Double.isNaN(MatrixUtils.getSumOfMatrixColumn(matrixColumn))) {
+
+                MatrixUtils.printMatrix(matrixColumn);
+            }
+
             Assert.assertEquals(1., MatrixUtils.getSumOfMatrixColumn(matrixColumn), 1E-5);
+            for (int i = 0; i < 3; i++) {
+                Assert.assertFalse(Double.isNaN(MatrixUtils.getColumnMatrixElementAt(matrixColumn, i)));
+            }
         }
 
     }
@@ -99,6 +108,10 @@ public class MixGanssianEMTest {
         for (int m = 0; m < length; m++) {
             Matrix matrixColumn = MatrixUtils.getMatrixColumn(getiPointBelongKComponent, m);
             Assert.assertEquals(1., MatrixUtils.getSumOfMatrixColumn(matrixColumn), 1E-5);
+            for (int i = 0; i < 3; i++) {
+                Assert.assertFalse(Double.isNaN(MatrixUtils.getColumnMatrixElementAt(matrixColumn, i)));
+            }
+
         }
 
     }
@@ -133,6 +146,18 @@ public class MixGanssianEMTest {
     }
 
     @Test
+    public void testgetCorrectVar() {
+
+        for (int i = 0; i < 10; i++) {
+
+            Matrix correctVar = mixGanssianEM.getCorrectVar(2);
+            double det = correctVar.det();
+
+            Assert.assertTrue(det > 0);
+        }
+    }
+
+    @Test
     public void testUpdateVar() {
 
         MixGaussianSample mix = new MixGaussianSample();
@@ -152,10 +177,11 @@ public class MixGanssianEMTest {
 
         mixGanssianEM.stepE();
 
-        for (int i = 0; i < 10; i++) {
-            System.out.println("column :" + i);
-            MatrixUtils.printMatrix(MatrixUtils.getMatrixColumn(mixGanssianEM.getiPointBelongKComponent(), i));
-        }
+        // for (int i = 0; i < 5; i++) {
+        // System.out.println("column :" + i);
+        // MatrixUtils.printMatrix(MatrixUtils.getMatrixColumn(mixGanssianEM.getiPointBelongKComponent(),
+        // i));
+        // }
 
         mixGanssianEM.updateMean();
         mixGanssianEM.updateVar();

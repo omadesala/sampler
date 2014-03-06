@@ -214,4 +214,19 @@ public class MatrixUtils {
 
     }
 
+    public static Matrix setMatrixColumn(Matrix input, Matrix column, int insetIndex) {
+
+        Preconditions.checkNotNull(input);
+        Preconditions.checkNotNull(column);
+
+        Preconditions.checkArgument(MatrixUtils.isColumn(column));
+        Preconditions.checkArgument(input.getRowDimension() == column.getRowDimension());
+        Preconditions.checkArgument(insetIndex >= 0 && insetIndex < input.getRowDimension());
+
+        input.setMatrix(0, input.getRowDimension() - 1, insetIndex, insetIndex, column);
+
+        return input;
+
+    }
+
 }

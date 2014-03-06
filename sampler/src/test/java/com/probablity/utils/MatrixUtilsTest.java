@@ -26,7 +26,6 @@ public class MatrixUtilsTest {
     @Test
     public void testGetPointOfMatrix() {
 
-        System.out.println("testGetPointOfMatrix");
         Vector<Double> input = new Vector<Double>();
 
         input.addElement(1.1);
@@ -41,14 +40,10 @@ public class MatrixUtilsTest {
         Assert.assertEquals(3, rowDimension);
         Assert.assertEquals(1, columnDimension);
 
-        MatrixUtils.printMatrix(pointOfMatrix);
-
     }
 
     @Test(expected = NullPointerException.class)
     public void testGetPointOfMatrixNullInput() {
-
-        System.out.println("testGetPointOfMatrixNullInput");
 
         MatrixUtils.getPointOfMatrix(null);
     }
@@ -56,7 +51,6 @@ public class MatrixUtilsTest {
     @Test(expected = IllegalStateException.class)
     public void testGetPointOfMatrixEmpty() {
 
-        System.out.println("testGetPointOfMatrixEmpty");
         Vector<Double> input = new Vector<Double>();
         MatrixUtils.getPointOfMatrix(input);
 
@@ -65,7 +59,6 @@ public class MatrixUtilsTest {
     @Test
     public void testGetListVector() {
 
-        System.out.println("testGetListVector");
         // 1.1 1.2 1.3
         // 2.1 2.2 2.3
         // 3.1 3.2 3.3
@@ -84,8 +77,6 @@ public class MatrixUtilsTest {
         a[2][2] = 3.3;
 
         Matrix input = new Matrix(a);
-
-        MatrixUtils.printMatrix(input);
 
         List<Vector<Double>> listVector = MatrixUtils.getListVector(input);
 
@@ -101,7 +92,6 @@ public class MatrixUtilsTest {
     @Test
     public void testGetMatrix() {
 
-        System.out.println("testGetMatrix");
         // 1.1 1.2 1.3
         // 2.1 2.2 2.3
         // 3.1 3.2 3.3
@@ -121,8 +111,6 @@ public class MatrixUtilsTest {
 
         Matrix input = new Matrix(a);
 
-        MatrixUtils.printMatrix(input);
-
         List<Vector<Double>> listVector = MatrixUtils.getListVector(input);
 
         Matrix matrix = MatrixUtils.getMatrix(listVector);
@@ -130,14 +118,11 @@ public class MatrixUtilsTest {
         Assert.assertEquals(3, matrix.getRowDimension());
         Assert.assertEquals(3, matrix.getColumnDimension());
 
-        MatrixUtils.printMatrix(matrix);
-
     }
 
     @Test
     public void testGetMatrixColumn() {
 
-        System.out.println("testGetMatrixColumn");
         double[][] a = new double[3][3];
         a[0][0] = 1.1;
         a[0][1] = 1.2;
@@ -153,7 +138,6 @@ public class MatrixUtilsTest {
 
         Matrix input = new Matrix(a);
         Matrix matrixColumn = MatrixUtils.getMatrixColumn(input, 0);
-        MatrixUtils.printMatrix(matrixColumn);
 
         Assert.assertEquals(1.1, matrixColumn.get(0, 0), 0.00001);
         Assert.assertEquals(2.1, matrixColumn.get(1, 0), 0.00001);
@@ -161,10 +145,41 @@ public class MatrixUtilsTest {
 
     }
 
+    @Test
+    public void testSetMatrixColumn() {
+
+        double[][] a = new double[3][3];
+        a[0][0] = 1.1;
+        a[0][1] = 1.2;
+        a[0][2] = 1.3;
+
+        a[1][0] = 2.1;
+        a[1][1] = 2.2;
+        a[1][2] = 2.3;
+
+        a[2][0] = 3.1;
+        a[2][1] = 3.2;
+        a[2][2] = 3.3;
+
+        Matrix input = new Matrix(a);
+
+        Matrix column = new Matrix(3, 1);
+        column.set(0, 0, 2.6);
+        column.set(1, 0, 2.7);
+        column.set(2, 0, 2.8);
+
+        Matrix matrixColumn = MatrixUtils.setMatrixColumn(input, column, 0);
+        MatrixUtils.printMatrix(matrixColumn);
+
+        Assert.assertEquals(2.6, matrixColumn.get(0, 0), 0.00001);
+        Assert.assertEquals(2.7, matrixColumn.get(1, 0), 0.00001);
+        Assert.assertEquals(2.8, matrixColumn.get(2, 0), 0.00001);
+
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testGetMatrixColumnInvalidIndex() {
 
-        System.out.println("testGetMatrixColumnInvalidIndex");
         double[][] a = new double[3][3];
         a[0][0] = 1.1;
         a[0][1] = 1.2;
@@ -186,14 +201,12 @@ public class MatrixUtilsTest {
     @Test(expected = NullPointerException.class)
     public void testGetMatrixColumnNullMatrix() {
 
-        System.out.println("testGetMatrixColumnNullMatrix");
         MatrixUtils.getMatrixColumn(null, 3);
     }
 
     @Test
     public void testGetMatrixRow() {
 
-        System.out.println("testGetMatrixRow");
         double[][] a = new double[3][3];
         a[0][0] = 1.1;
         a[0][1] = 1.2;
@@ -210,8 +223,6 @@ public class MatrixUtilsTest {
         Matrix input = new Matrix(a);
         Matrix matrixRow = MatrixUtils.getMatrixRow(input, 1);
 
-        MatrixUtils.printMatrix(matrixRow);
-
         Assert.assertEquals(2.1, matrixRow.get(0, 0), 0.00001);
         Assert.assertEquals(2.2, matrixRow.get(0, 1), 0.00001);
         Assert.assertEquals(2.3, matrixRow.get(0, 2), 0.00001);
@@ -221,7 +232,6 @@ public class MatrixUtilsTest {
     @Test(expected = IllegalArgumentException.class)
     public void testGetMatrixRowInvalidIndex() {
 
-        System.out.println("testGetMatrixRowInvalidIndex");
         double[][] a = new double[3][3];
         a[0][0] = 1.1;
         a[0][1] = 1.2;
@@ -241,13 +251,11 @@ public class MatrixUtilsTest {
 
     @Test(expected = NullPointerException.class)
     public void testGetMatrixRowNullMatrix() {
-        System.out.println("testGetMatrixRowNullMatrix");
         MatrixUtils.getMatrixRow(null, 0);
     }
 
     @Test
     public void testGetSumOfMatrixRow() {
-        System.out.println("testGetSumOfMatrixRow");
         double[][] a = new double[1][3];
         a[0][0] = 1.1;
         a[0][1] = 1.2;
@@ -260,14 +268,12 @@ public class MatrixUtilsTest {
     @Test(expected = NullPointerException.class)
     public void testGetSumOfMatrixRowNullMatrix() {
 
-        System.out.println("testGetSumOfMatrixRowNullMatrix");
         MatrixUtils.getSumOfMatrixRow(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetSumOfMatrixRowWithColumMatrix() {
 
-        System.out.println("testGetSumOfMatrixRowWithColumMatrix");
         double[][] a = new double[3][1];
         a[0][0] = 1.1;
         a[1][0] = 1.2;
@@ -280,7 +286,6 @@ public class MatrixUtilsTest {
     @Test
     public void testGetSumOfMatrixColumn() {
 
-        System.out.println("testGetSumOfMatrixColumn");
         double[][] a = new double[3][1];
         a[0][0] = 1.1;
         a[1][0] = 1.2;
@@ -295,14 +300,11 @@ public class MatrixUtilsTest {
     @Test(expected = NullPointerException.class)
     public void testGetSumOfMatrixColumnNullInput() {
 
-        System.out.println("testGetSumOfMatrixColumnNullInput");
         MatrixUtils.getSumOfMatrixColumn(null);
     }
 
     @Test
     public void testgetRowMatrixElementAt() {
-
-        System.out.println("testgetRowMatrixElementAt");
 
         double[][] a = new double[1][3];
         a[0][0] = 1.1;
@@ -323,15 +325,12 @@ public class MatrixUtilsTest {
     @Test(expected = NullPointerException.class)
     public void testgetRowMatrixElementAtNullInput() {
 
-        System.out.println("testgetRowMatrixElementAtNullInput");
         MatrixUtils.getRowMatrixElementAt(null, 0);
 
     }
 
     @Test(expected = IllegalStateException.class)
     public void testgetRowMatrixElementAtInvalidIndex() {
-
-        System.out.println("testgetRowMatrixElementAtInvalidIndex");
 
         double[][] a = new double[1][3];
         a[0][0] = 1.1;
@@ -346,8 +345,6 @@ public class MatrixUtilsTest {
 
     @Test
     public void testgetColumnMatrixElementAt() {
-
-        System.out.println("testgetColumnMatrixElementAt");
 
         double[][] a = new double[3][1];
         a[0][0] = 1.1;
@@ -369,15 +366,12 @@ public class MatrixUtilsTest {
     @Test(expected = NullPointerException.class)
     public void testgetColumnMatrixElementAtNullInput() {
 
-        System.out.println("testgetColumnMatrixElementAtNullInput");
         MatrixUtils.getColumnMatrixElementAt(null, 0);
 
     }
 
     @Test(expected = IllegalStateException.class)
     public void testgetColumnMatrixElementAtInvalidIndex() {
-
-        System.out.println("testgetColumnMatrixElementAtInvalidIndex");
 
         double[][] a = new double[3][1];
         a[0][0] = 1.1;
@@ -393,8 +387,6 @@ public class MatrixUtilsTest {
     @Test
     public void testMatrixIsColumnIsTrue() {
 
-        System.out.println("testMatrixIsColumn");
-
         double[][] a = new double[3][1];
         a[0][0] = 1.1;
         a[1][0] = 1.2;
@@ -408,8 +400,6 @@ public class MatrixUtilsTest {
     @Test
     public void testMatrixIsRowIsTrue() {
 
-        System.out.println("testMatrixIsRowIsTrue");
-
         double[][] a = new double[1][3];
         a[0][0] = 1.1;
         a[0][1] = 1.2;
@@ -422,8 +412,6 @@ public class MatrixUtilsTest {
 
     @Test
     public void testMatrixIsColumnFalse() {
-
-        System.out.println("testMatrixIsColumnFalse");
 
         double[][] a = new double[1][3];
         a[0][0] = 1.1;
@@ -447,8 +435,6 @@ public class MatrixUtilsTest {
     @Test
     public void testMatrixIsRowFalse() {
 
-        System.out.println("testMatrixIsRowFalse");
-
         double[][] a = new double[3][1];
         a[0][0] = 1.1;
         a[1][0] = 1.2;
@@ -471,7 +457,6 @@ public class MatrixUtilsTest {
     @Test(expected = NullPointerException.class)
     public void testMatrixIsColumnNullInput() {
 
-        System.out.println("testMatrixIsColumnNullInput");
         MatrixUtils.isColumn(null);
 
     }
@@ -479,15 +464,12 @@ public class MatrixUtilsTest {
     @Test(expected = NullPointerException.class)
     public void testMatrixIsRowNullInput() {
 
-        System.out.println("testMatrixIsRowNullInput");
         MatrixUtils.isRow(null);
 
     }
 
     @Test
     public void testrowMultiColumn() {
-
-        System.out.println("testMatrixIsRowNullInput");
 
         double[][] row = new double[1][3];
         row[0][0] = 1.1;
@@ -514,7 +496,6 @@ public class MatrixUtilsTest {
         point.add(0.3);
 
         Long dimension = MatrixUtils.printVectorPoint(point);
-
         Assert.assertEquals(3, dimension, 0.00001);
 
     }

@@ -1,4 +1,4 @@
-package com.sample.classify;
+package com.sample.cluster;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,15 +78,15 @@ public class MixGanssianEM {
 
         // the times is just for test
         // the convergence condition need optimal
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 1000; i++) {
 
             System.out.println("train times: " + i);
             System.out.println("step E");
             stepE();
             System.out.println("step M");
             stepM();
-            printInfo();
         }
+        printInfo();
 
     }
 
@@ -155,29 +155,21 @@ public class MixGanssianEM {
             Matrix iPointIsComponentK = MatrixUtils.getMatrixRow(getiPointBelongKComponent(), k);
             Matrix meanOfComponentK = this.mean.get(k);
 
-            System.out.println("var of component: " + k);
             for (int i = 0; i < getInputData().getColumnDimension(); i++) {
 
                 Matrix iPoint = MatrixUtils.getMatrixColumn(getInputData(), i);
 
                 Matrix minusMean = iPoint.minus(meanOfComponentK);
+
                 Matrix var1 = minusMean.times(minusMean.transpose());
 
                 Double probablity = MatrixUtils.getRowMatrixElementAt(iPointIsComponentK, i);
                 numerator = numerator.plus(var1.times(probablity));
+
             }
 
-            System.out.println("var numerator: ");
-            MatrixUtils.printMatrix(numerator);
-
             Double denominator = MatrixUtils.getSumOfMatrixRow(iPointIsComponentK);
-
-            System.out.println("var denominator: " + denominator);
             Matrix updatedVar = numerator.times(1. / denominator);
-
-            System.out.println("var updated: ");
-            MatrixUtils.printMatrix(updatedVar);
-
             this.var.set(k, updatedVar);
 
         }
@@ -264,7 +256,20 @@ public class MixGanssianEM {
              * initial variance matrix with random
              */
 
-            Matrix varK = Matrix.random(pointDimension, pointDimension);
+            Matrix varK = getCorrectVar(pointDimension);
+
+            this.var.add(varK);
+
+        }
+
+    }
+
+    public Matrix getCorrectVar(int pointDimension) {
+
+        Matrix varK = null;
+        while (true) {
+            varK = Matrix.random(pointDimension, pointDimension);
+
             for (int i = 0; i < pointDimension; i++) {
                 for (int j = 0; j < pointDimension; j++) {
 
@@ -272,10 +277,12 @@ public class MixGanssianEM {
                 }
             }
 
-            this.var.add(varK);
+            if (varK.det() > 0) {
+                break;
+            }
 
         }
-
+        return varK;
     }
 
     /**
@@ -306,7 +313,7 @@ public class MixGanssianEM {
 
         Double numerator = probablity * componentK;
 
-        for (int i = 0; i < this.component.getColumnDimension(); i++) {
+        for (int i = 0; i < this.componentNumber; i++) {
 
             // the i-th component value
             double componentI = this.component.get(0, i);
@@ -315,12 +322,25 @@ public class MixGanssianEM {
             // calculate the posterior value
             double prob = distributionOfcomponentI.pdf(point);
 
-            // MatrixUtils.printVectorPoint(point);
+            if (prob > 1E10) {
+                System.out.println("prob:" + prob);
+                MatrixUtils.printVectorPoint(point);
+                System.out.println("mean:");
+                MatrixUtils.printMatrix(this.mean.get(i));
+                System.out.println("var:");
+                MatrixUtils.printMatrix(this.var.get(i));
+            }
+
             denominator += prob * componentI;
 
         }
+        double ret = numerator / denominator;
 
-        return numerator / denominator;
+        if (Double.isNaN(numerator) || Double.isNaN(denominator) || Double.isNaN(ret)) {
+            System.out.println("numerator=" + numerator + " denominator=" + denominator);
+
+        }
+        return ret;
 
     }
 
