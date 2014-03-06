@@ -8,7 +8,7 @@ import com.sample.distribution.Distribution;
 public abstract class ISampler<T> {
 
     // sample parameter
-    private int samplePointNum = 100; // number of points, the sample point
+    private int samplePointNum = 30; // number of points, the sample point
     protected int maxValue = 0; // maximum of the distribution values
     // private List<T> sampleValues = new LinkedList<T>();
     private Queue<T> sampleValues = new ArrayBlockingQueue<T>(samplePointNum);
@@ -17,7 +17,6 @@ public abstract class ISampler<T> {
     private Distribution proposalDistribution = null;
 
     /**
-     * 
      * @Description: sample
      * @param 参数描述
      * @throws

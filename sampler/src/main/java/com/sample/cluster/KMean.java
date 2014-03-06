@@ -1,5 +1,8 @@
 package com.sample.cluster;
 
+import java.util.Collections;
+
+import com.google.common.base.Preconditions;
 import com.probablity.utils.MatrixUtils;
 
 import Jama.Matrix;
@@ -14,38 +17,44 @@ public class KMean {
     private Matrix input = null;
     private Matrix iPointBelongClusterK = null;
 
-    // private Matrix updatedMean = null;
-
     public KMean(int clusternum, int dim) {
 
         this.clusterNumber = clusternum;
         this.dimesion = dim;
 
+    }
+
+    public void init(Matrix input) {
+
+        Preconditions.checkNotNull(input);
+
+        this.input = input;
+        this.dataLength = input.getColumnDimension();
         setMean(Matrix.random(this.dimesion, this.clusterNumber));
         setiPointBelongClusterK(new Matrix(1, this.dataLength));
 
-        // updatedMean = new Matrix(this.dimesion, this.clusterNumber);
     }
 
     public int stepE() {
 
         int bestNearIndex = 0;
-        Double distance = Double.MAX_VALUE;
-        for (int i = 0; i < dataLength; i++) {
+        for (int i = 0; i < this.dataLength; i++) {
 
+            Double distance = Double.MAX_VALUE;
             Matrix matrixColumn = MatrixUtils.getMatrixColumn(input, i);
             for (int k = 0; k < this.clusterNumber; k++) {
 
-                Matrix minus = matrixColumn.minus(MatrixUtils.getMatrixColumn(this.mean, k));
+                Matrix minus = matrixColumn.minus(MatrixUtils.getMatrixColumn(
+                        this.mean, k));
 
                 Double dis = minus.norm2();
+
                 if (dis < distance) {
                     distance = dis;
                     bestNearIndex = k;
                 }
             }
 
-            System.out.println("belong to: " + bestNearIndex);
             getiPointBelongClusterK().set(0, i, bestNearIndex);
         }
 
@@ -58,34 +67,43 @@ public class KMean {
         int clusterCount[] = new int[this.clusterNumber];
         for (int i = 0; i < this.dataLength; i++) {
 
-            Double cluster = MatrixUtils.getColumnMatrixElementAt(iPointBelongClusterK, i);
+            Double cluster = MatrixUtils.getRowMatrixElementAt(
+                    iPointBelongClusterK, i);
             int clusterIndex = cluster.intValue();
             clusterCount[clusterIndex]++;
 
+            // FIXME there is a problem to fix, error calculate the mean
             Matrix meank = MatrixUtils.getMatrixColumn(this.mean, clusterIndex);
             meank = meank.plus(MatrixUtils.getMatrixColumn(this.input, i));
+
+            MatrixUtils.printMatrix(meank);
+
+            System.out.println("cluster index : " + clusterIndex);
+            MatrixUtils.printMatrix(this.mean);
             MatrixUtils.setMatrixColumn(this.mean, meank, clusterIndex);
+            MatrixUtils.printMatrix(this.mean);
         }
 
         for (int k = 0; k < this.clusterNumber; k++) {
 
             System.out.println("cluster count :" + clusterCount[k]);
             Matrix meank = MatrixUtils.getMatrixColumn(this.mean, k);
-            Matrix times = meank.times(clusterCount[k]);
+            System.out.println("mean of k");
+            MatrixUtils.printMatrix(meank);
 
-            MatrixUtils.printMatrix(times);
-
-            MatrixUtils.setMatrixColumn(this.mean, times, k);
-
+            if (clusterCount[k] == 0) {
+                Matrix times = meank.times(1. / clusterCount[k]);
+                MatrixUtils.setMatrixColumn(this.mean, times, k);
+            }
         }
 
+        MatrixUtils.printMatrix(this.mean);
     }
 
-    public void train(Matrix input) {
-
-        this.setInput(input);
+    public void train() {
 
         for (int i = 0; i < 10; i++) {
+            System.out.println("train times: " + i);
             stepE();
             stepM();
             printInfo();
@@ -96,18 +114,6 @@ public class KMean {
     public int getClusterNumber() {
 
         return clusterNumber;
-
-    }
-
-    public Matrix getInput() {
-
-        return input;
-
-    }
-
-    public void setInput(Matrix input) {
-
-        this.input = input;
 
     }
 
@@ -125,7 +131,7 @@ public class KMean {
 
     public Matrix getiPointBelongClusterK() {
 
-        return iPointBelongClusterK.copy();
+        return iPointBelongClusterK;
 
     }
 

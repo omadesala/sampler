@@ -1,5 +1,6 @@
 package com.probablity.utils;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class GnuPlotDisplayTest {
@@ -10,6 +11,7 @@ public class GnuPlotDisplayTest {
     }
 
     @Test
+    @Ignore
     public void testDisplay3D() {
         GnuPlotDisplay.display3D(new double[2][2]);
     }

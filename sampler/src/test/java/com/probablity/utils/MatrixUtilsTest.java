@@ -175,6 +175,20 @@ public class MatrixUtilsTest {
         Assert.assertEquals(2.7, matrixColumn.get(1, 0), 0.00001);
         Assert.assertEquals(2.8, matrixColumn.get(2, 0), 0.00001);
 
+        matrixColumn = MatrixUtils.setMatrixColumn(input, column, 1);
+        MatrixUtils.printMatrix(matrixColumn);
+
+        Assert.assertEquals(2.6, matrixColumn.get(0, 1), 0.00001);
+        Assert.assertEquals(2.7, matrixColumn.get(1, 1), 0.00001);
+        Assert.assertEquals(2.8, matrixColumn.get(2, 1), 0.00001);
+
+        matrixColumn = MatrixUtils.setMatrixColumn(input, column, 2);
+        MatrixUtils.printMatrix(matrixColumn);
+
+        Assert.assertEquals(2.6, matrixColumn.get(0, 2), 0.00001);
+        Assert.assertEquals(2.7, matrixColumn.get(1, 2), 0.00001);
+        Assert.assertEquals(2.8, matrixColumn.get(2, 2), 0.00001);
+
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -291,7 +305,8 @@ public class MatrixUtilsTest {
         a[1][0] = 1.2;
         a[2][0] = 1.3;
 
-        Double sumOfMatrixColumn = MatrixUtils.getSumOfMatrixColumn(new Matrix(a));
+        Double sumOfMatrixColumn = MatrixUtils.getSumOfMatrixColumn(new Matrix(
+                a));
 
         Assert.assertEquals(3.6, sumOfMatrixColumn, 0.00001);
 
