@@ -11,6 +11,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.google.common.collect.Lists;
+
 import Jama.Matrix;
 
 public class MatrixUtilsTest {
@@ -120,6 +122,12 @@ public class MatrixUtilsTest {
 
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetMatrixWithEmpty() {
+        List<Vector<Double>> listVector = Lists.newArrayList();
+        MatrixUtils.getMatrix(listVector);
+    }
+
     @Test
     public void testGetMatrixColumn() {
 
@@ -169,21 +177,21 @@ public class MatrixUtilsTest {
         column.set(2, 0, 2.8);
 
         Matrix matrixColumn = MatrixUtils.setMatrixColumn(input, column, 0);
-        MatrixUtils.printMatrix(matrixColumn);
+        // MatrixUtils.printMatrix(matrixColumn);
 
         Assert.assertEquals(2.6, matrixColumn.get(0, 0), 0.00001);
         Assert.assertEquals(2.7, matrixColumn.get(1, 0), 0.00001);
         Assert.assertEquals(2.8, matrixColumn.get(2, 0), 0.00001);
 
         matrixColumn = MatrixUtils.setMatrixColumn(input, column, 1);
-        MatrixUtils.printMatrix(matrixColumn);
+        // MatrixUtils.printMatrix(matrixColumn);
 
         Assert.assertEquals(2.6, matrixColumn.get(0, 1), 0.00001);
         Assert.assertEquals(2.7, matrixColumn.get(1, 1), 0.00001);
         Assert.assertEquals(2.8, matrixColumn.get(2, 1), 0.00001);
 
         matrixColumn = MatrixUtils.setMatrixColumn(input, column, 2);
-        MatrixUtils.printMatrix(matrixColumn);
+        // MatrixUtils.printMatrix(matrixColumn);
 
         Assert.assertEquals(2.6, matrixColumn.get(0, 2), 0.00001);
         Assert.assertEquals(2.7, matrixColumn.get(1, 2), 0.00001);
@@ -519,6 +527,90 @@ public class MatrixUtilsTest {
     public void testPrintVectorPointNullInput() {
 
         MatrixUtils.printVectorPoint(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getCovarianceMatrixNullInput() {
+        MatrixUtils.getCovarianceMatrix(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getCovarianceMatrixEmptyInput() {
+        MatrixUtils.getCovarianceMatrix(new Matrix(0, 0));
+    }
+
+    @Test
+    public void getCovarianceMatrix() {
+
+        double[][] b = new double[2][4];
+        b[0][0] = 1;
+        b[0][1] = 2;
+        b[0][2] = 3;
+        b[0][3] = 4;
+
+        b[1][0] = 4;
+        b[1][1] = 3;
+        b[1][2] = 2;
+        b[1][3] = 1;
+
+        Matrix matrix = new Matrix(b);
+
+        MatrixUtils.printMatrix(matrix);
+
+        Matrix covarianceMatrix = MatrixUtils.getCovarianceMatrix(matrix);
+        Assert.assertNotNull(covarianceMatrix);
+        Assert.assertEquals(2, covarianceMatrix.getRowDimension());
+        Assert.assertEquals(2, covarianceMatrix.getColumnDimension());
+
+        System.out.println("print covariance matrix");
+        MatrixUtils.printMatrix(covarianceMatrix);
+        System.out.println("print covariance matrix end");
+
+    }
+
+    @Test
+    public void isEmptyOrNull() {
+
+        boolean result = MatrixUtils.isEmptyOrNull(null);
+        Assert.assertTrue(result);
+        result = MatrixUtils.isEmptyOrNull(new Matrix(0, 0));
+        Assert.assertTrue(result);
+        result = MatrixUtils.isEmptyOrNull(Matrix.random(1, 1));
+        Assert.assertFalse(result);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void isSquareMatrixNullInput() {
+        MatrixUtils.isSquareMatrix(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void isSquareMatrixEmptyInput() {
+        Matrix input = Matrix.random(0, 0);
+        MatrixUtils.isSquareMatrix(input);
+    }
+
+    @Test
+    public void isSquareMatrix() {
+        Matrix input = Matrix.random(3, 3);
+        boolean isSquare = MatrixUtils.isSquareMatrix(input);
+        Assert.assertTrue(isSquare);
+    }
+
+    @Test
+    public void matrixIsEmpty() {
+
+        Matrix inputMatrix = new Matrix(2, 2);
+        boolean result = MatrixUtils.isZeroMatrix(inputMatrix);
+        Assert.assertTrue(result);
+        inputMatrix = Matrix.random(2, 2);
+        result = MatrixUtils.isZeroMatrix(inputMatrix);
+        Assert.assertFalse(result);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void matrixIsEmptyInvalidInput() {
+        MatrixUtils.isZeroMatrix(null);
     }
 
     @Test

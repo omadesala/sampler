@@ -3,6 +3,9 @@ package com.probablity.utils;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.stat.correlation.Covariance;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
@@ -145,6 +148,11 @@ public class MatrixUtils {
 
     public static void printMatrix(Matrix input) {
 
+        Preconditions.checkArgument(input != null, "input shoud not be null");
+        Preconditions.checkArgument(
+                input.getRowDimension() > 0 && input.getColumnDimension() > 0,
+                "input shoud not be empty");
+
         int row = input.getRowDimension();
         int col = input.getColumnDimension();
 
@@ -185,6 +193,8 @@ public class MatrixUtils {
     public static Matrix getMatrix(List<Vector<Double>> listVector) {
 
         Preconditions.checkNotNull(listVector);
+
+        Preconditions.checkArgument(listVector.size() > 0);
 
         Vector<Double> point1 = listVector.get(0);
         int length = listVector.size();
@@ -237,4 +247,64 @@ public class MatrixUtils {
 
     }
 
+    /**
+     * @Title: getCovarianceMatrix
+     * @Description: return the covariance matrix
+     * @param @param matrix col is the number of data ,row is the dimension of
+     *        each data point
+     * @param @return
+     * @return Matrix ·µ»ØÀàÐÍ
+     * @throws
+     */
+    public static Matrix getCovarianceMatrix(Matrix matrix) {
+
+        Preconditions.checkArgument(matrix != null, "input should not be null");
+
+        Preconditions
+                .checkArgument(
+                        matrix.getColumnDimension() > 0
+                                && matrix.getRowDimension() > 0,
+                        "input should not be empty matrix");
+
+        Covariance covariance = new Covariance(matrix.transpose().getArray());
+        RealMatrix covarianceMatrix = covariance.getCovarianceMatrix();
+        return new Matrix(covarianceMatrix.getData());
+
+    }
+
+    public static boolean isEmptyOrNull(Matrix inputMatrix) {
+
+        if (inputMatrix == null) {
+            return true;
+        }
+        if (inputMatrix.getRowDimension() == 0
+                && inputMatrix.getColumnDimension() == 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isSquareMatrix(Matrix input) {
+
+        Preconditions.checkArgument(!MatrixUtils.isEmptyOrNull(input),
+                "input should not be null or empty");
+
+        if (input.getColumnDimension() == input.getRowDimension()) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isZeroMatrix(Matrix inputMatrix) {
+        Preconditions.checkArgument(!MatrixUtils.isEmptyOrNull(inputMatrix));
+
+        for (int i = 0; i < inputMatrix.getRowDimension(); i++) {
+            for (int j = 0; j < inputMatrix.getColumnDimension(); j++) {
+                if (inputMatrix.get(i, j) != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }

@@ -53,9 +53,11 @@ public class KMeanTest {
     }
 
     @Test
-    public void testTrain() {
+    public void Train() {
 
         this.kmean.init(input);
         this.kmean.train();
+        
+        
     }
 }

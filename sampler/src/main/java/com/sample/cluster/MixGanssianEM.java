@@ -53,9 +53,29 @@ public class MixGanssianEM {
     public MixGanssianEM(List<Matrix> mu, List<Matrix> var,
             int numberOfcomponent) {
 
+        checkParam(mu, var, numberOfcomponent);
+
         this.componentNumber = numberOfcomponent;
         this.mean = mu;
         this.var = var;
+
+    }
+
+    /**
+     * @Description: check the covariance is not zero
+     * @param @param mu
+     * @param @param covariance
+     * @param @param componentNum
+     * @return void 返回类型
+     * @throws
+     */
+    private void checkParam(List<Matrix> mu, List<Matrix> covariance,
+                            int componentNum) {
+        for (int k = 0; k < componentNum; k++) {
+            Preconditions.checkArgument(
+                    !MatrixUtils.isZeroMatrix(covariance.get(k)),
+                    "the covariance should not be zero");
+        }
     }
 
     /**
@@ -75,21 +95,18 @@ public class MixGanssianEM {
         InitialContext(this.getInputData().getRowDimension(), this
                 .getInputData().getColumnDimension());
 
-        printInfo();
-
         // the times is just for test
         // the convergence condition need optimal
-        System.out.println("start train ...... ");
-        for (int i = 0; i < 200; i++) {
-
+        for (int i = 0; i < 100; i++) {
             stepE();
             stepM();
         }
-        printInfo();
 
     }
 
-    private void printInfo() {
+    public void printInfo() {
+
+        System.out.println("GMM train result:");
         printMean();
         printVar();
         printComponent();
@@ -315,6 +332,7 @@ public class MixGanssianEM {
 
         Distribution distributionOfcomponentK = new MVNDistribution(
                 meanOfComponentK, varOfComponentK);
+
         Double probablity = distributionOfcomponentK.pdf(point);
 
         Double numerator = probablity * componentK;

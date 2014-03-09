@@ -32,13 +32,11 @@ public class MixGanssianEMTest {
         mix.start();
 
         System.out.println("print samples mix: ");
-        List<Vector<Double>> samples = CollectionUtils.getList(mix.getSamples());
+        List<Vector<Double>> samples = CollectionUtils
+                .getList(mix.getSamples());
 
-        Matrix matrix = MatrixUtils.getMatrix(samples);
-        System.out.println("print  mix row: " + matrix.getRowDimension());
-        System.out.println("print  mix col: " + matrix.getColumnDimension());
-
-        mixGanssianEM.train(matrix);
+        Matrix input = MatrixUtils.getMatrix(samples);
+        mixGanssianEM.train(input);
     }
 
     @Test
@@ -50,7 +48,8 @@ public class MixGanssianEMTest {
         mix.start();
 
         System.out.println("print samples mix: ");
-        List<Vector<Double>> samples = CollectionUtils.getList(mix.getSamples());
+        List<Vector<Double>> samples = CollectionUtils
+                .getList(mix.getSamples());
 
         Matrix matrix = MatrixUtils.getMatrix(samples);
         int length = samples.size();
@@ -63,7 +62,8 @@ public class MixGanssianEMTest {
 
         for (int k = 0; k < 3; k++) {
             for (int i = 0; i < length; i++) {
-                Double prob = mixGanssianEM.getLatentVarPosterior(samples.get(i), k);
+                Double prob = mixGanssianEM.getLatentVarPosterior(
+                        samples.get(i), k);
                 componentret.set(k, i, prob);
             }
         }
@@ -77,9 +77,11 @@ public class MixGanssianEMTest {
                 MatrixUtils.printMatrix(matrixColumn);
             }
 
-            Assert.assertEquals(1., MatrixUtils.getSumOfMatrixColumn(matrixColumn), 1E-5);
+            Assert.assertEquals(1.,
+                    MatrixUtils.getSumOfMatrixColumn(matrixColumn), 1E-5);
             for (int i = 0; i < 3; i++) {
-                Assert.assertFalse(Double.isNaN(MatrixUtils.getColumnMatrixElementAt(matrixColumn, i)));
+                Assert.assertFalse(Double.isNaN(MatrixUtils
+                        .getColumnMatrixElementAt(matrixColumn, i)));
             }
         }
 
@@ -93,7 +95,8 @@ public class MixGanssianEMTest {
 
         mix.start();
 
-        List<Vector<Double>> samples = CollectionUtils.getList(mix.getSamples());
+        List<Vector<Double>> samples = CollectionUtils
+                .getList(mix.getSamples());
 
         Matrix matrix = MatrixUtils.getMatrix(samples);
         int length = samples.size();
@@ -103,13 +106,17 @@ public class MixGanssianEMTest {
 
         mixGanssianEM.stepE();
 
-        Matrix getiPointBelongKComponent = mixGanssianEM.getiPointBelongKComponent();
+        Matrix getiPointBelongKComponent = mixGanssianEM
+                .getiPointBelongKComponent();
 
         for (int m = 0; m < length; m++) {
-            Matrix matrixColumn = MatrixUtils.getMatrixColumn(getiPointBelongKComponent, m);
-            Assert.assertEquals(1., MatrixUtils.getSumOfMatrixColumn(matrixColumn), 1E-5);
+            Matrix matrixColumn = MatrixUtils.getMatrixColumn(
+                    getiPointBelongKComponent, m);
+            Assert.assertEquals(1.,
+                    MatrixUtils.getSumOfMatrixColumn(matrixColumn), 1E-5);
             for (int i = 0; i < 3; i++) {
-                Assert.assertFalse(Double.isNaN(MatrixUtils.getColumnMatrixElementAt(matrixColumn, i)));
+                Assert.assertFalse(Double.isNaN(MatrixUtils
+                        .getColumnMatrixElementAt(matrixColumn, i)));
             }
 
         }
@@ -125,7 +132,8 @@ public class MixGanssianEMTest {
         mix.start();
 
         System.out.println("print samples mix: ");
-        List<Vector<Double>> samples = CollectionUtils.getList(mix.getSamples());
+        List<Vector<Double>> samples = CollectionUtils
+                .getList(mix.getSamples());
 
         Matrix matrix = MatrixUtils.getMatrix(samples);
         int length = samples.size();
@@ -139,7 +147,8 @@ public class MixGanssianEMTest {
 
         for (int i = 0; i < 10; i++) {
             System.out.println("column :" + i);
-            MatrixUtils.printMatrix(MatrixUtils.getMatrixColumn(mixGanssianEM.getiPointBelongKComponent(), i));
+            MatrixUtils.printMatrix(MatrixUtils.getMatrixColumn(
+                    mixGanssianEM.getiPointBelongKComponent(), i));
         }
 
         mixGanssianEM.updateMean();
@@ -165,7 +174,8 @@ public class MixGanssianEMTest {
         mix.start();
 
         System.out.println("print samples mix: ");
-        List<Vector<Double>> samples = CollectionUtils.getList(mix.getSamples());
+        List<Vector<Double>> samples = CollectionUtils
+                .getList(mix.getSamples());
 
         Matrix matrix = MatrixUtils.getMatrix(samples);
         int length = samples.size();
