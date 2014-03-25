@@ -36,6 +36,18 @@ public class CollectionUtilsTest {
 
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetListNullInput() {
+        CollectionUtils.getList(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetListEmptyInput() {
+
+        ArrayBlockingQueue<Integer> queue = new ArrayBlockingQueue<Integer>(10);
+        CollectionUtils.getList(queue);
+    }
+
     @Test
     public void testgetColumnRowArray() {
 

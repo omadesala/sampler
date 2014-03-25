@@ -12,7 +12,8 @@ public class CollectionUtils {
 
     public static <T> List<T> getList(Queue<T> queue) {
 
-        Preconditions.checkNotNull(queue);
+        Preconditions.checkArgument(queue != null, "the input is null ,please set the queue first");
+        Preconditions.checkArgument(queue.size() > 0, "the input is empty ,please set the queue first");
 
         List<T> ret = new ArrayList<T>();
         for (T t : queue) {
