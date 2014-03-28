@@ -1,9 +1,9 @@
 package com.sample.cluster;
 
+import Jama.Matrix;
+
 import com.google.common.base.Preconditions;
 import com.probablity.utils.MatrixUtils;
-
-import Jama.Matrix;
 
 public class FactorAnalysis {
 
@@ -15,12 +15,12 @@ public class FactorAnalysis {
     private Matrix varXX;
 
     // result
-    private Matrix mean;
-    private Matrix lambda;
-    private Matrix psi;
-    private Matrix input;
-    private int dataLength;
-    private int dataDim;
+    // private Matrix mean; //
+    private Matrix lambda;// map matrix, which map k dim to m dim
+    private Matrix psi; // precision matrix of m dimension
+    private Matrix input; // train set
+    private int dataLength;// train set length
+    private int dataDim; // data dimension
 
     private int trainingtimes = 100;
 
@@ -35,70 +35,164 @@ public class FactorAnalysis {
         this.input = builder.input;
         this.dataDim = this.input.getRowDimension();
         this.dataLength = this.input.getColumnDimension();
+        this.lambda = Matrix.random(input.getRowDimension(), this.meanZ.getRowDimension());
+        this.psi = new Matrix(this.dataDim, this.dataDim);
+
+        psi.set(0, 0, 0.8);
+        psi.set(0, 1, 0.2);
+        psi.set(1, 0, 0.2);
+        psi.set(1, 1, 0.8);
 
     }
 
-    public void train(Matrix input) {
+    public void train() {
 
         Preconditions.checkArgument(input != null, "the sample data should not be null");
         Preconditions.checkArgument(input.getColumnDimension() > 0, "please input at least one point to train");
 
-        this.input = input;
+        updateMean();
 
         for (int i = 0; i < this.trainingtimes; i++) {
-
             trainOnce();
-
-            // stepE();
-            // stepM();
-
         }
+
+        printResult();
+
+    }
+
+    public void printResult() {
+
+        System.out.println("print updated result:");
+        System.out.println("print mean of X:");
+        MatrixUtils.printMatrix(this.meanX);
+
+        System.out.println("print lambda:");
+        MatrixUtils.printMatrix(this.lambda);
+
+        System.out.println("print psi:");
+        MatrixUtils.printMatrix(this.psi);
     }
 
     private void trainOnce() {
 
+        // stepE
+
+        // 1. get factor precision matrix
+        Matrix updatedSigmaZConditionXi = updateSigmaZConditionXi();
+        // 2. get mean of factor condition x
+        Matrix meanOfZConditionXSet = new Matrix(this.meanZ.getRowDimension(), this.dataLength);
+        for (int i = 0; i < this.dataLength; i++) {
+            Matrix pointX = MatrixUtils.getMatrixColumn(this.input, i);
+            Matrix updatedMeanZConditionXi = updateMeanZConditionXi(pointX);
+            MatrixUtils.setMatrixColumn(meanOfZConditionXSet, updatedMeanZConditionXi, i);
+        }
+
+        // System.out.println("print z|x_i set");
+        // MatrixUtils.printMatrix(meanOfZConditionXSet);
+
+        // stepM
+        // 1. update lambda.
+        // (\sum_{i=0}^{m} (x_i-\mu)\mu_{z|x_i}^T)(\mu_{z|x_i}\mu_{z|x_i}^T+
+        // \sigma_{z|x_i}^{-1} )^{-1}
+
+        // System.out.println("input row:" + this.input.getRowDimension());
+        // System.out.println("input col:" + this.input.getColumnDimension());
+        // System.out.println("meanOfZConditionXSet row:" +
+        // meanOfZConditionXSet.getRowDimension());
+        // System.out.println("meanOfZConditionXSet col:" +
+        // meanOfZConditionXSet.getColumnDimension());
+        // System.out.println("this.meanX row:" + this.meanX.getRowDimension());
+        // System.out.println("this.meanX col:" +
+        // this.meanX.getColumnDimension());
+
+        Matrix meanXset = new Matrix(this.meanX.getRowDimension(), this.dataLength);
+        for (int i = 0; i < this.dataLength; i++) {
+            MatrixUtils.setMatrixColumn(meanXset, this.meanX, i);
+        }
+
+        Matrix duceMean = this.input.minus(meanXset);
+
+        Matrix part1 = duceMean.times(meanOfZConditionXSet.transpose());
+
+        Matrix part2 = meanOfZConditionXSet.times(meanOfZConditionXSet.transpose()).plus(
+                updatedSigmaZConditionXi.inverse());
+        Matrix part2Inverse = part2.inverse();
+
+        this.lambda = part1.times(part2Inverse);
+        System.out.println("print lambda");
+        MatrixUtils.printMatrix(this.lambda);
+
+        // 2. update factor precision matrix.
+        // \Phi = \frac{1}{m}\sum_{i=0}^{m}x_i x_i^T-x_i\mu_{z_i|x_i}^T
+        // \Lambda^T -
+        // \Lambda\mu_{z_i|x_i}x_i^T+\Lambda(\mu_{z_i|x_i}\mu_{z_i|x_i}^T +
+        // {\sum}_{z_i|x_i} )\Lambda^T
+        Matrix updatedPsi = new Matrix(this.varXX.getRowDimension(), this.varXX.getColumnDimension());
         for (int i = 0; i < this.dataLength; i++) {
 
-            // stepE
-            Matrix updateMeanZConditionXi = updateMeanZConditionXi(MatrixUtils.getMatrixColumn(this.input, i));
-            Matrix updateSigmaZConditionXi = updateSigmaZConditionXi(MatrixUtils.getMatrixColumn(this.input, i));
-            // stepM
+            Matrix pointX = MatrixUtils.getMatrixColumn(this.input, i);
+            Matrix item1 = pointX.times(pointX.transpose());
 
-            
+            Matrix meanZConX = MatrixUtils.getMatrixColumn(meanOfZConditionXSet, i);
+            Matrix item2 = pointX.times(meanZConX).times(this.lambda.transpose());
+
+            Matrix item3 = this.lambda.times(meanZConX).times(pointX.transpose());
+
+            // System.out.println("print this.lambda row " +
+            // this.lambda.getRowDimension());
+            // System.out.println("print this.lambda col " +
+            // this.lambda.getColumnDimension());
+
+            Matrix item4 = this.lambda.times(meanZConX.times(meanZConX.transpose()).plus(updatedSigmaZConditionXi))
+                    .times(this.lambda.transpose());
+
+            Matrix psiTemp = item1.minus(item2).minus(item3).plus(item4);
+            // System.out.println("print psiTemp row " +
+            // psiTemp.getRowDimension());
+            // System.out.println("print psiTemp col " +
+            // psiTemp.getColumnDimension());
+            // System.out.println("print updatedPsi row " +
+            // updatedPsi.getRowDimension());
+            // System.out.println("print updatedPsi col " +
+            // updatedPsi.getColumnDimension());
+            // System.out.println("print psiTemp ");
+            // MatrixUtils.printMatrix(psiTemp);
+
+            updatedPsi = updatedPsi.plus(psiTemp).times(this.dataLength);
+
         }
+
+        for (int j = 0; j < updatedPsi.getColumnDimension(); j++) {
+            this.varXX.set(j, j, updatedPsi.get(j, j));
+            this.psi.set(j, j, updatedPsi.get(j, j));
+        }
+
+        // System.out.println("print the matrix of varXX");
+        // MatrixUtils.printMatrix(this.varXX);
 
     }
 
     private Matrix updateMeanZConditionXi(Matrix pointXi) {
 
         Matrix lambdaTranspose = this.lambda.transpose();
-        Matrix inverse = this.lambda.times(lambdaTranspose).plus(this.psi).inverse();
-        Matrix minus = pointXi.minus(this.mean);
-
+        Matrix plus = this.lambda.times(lambdaTranspose).plus(this.psi);
+        Matrix inverse = plus.inverse();
+        Matrix minus = pointXi.minus(this.meanX);
         this.meanZ = lambdaTranspose.times(inverse).times(minus);
 
         return this.meanZ;
 
     }
 
-    private Matrix updateSigmaZConditionXi(Matrix pointXi) {
+    private Matrix updateSigmaZConditionXi() {
 
-        Matrix unitOfVarZZ = MatrixUtils.getUnitMatrix(pointXi);
-
+        Matrix unitOfVarZZ = MatrixUtils.getUnitMatrix(this.varZZ);
         Matrix lambdaTranspose = this.lambda.transpose();
-        Matrix inverse = this.lambda.times(lambdaTranspose).plus(this.psi).inverse();
-        Matrix times = inverse.times(this.lambda);
+        Matrix plus = this.lambda.times(lambdaTranspose).plus(this.psi);
+        Matrix second = lambdaTranspose.times(plus.inverse()).times(this.lambda);
 
-        this.varZZ = unitOfVarZZ.minus(times);
+        this.varZZ = unitOfVarZZ.minus(second);
         return this.varZZ;
-    }
-
-    private void stepM() {
-
-        updateMean();
-        updateLambda();
-        updatePsi();
-
     }
 
     private Matrix updateMean() {
@@ -115,8 +209,8 @@ public class FactorAnalysis {
             sum = sum.plus(MatrixUtils.getMatrixColumn(this.input, col));
         }
 
-        this.mean = sum.times(1. / this.dataLength);
-        return this.mean;
+        this.meanX = sum.times(1. / this.dataLength);
+        return this.meanX;
     }
 
     private void updatePsi() {
@@ -147,32 +241,32 @@ public class FactorAnalysis {
 
         }
 
-        public Builder setMean1(Matrix mean1) {
-            this.meanX = mean1;
+        public Builder setMeanZ(Matrix meanZ) {
+            this.meanZ = meanZ;
             return this;
 
         }
 
-        public Builder setMean2(Matrix mean2) {
-            this.meanZ = mean2;
+        public Builder setMeanX(Matrix meanX) {
+            this.meanX = meanX;
             return this;
 
         }
 
-        public Builder setVar11(Matrix var11) {
-            this.varZZ = var11;
+        public Builder setVar11(Matrix varZZ) {
+            this.varZZ = varZZ;
             return this;
 
         }
 
-        public Builder setVar12(Matrix var12) {
-            this.varZX = var12;
+        public Builder setVar12(Matrix varZX) {
+            this.varZX = varZX;
             return this;
 
         }
 
-        public Builder setVar22(Matrix var22) {
-            this.varXX = var22;
+        public Builder setVar22(Matrix varXX) {
+            this.varXX = varXX;
             return this;
 
         }
@@ -195,13 +289,12 @@ public class FactorAnalysis {
 
             int dim = this.input.getRowDimension();
 
-            Preconditions.checkArgument(this.meanX.getRowDimension() < dim, "mean1 dimension must less data dimension");
-            Preconditions.checkArgument(this.meanZ.getRowDimension() < dim, "mean2 dimension must less data dimension");
-            Preconditions.checkArgument(this.meanX.getRowDimension() + this.meanZ.getRowDimension() == dim,
-                    "the mean1 and mean2 dim must equal train data");
+            Preconditions.checkArgument(this.meanX.getRowDimension() == dim,
+                    "meanX dimension must equal data dimension");
+            Preconditions.checkArgument(this.meanZ.getRowDimension() < dim, "meanZ dimension must less data dimension");
 
-            Preconditions.checkArgument(this.meanX.getRowDimension() == this.varZZ.getRowDimension(),
-                    "mean1 dimension must match var11");
+            Preconditions.checkArgument(this.meanX.getRowDimension() == this.varXX.getRowDimension(),
+                    "meanX dimension must match varXX");
 
             return new FactorAnalysis(this);
 

@@ -190,7 +190,8 @@ public class MatrixUtilsTest {
         Assert.assertEquals(2.7, matrixColumn.get(1, 1), 0.00001);
         Assert.assertEquals(2.8, matrixColumn.get(2, 1), 0.00001);
 
-        matrixColumn = MatrixUtils.setMatrixColumn(input, column, 2);
+        matrixColumn = MatrixUtils.setMatrixColumn(input, column, 3);
+        // matrixColumn = MatrixUtils.setMatrixColumn(input, column, 2);
         // MatrixUtils.printMatrix(matrixColumn);
 
         Assert.assertEquals(2.6, matrixColumn.get(0, 2), 0.00001);

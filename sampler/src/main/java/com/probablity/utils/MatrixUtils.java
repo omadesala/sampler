@@ -225,12 +225,16 @@ public class MatrixUtils {
 
     public static Matrix setMatrixColumn(Matrix input, Matrix column, int insetIndex) {
 
-        Preconditions.checkNotNull(input);
-        Preconditions.checkNotNull(column);
+        Preconditions.checkNotNull(input, "input matrix should not be null");
+        Preconditions.checkNotNull(column, "column matrix should not be null");
 
-        Preconditions.checkArgument(MatrixUtils.isColumn(column));
-        Preconditions.checkArgument(input.getRowDimension() == column.getRowDimension());
-        Preconditions.checkArgument(insetIndex >= 0 && insetIndex <= column.getRowDimension());
+        Preconditions.checkArgument(MatrixUtils.isColumn(column), "the column is not a column matrix ");
+        Preconditions.checkArgument(input.getRowDimension() == column.getRowDimension(),
+                "column row size not equal input matrix row");
+        Preconditions.checkArgument(insetIndex >= 0 && insetIndex < input.getColumnDimension(),
+                "the index is not correct");
+        // Preconditions.checkArgument(insetIndex >= 0 && insetIndex <=
+        // column.getRowDimension());
 
         input.setMatrix(0, input.getRowDimension() - 1, insetIndex, insetIndex, column);
 
