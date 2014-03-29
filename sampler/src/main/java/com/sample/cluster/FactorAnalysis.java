@@ -94,23 +94,10 @@ public class FactorAnalysis {
                     updatedMeanZConditionXi, i);
         }
 
-        // System.out.println("print z|x_i set");
-        // MatrixUtils.printMatrix(meanOfZConditionXSet);
-
         // stepM
         // 1. update lambda.
         // (\sum_{i=0}^{m} (x_i-\mu)\mu_{z|x_i}^T)(\mu_{z|x_i}\mu_{z|x_i}^T+
         // \sigma_{z|x_i}^{-1} )^{-1}
-
-        // System.out.println("input row:" + this.input.getRowDimension());
-        // System.out.println("input col:" + this.input.getColumnDimension());
-        // System.out.println("meanOfZConditionXSet row:" +
-        // meanOfZConditionXSet.getRowDimension());
-        // System.out.println("meanOfZConditionXSet col:" +
-        // meanOfZConditionXSet.getColumnDimension());
-        // System.out.println("this.meanX row:" + this.meanX.getRowDimension());
-        // System.out.println("this.meanX col:" +
-        // this.meanX.getColumnDimension());
 
         Matrix meanXset = new Matrix(this.meanX.getRowDimension(),
                 this.dataLength);
@@ -119,14 +106,11 @@ public class FactorAnalysis {
         }
 
         Matrix duceMean = this.input.minus(meanXset);
-
         Matrix part1 = duceMean.times(meanSetOfZgivenX.transpose());
-
         Matrix partTwoMatrix = new Matrix(this.varZZ.getRowDimension(),
                 this.varZZ.getColumnDimension());
 
         for (int i = 0; i < this.dataLength; i++) {
-
             Matrix meanZgivenXi = MatrixUtils.getMatrixColumn(meanSetOfZgivenX,
                     i);
             Matrix part2i = meanZgivenXi.times(meanZgivenXi.transpose()).plus(
@@ -168,16 +152,6 @@ public class FactorAnalysis {
                     updatedLambda.transpose());
 
             Matrix psiTemp = item1.minus(item2).minus(item3).plus(item4);
-            // System.out.println("print psiTemp row " +
-            // psiTemp.getRowDimension());
-            // System.out.println("print psiTemp col " +
-            // psiTemp.getColumnDimension());
-            // System.out.println("print updatedPsi row " +
-            // updatedPsi.getRowDimension());
-            // System.out.println("print updatedPsi col " +
-            // updatedPsi.getColumnDimension());
-            // System.out.println("print psiTemp ");
-            // MatrixUtils.printMatrix(psiTemp);
             updatedPsi = updatedPsi.plus(psiTemp);
         }
 
@@ -186,11 +160,6 @@ public class FactorAnalysis {
             this.varXX.set(j, j, updatedPsi.get(j, j));
             this.psi.set(j, j, updatedPsi.get(j, j));
         }
-
-        // System.out.println("print the matrix of varXX");
-        // MatrixUtils.printMatrix(this.varXX);
-        // MatrixUtils.printMatrix(this.psi);
-
     }
 
     private Matrix updateMeanZConditionXi(Matrix pointXi) {

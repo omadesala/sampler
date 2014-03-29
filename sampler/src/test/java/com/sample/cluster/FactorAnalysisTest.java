@@ -151,8 +151,8 @@ public class FactorAnalysisTest {
     private Matrix generateData() {
 
         double[][] A = new double[2][1];
-        A[0][0] = 3.;
-        A[1][0] = 1.;
+        A[0][0] = 5.;
+        A[1][0] = 5.;
         Matrix lambda = new Matrix(A);
 
         double[][] errMean = new double[2][1];
@@ -185,8 +185,8 @@ public class FactorAnalysisTest {
 
         Matrix sample = new Matrix(2, datalength);
         Matrix mean = new Matrix(2, 1);
-        mean.set(0, 0, 2);
-        mean.set(1, 0, 1);
+        mean.set(0, 0, 5);
+        mean.set(1, 0, 4);
 
         Random random = new Random();
         for (int i = 0; i < datalength; i++) {
