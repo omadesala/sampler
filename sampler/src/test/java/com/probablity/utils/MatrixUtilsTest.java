@@ -314,7 +314,8 @@ public class MatrixUtilsTest {
         a[1][0] = 1.2;
         a[2][0] = 1.3;
 
-        Double sumOfMatrixColumn = MatrixUtils.getSumOfMatrixColumn(new Matrix(a));
+        Double sumOfMatrixColumn = MatrixUtils.getSumOfMatrixColumn(new Matrix(
+                a));
 
         Assert.assertEquals(3.6, sumOfMatrixColumn, 0.00001);
 
@@ -633,6 +634,20 @@ public class MatrixUtilsTest {
     public void testgetUnitMatrixNotSquareMatrix() {
 
         MatrixUtils.getUnitMatrix(Matrix.random(2, 3));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPrintMatrixInfoNullInput() {
+        Matrix input = null;
+        MatrixUtils.printMatrixInfo(input, "test");
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPrintMatrixInfoNullMessage() {
+        Matrix input = Matrix.random(2, 3);
+        MatrixUtils.printMatrixInfo(input, null);
+
     }
 
     @Test

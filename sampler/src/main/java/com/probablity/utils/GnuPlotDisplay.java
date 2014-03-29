@@ -20,8 +20,8 @@ public final class GnuPlotDisplay {
         ArrayList<String> preInit = param.getPreInit();
 
         // preInit.add("set contour base");// draw contour
-        preInit.add("set xrange [-5:5]");// draw contour
-        preInit.add("set yrange [-5:5]");// draw contour
+        preInit.add("set xrange [-10:10]");// draw contour
+        preInit.add("set yrange [-10:10]");// draw contour
         preInit.add("set size square");// draw contour
 
         JavaPlot p = new JavaPlot(param, Constant.GNUPLOT_PATH, null);

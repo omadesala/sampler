@@ -43,25 +43,9 @@ public class FactorAnalysisTest {
 
         System.out.println("meanX row:" + meanX.getRowDimension());
 
-        double[][] datas = new double[xDim][datalength];
-
-        datas[0][0] = 1.1;
-        datas[0][1] = 2.1;
-        datas[0][2] = 1.2;
-        datas[0][3] = 2.2;
-
-        datas[1][0] = 1.1;
-        datas[1][1] = 2.1;
-        datas[1][2] = 1.2;
-        datas[1][3] = 2.2;
-
-        factorAnalysis = new FactorAnalysis.Builder().setMeanZ(meanZ).setMeanX(meanX).setVar11(varZZ).setVar12(varZX)
+        factorAnalysis = new FactorAnalysis.Builder().setMeanZ(meanZ)
+                .setMeanX(meanX).setVar11(varZZ).setVar12(varZX)
                 .setVar22(varXX).setDatas(generateData()).build();
-        //
-        // Matrix inputMatrix = new Matrix(datas);
-        // factorAnalysis = new
-        // FactorAnalysis.Builder().setMeanZ(meanZ).setMeanX(meanX).setVar11(varZZ).setVar12(varZX)
-        // .setVar22(varXX).setDatas(inputMatrix).build();
     }
 
     @After
@@ -73,13 +57,17 @@ public class FactorAnalysisTest {
     public void testUpdateMean() {
 
         try {
-            Matrix meanMatrix = ((Matrix) ReflectUtil.getClassMemberMethod(this.factorAnalysis, "updateMean").invoke(
-                    this.factorAnalysis, null));
+            Matrix meanMatrix = ((Matrix) ReflectUtil.getClassMemberMethod(
+                    this.factorAnalysis, "updateMean").invoke(
+                    this.factorAnalysis));
 
-            Assert.assertEquals(1.65, meanMatrix.get(0, 0), 1e-5);
-            Assert.assertEquals(1.65, meanMatrix.get(1, 0), 1e-5);
+            System.out.println("print updated mean");
+            MatrixUtils.printMatrix(meanMatrix);
+            // Assert.assertEquals(1.65, meanMatrix.get(0, 0), 1e-5);
+            // Assert.assertEquals(1.65, meanMatrix.get(1, 0), 1e-5);
 
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        } catch (IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException e) {
             e.printStackTrace();
         }
 
@@ -92,12 +80,14 @@ public class FactorAnalysisTest {
 
         try {
             Matrix point0 = MatrixUtils.getMatrixColumn(generateData, 0);
-            Matrix meanMatrix = ((Matrix) ReflectUtil.getClassMemberMethod(this.factorAnalysis,
-                    "updateMeanZConditionXi").invoke(this.factorAnalysis, point0));
+            Matrix meanMatrix = ((Matrix) ReflectUtil.getClassMemberMethod(
+                    this.factorAnalysis, "updateMeanZConditionXi").invoke(
+                    this.factorAnalysis, point0));
             MatrixUtils.printMatrix(meanMatrix);
             Assert.assertNotNull(meanMatrix);
 
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        } catch (IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException e) {
 
             e.printStackTrace();
             fail("exception happened");
@@ -112,10 +102,12 @@ public class FactorAnalysisTest {
 
         try {
             // Matrix point0 = MatrixUtils.getMatrixColumn(generateData, 0);
-            Matrix meanMatrix = ((Matrix) ReflectUtil.getClassMemberMethod(this.factorAnalysis,
-                    "updateSigmaZConditionXi").invoke(this.factorAnalysis, null));
+            Matrix meanMatrix = ((Matrix) ReflectUtil.getClassMemberMethod(
+                    this.factorAnalysis, "updateSigmaZConditionXi").invoke(
+                    this.factorAnalysis, null));
 
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        } catch (IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException e) {
 
             e.printStackTrace();
         }
@@ -128,9 +120,11 @@ public class FactorAnalysisTest {
         // Matrix generateData = generateData();
         try {
             // Matrix point0 = MatrixUtils.getMatrixColumn(generateData, 0);
-            Matrix meanMatrix = ((Matrix) ReflectUtil.getClassMemberMethod(this.factorAnalysis, "trainOnce").invoke(
+            Matrix meanMatrix = ((Matrix) ReflectUtil.getClassMemberMethod(
+                    this.factorAnalysis, "trainOnce").invoke(
                     this.factorAnalysis));
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        } catch (IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException e) {
             e.printStackTrace();
         }
     }
@@ -173,11 +167,11 @@ public class FactorAnalysisTest {
         errVar[1][1] = 1.;
         Matrix sigma1 = new Matrix(errVar);;
 
+        int datalength = 1000;
         ISampler<Vector<Double>> sampler = new TwoDimGaussSampler(mu1, sigma1);
+        sampler.setSamplePointNum(datalength);
         sampler.doSample();
         Queue<Vector<Double>> datas = sampler.getSampleValues();
-
-        int datalength = datas.size();
 
         Matrix result = new Matrix(2, datalength);
 
@@ -189,14 +183,17 @@ public class FactorAnalysisTest {
 
         // GnuPlotDisplay.display2D(result.transpose().getArray());
 
-        int length = 100;
-        Matrix sample = new Matrix(2, length);
+        Matrix sample = new Matrix(2, datalength);
+        Matrix mean = new Matrix(2, 1);
+        mean.set(0, 0, 2);
+        mean.set(1, 0, 1);
+
         Random random = new Random();
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < datalength; i++) {
 
             Matrix error = MatrixUtils.getMatrixColumn(result, i);
             double z = random.nextGaussian();
-            Matrix point = lambda.times(z).plus(error);
+            Matrix point = lambda.times(z).plus(error).plus(mean);
 
             MatrixUtils.setMatrixColumn(sample, point, i);
 
