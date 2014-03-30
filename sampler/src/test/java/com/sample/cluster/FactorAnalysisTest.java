@@ -15,12 +15,8 @@ import org.junit.Test;
 
 import Jama.Matrix;
 
-import com.probablity.utils.Constant;
-import com.probablity.utils.GnuPlotDisplay;
 import com.probablity.utils.MatrixUtils;
 import com.probablity.utils.ReflectUtil;
-import com.sample.distribution.Distribution;
-import com.sample.distribution.implement.TwoDimGaussDistribution;
 import com.sample.sampler.ISampler;
 import com.sample.sampler.implement.inverse.TwoDimGaussSampler;
 
@@ -33,7 +29,6 @@ public class FactorAnalysisTest {
 
         int zDim = 1;
         int xDim = 2;
-        int datalength = 4;
 
         Matrix meanZ = Matrix.random(zDim, 1);
         Matrix meanX = Matrix.random(xDim, 1);
@@ -102,9 +97,8 @@ public class FactorAnalysisTest {
 
         try {
             // Matrix point0 = MatrixUtils.getMatrixColumn(generateData, 0);
-            Matrix meanMatrix = ((Matrix) ReflectUtil.getClassMemberMethod(
-                    this.factorAnalysis, "updateSigmaZConditionXi").invoke(
-                    this.factorAnalysis, null));
+            ReflectUtil.getClassMemberMethod(this.factorAnalysis,
+                    "updateSigmaZConditionXi").invoke(this.factorAnalysis);
 
         } catch (IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
@@ -117,12 +111,9 @@ public class FactorAnalysisTest {
     @Test
     public void testTrainOnce() {
 
-        // Matrix generateData = generateData();
         try {
-            // Matrix point0 = MatrixUtils.getMatrixColumn(generateData, 0);
-            Matrix meanMatrix = ((Matrix) ReflectUtil.getClassMemberMethod(
-                    this.factorAnalysis, "trainOnce").invoke(
-                    this.factorAnalysis));
+            ReflectUtil.getClassMemberMethod(this.factorAnalysis, "trainOnce")
+                    .invoke(this.factorAnalysis);
         } catch (IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
             e.printStackTrace();
@@ -137,6 +128,7 @@ public class FactorAnalysisTest {
     }
 
     @Test
+    @Ignore
     public void testGenerateData() {
 
         MatrixUtils.printMatrix(generateData());
@@ -152,7 +144,7 @@ public class FactorAnalysisTest {
 
         double[][] A = new double[2][1];
         A[0][0] = 5.;
-        A[1][0] = 5.;
+        A[1][0] = 2.;
         Matrix lambda = new Matrix(A);
 
         double[][] errMean = new double[2][1];
@@ -167,7 +159,7 @@ public class FactorAnalysisTest {
         errVar[1][1] = 1.;
         Matrix sigma1 = new Matrix(errVar);;
 
-        int datalength = 1000;
+        int datalength = 10;
         ISampler<Vector<Double>> sampler = new TwoDimGaussSampler(mu1, sigma1);
         sampler.setSamplePointNum(datalength);
         sampler.doSample();

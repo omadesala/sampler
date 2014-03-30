@@ -1,48 +1,63 @@
 package com.sample.cluster;
 
+import java.util.Random;
+
 import Jama.Matrix;
 
 import com.google.common.base.Preconditions;
 import com.probablity.utils.MatrixUtils;
 
+/**
+ * @ClassName: FactorAnalysis
+ * @Description: there are two way to estimate the parameter.one is include the
+ *               mean and the psi estimate can't use andrew ng given
+ *               fomula.</br> tow. we can let each xi minus mean and use andrew
+ *               ng given formula.because of the mean of input x is not changed
+ *               in the iterator.so the second way is a good way</br> but here
+ *               we use the first method to illustrate the principle.
+ * @author omadesala@msn.com
+ * @date 2014-3-30 ÉÏÎç10:11:44
+ */
 public class FactorAnalysis {
 
     private Matrix meanX;
     private Matrix meanZ;
     private Matrix varZZ;
-    private Matrix varZX;
-    private Matrix varXZ;
-    private Matrix varXX;
 
     // result
-    // private Matrix mean; //
     private Matrix lambda;// map matrix, which map k dim to m dim
     private Matrix psi; // precision matrix of m dimension
     private Matrix input; // train set
     private int dataLength;// train set length
     private int dataDim; // data dimension
 
-    private int trainingtimes = 200;
+    private int trainingtimes = 1000;
+
+    private Random random = new Random();
 
     public FactorAnalysis(Builder builder) {
 
         this.meanX = builder.meanX;
         this.meanZ = builder.meanZ;
         this.varZZ = builder.varZZ;
-        this.varZX = builder.varZX;
-        this.varXZ = builder.varZX.transpose();
-        this.varXX = builder.varXX;
         this.input = builder.input;
         this.dataDim = this.input.getRowDimension();
         this.dataLength = this.input.getColumnDimension();
+
         this.lambda = Matrix.random(input.getRowDimension(),
                 this.meanZ.getRowDimension());
+        // this.lambda = new Matrix(input.getRowDimension(),
+        // this.meanZ.getRowDimension());
+
+        // this.lambda.set(0, 0, 4.9);
+        // this.lambda.set(1, 0, 2.1);
+
         this.psi = new Matrix(this.dataDim, this.dataDim);
 
-        psi.set(0, 0, 0.8);
+        psi.set(0, 0, random.nextDouble());
         psi.set(0, 1, 0.);
         psi.set(1, 0, 0.);
-        psi.set(1, 1, 0.8);
+        psi.set(1, 1, random.nextDouble());
 
     }
 
@@ -80,41 +95,120 @@ public class FactorAnalysis {
 
         // stepE
 
-        // 1. get factor precision matrix from last time updated lambda and
+        // 1. get mean of factor given x_i,use the last time update lambda and
         // other parameter
-        Matrix updatedSigmaZConditionXi = updateSigmaZConditionXi();
-        // 2. get mean of factor given x_i,use the last time update lambda and
-        // other parameter
-        Matrix meanSetOfZgivenX = new Matrix(this.meanZ.getRowDimension(),
+        Matrix meanSetOfZiGivenX = new Matrix(this.meanZ.getRowDimension(),
                 this.dataLength);
         for (int i = 0; i < this.dataLength; i++) {
             Matrix pointX = MatrixUtils.getMatrixColumn(this.input, i);
-            Matrix updatedMeanZConditionXi = updateMeanZConditionXi(pointX);
-            MatrixUtils.setMatrixColumn(meanSetOfZgivenX,
+            Matrix updatedMeanZConditionXi = updateMeanZiGivenXi(pointX);
+            MatrixUtils.setMatrixColumn(meanSetOfZiGivenX,
                     updatedMeanZConditionXi, i);
         }
 
+        // 2. get factor precision matrix from last time updated lambda and
+        // other parameter
+        Matrix updatedSigmaZiGivenXi = updateSigmaZiGivenXi();
+        Matrix lastLambda = new Matrix(this.meanX.getRowDimension(),
+                this.meanZ.getRowDimension());
+
         // stepM
         // 1. update lambda.
-        // (\sum_{i=0}^{m} (x_i-\mu)\mu_{z|x_i}^T)(\mu_{z|x_i}\mu_{z|x_i}^T+
-        // \sigma_{z|x_i}^{-1} )^{-1}
+        lastLambda = updateLambda(meanSetOfZiGivenX, updatedSigmaZiGivenXi);
+        System.out.println("print lastLambda:");
+        MatrixUtils.printMatrix(lastLambda);
+        // 2. update factor precision matrix.
+        // updatePsi(meanSetOfZiGivenX, updatedSigmaZiGivenXi, lastLambda);
+        updatePsi(meanSetOfZiGivenX, updatedSigmaZiGivenXi, lastLambda);
+    }
 
-        Matrix meanXset = new Matrix(this.meanX.getRowDimension(),
-                this.dataLength);
+    /**
+     * @Description: // \Phi = \frac{1}{m}\sum_{i=0}^{m}x_i
+     *               x_i^T-x_i\mu_{z_i|x_i}^T // \Lambda^T - //
+     *               \Lambda\mu_{z_i|x_i
+     *               }x_i^T+\Lambda(\mu_{z_i|x_i}\mu_{z_i|x_i}^T + //
+     *               {\sum}_{z_i|x_i} )\Lambda^T
+     * @param @param meanSetOfZiGivenX
+     * @param @param updatedSigmaZiGivenXi
+     * @param @param lastLambda
+     * @throws
+     */
+    private void updatePsi(Matrix meanSetOfZiGivenX,
+                           Matrix updatedSigmaZiGivenXi, Matrix lastLambda) {
+        Matrix updatedPsi = new Matrix(this.psi.getRowDimension(),
+                this.psi.getColumnDimension());
         for (int i = 0; i < this.dataLength; i++) {
-            MatrixUtils.setMatrixColumn(meanXset, this.meanX, i);
+
+            Matrix pointX = MatrixUtils.getMatrixColumn(this.input, i);
+            Matrix updatedMeanZiGivenXi = MatrixUtils.getMatrixColumn(
+                    meanSetOfZiGivenX, i);
+
+            Matrix item1 = pointX.times(pointX.transpose());
+            Matrix item2 = pointX.times(this.meanX.transpose());
+            Matrix item3 = pointX.times(updatedMeanZiGivenXi.transpose())
+                    .times(lastLambda.transpose());
+            Matrix item4 = this.meanX.times(pointX.transpose());
+            Matrix item5 = this.meanX.times(this.meanX.transpose());
+            Matrix item6 = this.meanX.times(updatedMeanZiGivenXi.transpose())
+                    .times(lastLambda.transpose());
+            Matrix item7 = lastLambda.times(updatedMeanZiGivenXi).times(
+                    pointX.transpose());
+            Matrix item8 = lastLambda.times(updatedMeanZiGivenXi).times(
+                    this.meanX.transpose());
+
+            Matrix temp = updatedMeanZiGivenXi.times(
+                    updatedMeanZiGivenXi.transpose()).plus(
+                    updatedSigmaZiGivenXi);
+
+            Matrix item9 = lastLambda.times(temp).times(lastLambda.transpose());
+
+            Matrix psiTemp = item1.minus(item2).minus(item3).minus(item4)
+                    .plus(item5).plus(item6).minus(item7).plus(item8)
+                    .plus(item9);
+            updatedPsi = updatedPsi.plus(psiTemp);
         }
 
-        Matrix duceMean = this.input.minus(meanXset);
-        Matrix part1 = duceMean.times(meanSetOfZgivenX.transpose());
-        Matrix partTwoMatrix = new Matrix(this.varZZ.getRowDimension(),
-                this.varZZ.getColumnDimension());
+        updatedPsi = updatedPsi.times(1. / this.dataLength);
+        for (int j = 0; j < updatedPsi.getColumnDimension(); j++) {
+            this.psi.set(j, j, updatedPsi.get(j, j));
+        }
+    }
+
+    /**
+     * @Description: // (\sum_{i=0}^{m}
+     *               (x_i-\mu)\mu_{z|x_i}^T)(\mu_{z|x_i}\mu_{z|x_i}^T+ //
+     *               \sigma_{z|x_i}^{-1} )^{-1}
+     * @param @param meanSetOfZiGivenX
+     * @param @param updatedSigmaZiGivenXi
+     * @param @return
+     * @return Matrix updated lambda
+     * @throws
+     */
+    private Matrix updateLambda(Matrix meanSetOfZiGivenX,
+                                Matrix updatedSigmaZiGivenXi) {
+        Matrix lastLambda;
+        Matrix partOneMatrix = new Matrix(this.meanX.getRowDimension(),
+                this.meanZ.getColumnDimension());
 
         for (int i = 0; i < this.dataLength; i++) {
-            Matrix meanZgivenXi = MatrixUtils.getMatrixColumn(meanSetOfZgivenX,
-                    i);
-            Matrix part2i = meanZgivenXi.times(meanZgivenXi.transpose()).plus(
-                    updatedSigmaZConditionXi);
+
+            Matrix pointX = MatrixUtils.getMatrixColumn(this.input, i);
+            Matrix minus = pointX.minus(this.meanX);
+            Matrix meanZiGivenXi = MatrixUtils.getMatrixColumn(
+                    meanSetOfZiGivenX, i);
+
+            Matrix times = minus.times(meanZiGivenXi.transpose());
+
+            partOneMatrix = partOneMatrix.plus(times);
+        }
+
+        Matrix partTwoMatrix = new Matrix(this.varZZ.getRowDimension(),
+                this.varZZ.getColumnDimension());
+        for (int i = 0; i < this.dataLength; i++) {
+            Matrix meanZigivenXi = MatrixUtils.getMatrixColumn(
+                    meanSetOfZiGivenX, i);
+            Matrix part2i = meanZigivenXi.times(meanZigivenXi.transpose())
+                    .plus(updatedSigmaZiGivenXi);
 
             partTwoMatrix = partTwoMatrix.plus(part2i);
 
@@ -122,47 +216,12 @@ public class FactorAnalysis {
 
         partTwoMatrix = partTwoMatrix.inverse();
 
-        this.lambda = part1.times(partTwoMatrix);
-
-        // 2. update factor precision matrix.
-        // \Phi = \frac{1}{m}\sum_{i=0}^{m}x_i x_i^T-x_i\mu_{z_i|x_i}^T
-        // \Lambda^T -
-        // \Lambda\mu_{z_i|x_i}x_i^T+\Lambda(\mu_{z_i|x_i}\mu_{z_i|x_i}^T +
-        // {\sum}_{z_i|x_i} )\Lambda^T
-
-        Matrix updatedPsi = new Matrix(this.varXX.getRowDimension(),
-                this.varXX.getColumnDimension());
-        for (int i = 0; i < this.dataLength; i++) {
-
-            Matrix pointX = MatrixUtils.getMatrixColumn(this.input, i);
-            Matrix updatedMeanZGivenXi = updateMeanZConditionXi(pointX);
-            Matrix updatedSigmaZGivenXi = updateSigmaZConditionXi();
-            Matrix updatedLambda = this.lambda;
-
-            Matrix item1 = pointX.times(pointX.transpose());
-            Matrix item2 = pointX.times(updatedMeanZGivenXi.transpose()).times(
-                    updatedLambda.transpose());
-            Matrix item3 = updatedLambda.times(updatedMeanZGivenXi).times(
-                    pointX.transpose());
-
-            Matrix temp = updatedMeanZGivenXi.times(
-                    updatedMeanZGivenXi.transpose()).plus(updatedSigmaZGivenXi);
-
-            Matrix item4 = updatedLambda.times(temp).times(
-                    updatedLambda.transpose());
-
-            Matrix psiTemp = item1.minus(item2).minus(item3).plus(item4);
-            updatedPsi = updatedPsi.plus(psiTemp);
-        }
-
-        updatedPsi = updatedPsi.times(1. / this.dataLength);
-        for (int j = 0; j < updatedPsi.getColumnDimension(); j++) {
-            this.varXX.set(j, j, updatedPsi.get(j, j));
-            this.psi.set(j, j, updatedPsi.get(j, j));
-        }
+        lastLambda = partOneMatrix.times(partTwoMatrix);
+        this.lambda = lastLambda;
+        return lastLambda;
     }
 
-    private Matrix updateMeanZConditionXi(Matrix pointXi) {
+    private Matrix updateMeanZiGivenXi(Matrix pointXi) {
 
         Matrix lambdaTranspose = this.lambda.transpose();
         Matrix plus = this.lambda.times(lambdaTranspose).plus(this.psi);
@@ -174,7 +233,7 @@ public class FactorAnalysis {
 
     }
 
-    private Matrix updateSigmaZConditionXi() {
+    private Matrix updateSigmaZiGivenXi() {
 
         Matrix unitOfVarZZ = MatrixUtils.getUnitMatrix(this.varZZ);
         Matrix lambdaTranspose = this.lambda.transpose();
@@ -204,19 +263,6 @@ public class FactorAnalysis {
 
         this.meanX = sum.times(1. / this.dataLength);
         return this.meanX;
-    }
-
-    private void updatePsi() {
-
-    }
-
-    private void updateLambda() {
-
-        for (int i = 0; i < this.dataLength; i++) {
-
-            Matrix pointXi = MatrixUtils.getMatrixColumn(this.input, i);
-
-        }
     }
 
     public static class Builder {
