@@ -8,9 +8,11 @@ import Jama.Matrix;
 public class PcaAnalysis {
 
     private Matrix input;
-    private Matrix eigenMatrix;
-    private Matrix eigenValue;
+    private Matrix output;
+    private Matrix coVarMatrix;
+    // private Matrix eigenValue;
     private Matrix egivenVector;
+    private int topK = 2;
 
     public PcaAnalysis(Builder builder) {
         this.input = builder.input;
@@ -18,34 +20,48 @@ public class PcaAnalysis {
 
     public void process() {
 
-        this.eigenMatrix = this.input.times(this.input.transpose());
-        EigenvalueDecomposition eig = this.eigenMatrix.eig();
+        this.coVarMatrix = this.input.times(this.input.transpose());
 
-        eigenValue = eig.getD();
+        MatrixUtils.printMatrix(this.coVarMatrix);
+        EigenvalueDecomposition eig = this.coVarMatrix.eig();
+
+        // eigenValue = eig.getD();
         egivenVector = eig.getV();
 
-        double[] realEigenvalues = eig.getRealEigenvalues();
-        for (double d : realEigenvalues) {
-            System.out.println("eigen real value:" + d);
+        Matrix result = new Matrix(topK, this.input.getColumnDimension());
+        for (int i = 0; i < this.input.getColumnDimension(); i++) {
+
+            Matrix pointXi = MatrixUtils.getMatrixColumn(this.input, i);
+
+            double[][] kdim = new double[topK][1];
+            for (int j = 0; j < topK; j++) {
+
+                int columnDimension = egivenVector.getColumnDimension() - 1;
+                Matrix eigvenI = MatrixUtils.getMatrixColumn(egivenVector,
+                        columnDimension - j);
+
+                Matrix times = eigvenI.transpose().times(pointXi);
+                kdim[j][0] = times.get(0, 0);
+                MatrixUtils.printMatrix(times);
+            }
+            Matrix kDimMatrix = new Matrix(kdim);
+            MatrixUtils.setMatrixColumn(result, kDimMatrix, i);
         }
 
-        double[] imagEigenvalues = eig.getImagEigenvalues();
-        for (double d : imagEigenvalues) {
-            System.out.println("eigen image value:" + d);
-        }
+        this.output = result;
 
-        MatrixUtils.printMatrix(eigenValue);
-        MatrixUtils.printMatrix(egivenVector);
-
-        // Matrix vec1 = MatrixUtils.getMatrixColumn(egivenVector, 0);
-        // Matrix vec2 = MatrixUtils.getMatrixColumn(egivenVector, 1);
-        //
-        // MatrixUtils.printMatrix(vec2.times(vec1.transpose()));
-
+        // System.out.println("print topK dim:");
+        // MatrixUtils.printMatrix(result);
+        // System.out.println("print input:");
+        // MatrixUtils.printMatrix(this.input);
     }
 
     public Matrix getTopKProject(int topK) {
         return null;
+    }
+
+    public Matrix getOutput() {
+        return output;
     }
 
     public static class Builder {
