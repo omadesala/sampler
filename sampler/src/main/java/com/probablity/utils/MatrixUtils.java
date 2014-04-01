@@ -19,7 +19,8 @@ public class MatrixUtils {
     /**
      * @Title: getMatrix
      * @Description: get the input point as the column matrix such as N x 1
-     * @param input data point
+     * @param input
+     *            data point
      * @return Matrix Column is one ,and arrow is N, N is the size of input
      * @throws
      */
@@ -60,8 +61,10 @@ public class MatrixUtils {
     /**
      * @Title: getMatrixColumn
      * @Description: get the k-th column form input matrix
-     * @param input input matrix
-     * @param columnIndex column index
+     * @param input
+     *            input matrix
+     * @param columnIndex
+     *            column index
      * @return Matrix 返回类型
      * @throws
      */
@@ -71,8 +74,7 @@ public class MatrixUtils {
         int rowNumber = input.getRowDimension();
 
         Preconditions.checkNotNull(input);
-        Preconditions.checkArgument(columnIndex >= 0
-                && columnIndex < columnNumber);
+        Preconditions.checkArgument(columnIndex >= 0 && columnIndex < columnNumber);
 
         return input.getMatrix(0, rowNumber - 1, columnIndex, columnIndex);
 
@@ -93,8 +95,7 @@ public class MatrixUtils {
     public static Double getSumOfMatrixRow(Matrix row) {
 
         Preconditions.checkNotNull(row);
-        Preconditions.checkArgument(row.getColumnDimension() > 1
-                && row.getRowDimension() == 1);
+        Preconditions.checkArgument(row.getColumnDimension() > 1 && row.getRowDimension() == 1);
 
         Double sum = 0.;
         for (int i = 0; i < row.getColumnDimension(); i++) {
@@ -108,8 +109,7 @@ public class MatrixUtils {
     public static Double getSumOfMatrixColumn(Matrix col) {
 
         Preconditions.checkNotNull(col);
-        Preconditions.checkArgument(col.getRowDimension() > 1
-                && col.getColumnDimension() == 1);
+        Preconditions.checkArgument(col.getRowDimension() > 1 && col.getColumnDimension() == 1);
 
         Double sum = 0.;
         for (int i = 0; i < col.getRowDimension(); i++) {
@@ -123,8 +123,7 @@ public class MatrixUtils {
     public static Double getRowMatrixElementAt(Matrix rowMat, Integer index) {
 
         Preconditions.checkNotNull(rowMat);
-        Preconditions.checkState(rowMat.getRowDimension() == 1
-                && rowMat.getColumnDimension() > 1
+        Preconditions.checkState(rowMat.getRowDimension() == 1 && rowMat.getColumnDimension() > 1
                 && (index >= 0 && index < rowMat.getColumnDimension()));
 
         Double element = rowMat.get(0, index);
@@ -136,8 +135,7 @@ public class MatrixUtils {
     public static Double getColumnMatrixElementAt(Matrix colMat, Integer index) {
 
         Preconditions.checkNotNull(colMat);
-        Preconditions.checkState(colMat.getRowDimension() > 1
-                && colMat.getColumnDimension() == 1
+        Preconditions.checkState(colMat.getRowDimension() > 1 && colMat.getColumnDimension() == 1
                 && (index >= 0 && index < colMat.getRowDimension()));
 
         Double element = colMat.get(index, 0);
@@ -149,8 +147,7 @@ public class MatrixUtils {
     public static void printMatrix(Matrix input) {
 
         Preconditions.checkArgument(input != null, "input shoud not be null");
-        Preconditions.checkArgument(
-                input.getRowDimension() > 0 && input.getColumnDimension() > 0,
+        Preconditions.checkArgument(input.getRowDimension() > 0 && input.getColumnDimension() > 0,
                 "input shoud not be empty");
 
         int row = input.getRowDimension();
@@ -183,8 +180,7 @@ public class MatrixUtils {
 
     public static Double rowMultiColumn(Matrix row, Matrix col) {
 
-        Preconditions.checkArgument(MatrixUtils.isRow(row)
-                && MatrixUtils.isColumn(col));
+        Preconditions.checkArgument(MatrixUtils.isRow(row) && MatrixUtils.isColumn(col));
 
         return row.times(col).get(0, 0);
 
@@ -203,8 +199,7 @@ public class MatrixUtils {
         Matrix resultMatrix = new Matrix(dimension, length);
 
         for (int i = 0; i < length; i++) {
-            Matrix pointOfMatrix = MatrixUtils.getPointOfMatrix(listVector
-                    .get(i));
+            Matrix pointOfMatrix = MatrixUtils.getPointOfMatrix(listVector.get(i));
 
             resultMatrix.setMatrix(0, dimension - 1, i, i, pointOfMatrix);
         }
@@ -228,25 +223,20 @@ public class MatrixUtils {
 
     }
 
-    public static Matrix setMatrixColumn(Matrix input, Matrix column,
-                                         int insetIndex) {
+    public static Matrix setMatrixColumn(Matrix input, Matrix column, int insetIndex) {
 
         Preconditions.checkNotNull(input, "input matrix should not be null");
         Preconditions.checkNotNull(column, "column matrix should not be null");
 
-        Preconditions.checkArgument(MatrixUtils.isColumn(column),
-                "the column is not a column matrix ");
-        Preconditions.checkArgument(
-                input.getRowDimension() == column.getRowDimension(),
+        Preconditions.checkArgument(MatrixUtils.isColumn(column), "the column is not a column matrix ");
+        Preconditions.checkArgument(input.getRowDimension() == column.getRowDimension(),
                 "column row size not equal input matrix row");
-        Preconditions.checkArgument(
-                insetIndex >= 0 && insetIndex < input.getColumnDimension(),
+        Preconditions.checkArgument(insetIndex >= 0 && insetIndex < input.getColumnDimension(),
                 "the index is not correct");
         // Preconditions.checkArgument(insetIndex >= 0 && insetIndex <=
         // column.getRowDimension());
 
-        input.setMatrix(0, input.getRowDimension() - 1, insetIndex, insetIndex,
-                column);
+        input.setMatrix(0, input.getRowDimension() - 1, insetIndex, insetIndex, column);
 
         return input;
 
@@ -265,13 +255,13 @@ public class MatrixUtils {
 
         Preconditions.checkArgument(matrix != null, "input should not be null");
 
-        Preconditions
-                .checkArgument(
-                        matrix.getColumnDimension() > 0
-                                && matrix.getRowDimension() > 0,
-                        "input should not be empty matrix");
+        Preconditions.checkArgument(matrix.getColumnDimension() > 0 && matrix.getRowDimension() > 0,
+                "input should not be empty matrix");
 
-        Covariance covariance = new Covariance(matrix.transpose().getArray());
+        // Covariance covariance = new
+        // Covariance(matrix.transpose().getArray());
+        Covariance covariance = new Covariance(matrix.transpose().getArray(), false);
+
         RealMatrix covarianceMatrix = covariance.getCovarianceMatrix();
         return new Matrix(covarianceMatrix.getData());
 
@@ -282,8 +272,7 @@ public class MatrixUtils {
         if (inputMatrix == null) {
             return true;
         }
-        if (inputMatrix.getRowDimension() == 0
-                && inputMatrix.getColumnDimension() == 0) {
+        if (inputMatrix.getRowDimension() == 0 && inputMatrix.getColumnDimension() == 0) {
             return true;
         }
         return false;
@@ -291,8 +280,7 @@ public class MatrixUtils {
 
     public static boolean isSquareMatrix(Matrix input) {
 
-        Preconditions.checkArgument(!MatrixUtils.isEmptyOrNull(input),
-                "input should not be null or empty");
+        Preconditions.checkArgument(!MatrixUtils.isEmptyOrNull(input), "input should not be null or empty");
 
         if (input.getColumnDimension() == input.getRowDimension()) {
             return true;
@@ -316,11 +304,9 @@ public class MatrixUtils {
     public static Matrix getUnitMatrix(Matrix input) {
 
         Preconditions.checkArgument(input != null, "input should not be null");
-        Preconditions.checkArgument(MatrixUtils.isSquareMatrix(input),
-                "input should  be square matrix");
+        Preconditions.checkArgument(MatrixUtils.isSquareMatrix(input), "input should  be square matrix");
 
-        Matrix result = new Matrix(input.getRowDimension(),
-                input.getColumnDimension());
+        Matrix result = new Matrix(input.getRowDimension(), input.getColumnDimension());
 
         for (int i = 0; i < input.getColumnDimension(); i++) {
             result.set(i, i, 1.);
@@ -333,13 +319,47 @@ public class MatrixUtils {
     public static void printMatrixInfo(Matrix input, Object errorMessage) {
 
         Preconditions.checkArgument(input != null, "input  should not be null");
-        Preconditions.checkArgument(errorMessage != null,
-                "msg  should not be null");
+        Preconditions.checkArgument(errorMessage != null, "msg  should not be null");
 
         String valueOf = String.valueOf(errorMessage);
         System.out.println(valueOf);
         System.out.println("row: " + input.getRowDimension());
         System.out.println("col: " + input.getColumnDimension());
+
+    }
+
+    public static Matrix getMatrixMean(Matrix input) {
+
+        Preconditions.checkArgument(input != null, "the input should not be null");
+
+        Matrix result = new Matrix(input.getRowDimension(), 1);
+
+        for (int j = 0; j < input.getColumnDimension(); j++) {
+            Matrix inputItem = MatrixUtils.getMatrixColumn(input, j);
+            result = result.plus(inputItem);
+
+        }
+
+        result = result.times(1. / input.getColumnDimension());
+
+        return result;
+
+    }
+
+    public static Matrix setMatrixRow(Matrix input, Matrix row, int insertIndex) {
+
+        Preconditions.checkNotNull(input, "input matrix should not be null");
+        Preconditions.checkNotNull(row, "column matrix should not be null");
+
+        Preconditions.checkArgument(MatrixUtils.isRow(row), "the column is not a column matrix ");
+        Preconditions.checkArgument(input.getColumnDimension() == row.getColumnDimension(),
+                "column row size not equal input matrix row");
+        Preconditions.checkArgument(insertIndex >= 0 && insertIndex < input.getColumnDimension(),
+                "the index is not correct");
+
+        input.setMatrix(insertIndex, insertIndex, 0, input.getColumnDimension() - 1, row);
+
+        return input;
 
     }
 }

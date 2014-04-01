@@ -200,6 +200,77 @@ public class MatrixUtilsTest {
 
     }
 
+    @Test
+    public void testSetMatrixRow() {
+
+        double[][] a = new double[3][3];
+        a[0][0] = 1.1;
+        a[0][1] = 1.2;
+        a[0][2] = 1.3;
+
+        a[1][0] = 2.1;
+        a[1][1] = 2.2;
+        a[1][2] = 2.3;
+
+        a[2][0] = 3.1;
+        a[2][1] = 3.2;
+        a[2][2] = 3.3;
+
+        Matrix input = new Matrix(a);
+
+        Matrix row = new Matrix(1, 3);
+        row.set(0, 0, 2.6);
+        row.set(0, 1, 2.7);
+        row.set(0, 2, 2.8);
+
+        Matrix matrixRow = MatrixUtils.setMatrixRow(input, row, 0);
+        // MatrixUtils.printMatrix(matrixColumn);
+
+        Assert.assertEquals(2.6, matrixRow.get(0, 0), 1e-5);
+        Assert.assertEquals(2.7, matrixRow.get(0, 1), 1e-5);
+        Assert.assertEquals(2.8, matrixRow.get(0, 2), 1e-5);
+
+        matrixRow = MatrixUtils.setMatrixRow(input, row, 1);
+        // MatrixUtils.printMatrix(matrixColumn);
+
+        Assert.assertEquals(2.6, matrixRow.get(1, 0), 1e-5);
+        Assert.assertEquals(2.7, matrixRow.get(1, 1), 1e-5);
+        Assert.assertEquals(2.8, matrixRow.get(1, 2), 1e-5);
+
+        matrixRow = MatrixUtils.setMatrixRow(input, row, 2);
+
+        Assert.assertEquals(2.6, matrixRow.get(2, 0), 1e-5);
+        Assert.assertEquals(2.7, matrixRow.get(2, 1), 1e-5);
+        Assert.assertEquals(2.8, matrixRow.get(2, 2), 1e-5);
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetMatrixRowInvalidIndex() {
+
+        double[][] a = new double[3][3];
+        a[0][0] = 1.1;
+        a[0][1] = 1.2;
+        a[0][2] = 1.3;
+
+        a[1][0] = 2.1;
+        a[1][1] = 2.2;
+        a[1][2] = 2.3;
+
+        a[2][0] = 3.1;
+        a[2][1] = 3.2;
+        a[2][2] = 3.3;
+
+        Matrix input = new Matrix(a);
+
+        Matrix row = new Matrix(1, 3);
+        row.set(0, 0, 2.6);
+        row.set(0, 1, 2.7);
+        row.set(0, 2, 2.8);
+
+        Matrix matrixRow = MatrixUtils.setMatrixRow(input, row, 3);
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testGetMatrixColumnInvalidIndex() {
 
@@ -314,8 +385,7 @@ public class MatrixUtilsTest {
         a[1][0] = 1.2;
         a[2][0] = 1.3;
 
-        Double sumOfMatrixColumn = MatrixUtils.getSumOfMatrixColumn(new Matrix(
-                a));
+        Double sumOfMatrixColumn = MatrixUtils.getSumOfMatrixColumn(new Matrix(a));
 
         Assert.assertEquals(3.6, sumOfMatrixColumn, 0.00001);
 
@@ -648,6 +718,25 @@ public class MatrixUtilsTest {
         Matrix input = Matrix.random(2, 3);
         MatrixUtils.printMatrixInfo(input, null);
 
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testgetMatrixMeanNullInput() {
+        MatrixUtils.getMatrixMean(null);
+    }
+
+    @Test
+    public void testgetMatrixMean() {
+
+        double[][] a = new double[2][2];
+        a[0][0] = 1;
+        a[0][1] = 3;
+        a[1][0] = 2;
+        a[1][1] = 6;
+
+        Matrix matrixMean = MatrixUtils.getMatrixMean(new Matrix(a));
+        Assert.assertEquals(2, MatrixUtils.getColumnMatrixElementAt(matrixMean, 0), 1e-5);
+        Assert.assertEquals(4, MatrixUtils.getColumnMatrixElementAt(matrixMean, 1), 1e-5);
     }
 
     @Test
