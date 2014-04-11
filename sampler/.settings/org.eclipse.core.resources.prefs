@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
+encoding//src/main/java/com/application/audio/FileUtil.java=UTF-8
 encoding//src/main/java/com/sample/cluster/MixGanssianEM.java=UTF-8
 encoding//src/main/java/com/sample/sampler/implement/inverse/TwoDimGaussSampler.java=UTF-8
 encoding//src/main/java/com/sample/ui/AcceptRejectSampleView.java=UTF-8

@@ -28,7 +28,8 @@ public class FileUtil {
 
     public void spectrum() throws Exception {
 
-        String fileName = "d:\\music\\father.mp3";
+        // String fileName = "d:\\music\\father.mp3";
+        String fileName = "/home/daniel/ml/data/midi.mp3";
 
         File file = new File(fileName);
         if (!file.exists()) {
@@ -44,7 +45,7 @@ public class FileUtil {
             baseFormat = ais.getFormat();
 
             info = new DataLine.Info(SourceDataLine.class, baseFormat);
-            // 提取信息
+
             this.channels = baseFormat.getChannels();
             this.frameRate = baseFormat.getFrameRate();
             this.frameSize = baseFormat.getFrameSize();
@@ -60,17 +61,12 @@ public class FileUtil {
 
             while (intBytes != -1) {
                 byte[] buf = new byte[BUFFER_SIZE];
-                intBytes = ais.read(buf, 0, BUFFER_SIZE);// 从音频流读取指定的最大数量的数据字节，并将其放入给定的字节数组中。
+                intBytes = ais.read(buf, 0, BUFFER_SIZE);
                 for (int c = 0; c < intBytes; c++) {
                     // System.out.println(buf[c]);
                     int value = buf[c] > 0 ? buf[c] : (buf[c] + 256);
                     vector.add(value);
                 }
-                // 播放代码
-                // if (intBytes >= 0) {
-                // int outBytes = line.write(buf, 0, intBytes);//
-                // 通过此源数据行将音频数据写入混频器。
-                // }
             }
 
         } catch (UnsupportedAudioFileException e) {
@@ -84,6 +80,7 @@ public class FileUtil {
             e.printStackTrace();
         }
         float[] f = new float[vector.size()];
+        // File ff = new File("e:\\music\\pcm.txt");
         File ff = new File("e:\\music\\pcm.txt");
         FileWriter fw = null;
         try {
