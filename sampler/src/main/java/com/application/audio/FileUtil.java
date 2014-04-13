@@ -29,7 +29,8 @@ public class FileUtil {
     public void spectrum() throws Exception {
 
         // String fileName = "d:\\music\\father.mp3";
-        String fileName = "/home/daniel/ml/data/midi.mp3";
+        // String fileName = "/home/daniel/ml/data/midi.mp3";
+        String fileName = "d:\\music\\midi.mp3";
 
         File file = new File(fileName);
         if (!file.exists()) {
@@ -41,6 +42,7 @@ public class FileUtil {
         SourceDataLine line = null;
         List<Integer> vector = Lists.newArrayList();
         try {
+
             ais = AudioSystem.getAudioInputStream(file);
             baseFormat = ais.getFormat();
 

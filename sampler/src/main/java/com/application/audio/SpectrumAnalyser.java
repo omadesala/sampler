@@ -9,6 +9,7 @@ package com.application.audio;
 import java.awt.*;
 import java.applet.Applet;
 
+// git clone https://code.google.com/p/musicg/
 public class SpectrumAnalyser extends Applet {
 
     float[] signal;
