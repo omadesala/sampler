@@ -35,6 +35,10 @@ import com.application.audio.jmp123.gui.album.AlbumReceiver;
 import com.application.audio.jmp123.gui.album.AlbumThread;
 import com.application.audio.jmp123.output.Audio;
 import com.application.audio.jmp123.output.FFT;
+import com.musicg.graphic.GraphicRender;
+import com.musicg.wave.Wave;
+import com.musicg.wave.WaveHeader;
+import com.musicg.wave.extension.Spectrogram;
 
 // import jmp123.gui.album.AlbumImpl;
 
@@ -285,34 +289,33 @@ public class AudioGUI extends JComponent implements IAudio, AlbumReceiver {
         repaint();
     }
 
-    private void drawTimeFreqgram(float[] amp) {
+    private void drawTimeFreqgram(byte[] amp) {
 
-        Graphics graphics = timeSpectrumImage.getGraphics();
-        graphics.setColor(Color.BLACK);
-        graphics.fillRect(0, 0, 1, height);
-        for (int j = 0; j < amp.length; j++) {
-            // int a = (int) amp[j];
-            System.out.println("a=" + j + "=" + amp[j]);
-            double b = amp[j] / 1e9;
-            System.out.println("b=" + j + "=" + b);
-            // a = a / 1024;
+        System.out.println("data length:" + amp.length);
 
-            // a = a << 24;
-            // System.out.println("a1=" + a);
-            // a = a | 0x00ff0000;
-            // // a = a & 0xff000000;
-            // System.out.println("a2=" + a);
-            // WritableRaster alphaRaster = timeSpectrumImage.getAlphaRaster();
-            // alphaRaster.
+        WaveHeader header = new WaveHeader();
+        header.setSampleRate(44100);
+        header.setChannels(2);
+        Wave wave = new Wave(header, amp);
+        Spectrogram spectrogram = new Spectrogram(wave);
 
-            timeSpectrumImage.setRGB(0, j, j);
-        }
+        // Graphic render
+        GraphicRender render = new GraphicRender();
+        // render.setHorizontalMarker(1);
+        // render.setVerticalMarker(1);
+        render.renderSpectrogram(spectrogram, "E:\\googlesvn\\out\\test"
+                + ".jpg");
+
+        this.timeSpectrumImage = render.getBufferedImage();
 
         spectrumGraphics.drawImage(timeSpectrumImage, xpos, 0, null);
 
-        if (++xpos >= width) {
+        System.out.println("width: " + timeSpectrumImage.getWidth());
+
+        xpos += timeSpectrumImage.getWidth();
+
+        if (xpos >= width) {
             xpos = 0;
-            // spectrumGraphics.clearRect(0, 0, width, height);
         }
         repaint();
     }
@@ -404,12 +407,11 @@ public class AudioGUI extends JComponent implements IAudio, AlbumReceiver {
 
             // 4. 绘制
             // drawHistogram(realIO);
-            drawTimeFreqgram(realIO);
-            // System.out.println("frame length: " + amp.length);
-            // for (int i = 0; i < amp.length; i++) {
-            // System.out.print(" " + amp[i]);
-            // }
-            // System.out.println("");
+            // drawTimeFreqgram(realIO);
+
+            // create a wave object
+
+            drawTimeFreqgram(b);
 
         }
 
