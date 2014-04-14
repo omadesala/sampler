@@ -1,7 +1,5 @@
 package com.application.audio;
 
-import static org.junit.Assert.*;
-
 import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.junit.After;
@@ -11,14 +9,13 @@ import org.junit.Test;
 public class FFTTest {
 
     private FastFourierTransformer fft = null;
-    
-    
+
     @Before
     public void setUp() throws Exception {
-        
+
         DftNormalization normalization;
-        fft = new FastFourierTransformer(normalization);
-        
+        // fft = new FastFourierTransformer(normalization);
+
     }
 
     @After
@@ -28,8 +25,6 @@ public class FFTTest {
     @Test
     public void testForward() {
 
-        
-        
     }
 
 }
