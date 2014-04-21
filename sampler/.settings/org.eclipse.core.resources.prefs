@@ -33,6 +33,7 @@ encoding//src/main/java/com/application/audio/jmp123/output/Audio.java=UTF-8
 encoding//src/main/java/com/application/audio/jmp123/output/FFT.java=UTF-8
 encoding//src/main/java/com/application/audio/jmp123/test/Decode.java=UTF-8
 encoding//src/main/java/com/application/audio/jmp123/test/Synt.java=UTF-8
+encoding//src/main/java/com/cs/omp/OMP.java=UTF-8
 encoding//src/main/java/com/sample/cluster/MixGanssianEM.java=UTF-8
 encoding//src/main/java/com/sample/sampler/implement/inverse/TwoDimGaussSampler.java=UTF-8
 encoding//src/main/java/com/sample/ui/AcceptRejectSampleView.java=UTF-8

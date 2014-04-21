@@ -1,9 +1,14 @@
 package com.cs.omp;
 
+import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
+import org.apache.commons.math3.transform.TransformType;
+import org.jscience.mathematics.vector.ComplexMatrix;
 
 import Jama.Matrix;
+
+import com.probablity.utils.MatrixUtils;
 
 public class OMP {
 
@@ -18,6 +23,8 @@ public class OMP {
     private Matrix measurement; // the matrix for measurement.
 
     private Matrix measureResult;// result by random sample.
+    private Matrix residual;// result by random sample.
+    private Matrix augT;// result by random sample.
 
     // frequency
     private int f1 = 50;
@@ -35,6 +42,7 @@ public class OMP {
         this.length = 256;
         this.sparsity = 7;
         this.input = getSignal();
+
         this.loopCount = 2 * this.sparsity;
     }
 
@@ -49,9 +57,96 @@ public class OMP {
         this.measureResult = measurement.times(this.input.transpose());
 
         // step 2. o pursuit basis.
+        FastFourierTransformer fft = new FastFourierTransformer(
+                DftNormalization.UNITARY);
 
-        FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.UNITARY);
+        Matrix unitMatrix = MatrixUtils.getUnitMatrix(this.input);
 
+        double[][] unitArray = unitMatrix.getArray();
+
+        Complex[][] complexFFT = new Complex[][];
+        
+        Matrix<Complex> compleMatrix = ComplexMatrix.
+        
+        ComplexMatrix.valueOf(that)
+        
+        for (int i = 0; i < this.length; i++) {
+
+            Complex[] transform = fft.transform(unitArray[i],
+                    TransformType.FORWARD);
+
+            for (int j = 0; j < transform.length; j++) {
+                this.psi.set(i, j, getMod(transform[j]));
+            }
+
+            ComplexMatrix complex = ComplexMatrix.valueOf(transform);
+
+        }
+
+        Matrix restoryMatrix = new Matrix(this.countOfMeasure, this.length);
+        restoryMatrix = this.phi.times(this.psi.transpose());
+
+        Matrix hatOfy = new Matrix(1, this.length);
+        this.residual = measureResult.copy();
+
+        // start to iterate.
+
+        Matrix aug_y = new Matrix(this.countOfMeasure, 1);
+
+        Matrix measureY = new Matrix(this.measureResult.getRowDimension(), 1);
+        for (int i = 0; i < this.loopCount; i++) {
+
+            for (int j = 0; j < this.measurement.getColumnDimension(); j++) {
+                Matrix matrixColumn = MatrixUtils.getMatrixColumn(
+                        this.measurement, j);
+                double d = Math
+                        .abs(matrixColumn.times(this.residual).get(0, 0));
+                measureY.set(j, 0, d);
+
+            }
+
+            int pos = 0;
+            double maxValue = -1.;
+            for (int k = 0; k < measureY.getRowDimension(); k++) {
+                double d = measureY.get(k, 0);
+                if (d > maxValue) {
+                    maxValue = d;
+                    pos = k;
+                }
+            }
+
+            this.augT = new Matrix(this.measurement.getRowDimension(),
+                    this.measurement.getColumnDimension());
+
+            MatrixUtils.setMatrixColumn(this.augT,
+                    MatrixUtils.getMatrixColumn(this.measurement, pos), i);
+
+            // remove T column of row
+            Matrix zero = new Matrix(this.measurement.getRowDimension(), 1);
+            MatrixUtils.setMatrixColumn(this.measurement, zero, pos);
+
+            aug_y = this.augT.transpose().times(this.augT).inverse()
+                    .times(this.augT.transpose()).times(this.measurement);
+
+            this.residual = this.measurement.minus(this.augT.times(aug_y));
+
+            // aug_y=(Aug_t'*Aug_t)^(-1)*Aug_t'*s; % 最小二乘,使残差最小
+            // r_n=s-Aug_t*aug_y; % 残差
+
+        }
+
+        double[][] array = aug_y.getArray();
+        Complex[] transform = fft.transform(array[0], TransformType.INVERSE);
+
+    }
+
+    public double getMod(Complex complex) {
+
+        double real = complex.getReal();
+        double imaginary = complex.getImaginary();
+        double mod = Math.sqrt(real * real + imaginary * imaginary);
+
+        return mod;
     }
 
     // %% 3. 正交匹配追踪法重构信号(本质上是L_1范数最优化问题)
@@ -94,8 +189,10 @@ public class OMP {
 
         for (int i = 0; i < this.length; i++) {
 
-            double s = 0.3 * Math.cos(2 * Math.PI * f1 * i * ts) + 0.6 * Math.cos(2 * Math.PI * f2 * i * ts) + 0.1
-                    * Math.cos(2 * Math.PI * f3 * i * ts) + 0.9 * Math.cos(2 * Math.PI * f4 * i * ts);
+            double s = 0.3 * Math.cos(2 * Math.PI * f1 * i * ts) + 0.6
+                    * Math.cos(2 * Math.PI * f2 * i * ts) + 0.1
+                    * Math.cos(2 * Math.PI * f3 * i * ts) + 0.9
+                    * Math.cos(2 * Math.PI * f4 * i * ts);
             signal.set(0, i, s);
         }
 
