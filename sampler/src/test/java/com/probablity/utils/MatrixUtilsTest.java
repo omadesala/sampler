@@ -298,7 +298,8 @@ public class MatrixUtilsTest {
     @Test(expected = NullPointerException.class)
     public void testGetMatrixColumnNullMatrix() {
 
-        MatrixUtils.getMatrixColumn(null, 3);
+        Matrix input = null;
+        MatrixUtils.getMatrixColumn(input, 3);
     }
 
     @Test
@@ -348,7 +349,9 @@ public class MatrixUtilsTest {
 
     @Test(expected = NullPointerException.class)
     public void testGetMatrixRowNullMatrix() {
-        MatrixUtils.getMatrixRow(null, 0);
+
+        Matrix inputMatrix = null;
+        MatrixUtils.getMatrixRow(inputMatrix, 0);
     }
 
     @Test
@@ -388,7 +391,8 @@ public class MatrixUtilsTest {
         a[1][0] = 1.2;
         a[2][0] = 1.3;
 
-        Double sumOfMatrixColumn = MatrixUtils.getSumOfMatrixColumn(new Matrix(a));
+        Double sumOfMatrixColumn = MatrixUtils.getSumOfMatrixColumn(new Matrix(
+                a));
 
         Assert.assertEquals(3.6, sumOfMatrixColumn, 0.00001);
 
@@ -738,8 +742,10 @@ public class MatrixUtilsTest {
         a[1][1] = 6;
 
         Matrix matrixMean = MatrixUtils.getMatrixMean(new Matrix(a));
-        Assert.assertEquals(2, MatrixUtils.getColumnMatrixElementAt(matrixMean, 0), 1e-5);
-        Assert.assertEquals(4, MatrixUtils.getColumnMatrixElementAt(matrixMean, 1), 1e-5);
+        Assert.assertEquals(2,
+                MatrixUtils.getColumnMatrixElementAt(matrixMean, 0), 1e-5);
+        Assert.assertEquals(4,
+                MatrixUtils.getColumnMatrixElementAt(matrixMean, 1), 1e-5);
     }
 
     @Test
@@ -773,10 +779,16 @@ public class MatrixUtilsTest {
     }
 
     @Test
+    @Ignore
     public void testMatrixFFT() {
 
-        Matrix data = null;
-        ComplexMatrix comp = MatrixUtils.fft(data);
+        Matrix data = MatrixUtils.getUnitMatrix(Matrix.random(4, 4));
+        MatrixUtils.printMatrix(data);
+
+        FieldMatrix<Complex> fft = MatrixUtils.fft(data);
+
+        MatrixUtils.printMatrix(fft);
+
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -1,9 +1,12 @@
 package com.cs.omp;
 
 import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.linear.Array2DRowFieldMatrix;
+import org.apache.commons.math3.linear.FieldMatrix;
 import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.apache.commons.math3.transform.TransformType;
+import org.apache.commons.math3.util.FastMath;
 import org.jscience.mathematics.vector.ComplexMatrix;
 
 import Jama.Matrix;
@@ -17,14 +20,15 @@ public class OMP {
     private int countOfMeasure; // the count of measurement.(M>=K*log(N/K)
 
     private Matrix phi; // measure matrix
-    private Matrix psi; // transform matrix for raw signal. here is fft.
+    private FieldMatrix<Complex> psi; // transform matrix for raw signal. here
+                                      // is fft.
 
     private Matrix input; // the raw signal of input.
     private Matrix measurement; // the matrix for measurement.
 
     private Matrix measureResult;// result by random sample.
     private Matrix residual;// result by random sample.
-    private Matrix augT;// result by random sample.
+    private FieldMatrix<Complex> augT;// result by random sample.
 
     // frequency
     private int f1 = 50;
@@ -42,7 +46,7 @@ public class OMP {
         this.length = 256;
         this.sparsity = 7;
         this.input = getSignal();
-
+        this.countOfMeasure = 64;
         this.loopCount = 2 * this.sparsity;
     }
 
@@ -53,54 +57,48 @@ public class OMP {
     public void process() {
 
         // step 1. get the random sample
-        this.measurement = Matrix.random(sparsity, this.countOfMeasure);
-        this.measureResult = measurement.times(this.input.transpose());
+        this.phi = Matrix.random(countOfMeasure, this.length);
 
-        // step 2. o pursuit basis.
-        FastFourierTransformer fft = new FastFourierTransformer(
-                DftNormalization.UNITARY);
+        this.measureResult = this.phi.times(this.input.transpose());
 
-        Matrix unitMatrix = MatrixUtils.getUnitMatrix(this.input);
+        // step 2. orthogonality match pursuit .
 
-        double[][] unitArray = unitMatrix.getArray();
+        this.psi = MatrixUtils.fft(MatrixUtils.getUnitMatrix(Matrix.random(
+                this.length, this.length)));
 
-        Complex[][] complexFFT = new Complex[][];
-        
-        Matrix<Complex> compleMatrix = ComplexMatrix.
-        
-        ComplexMatrix.valueOf(that)
-        
-        for (int i = 0; i < this.length; i++) {
+        FieldMatrix<Complex> measure = MatrixUtils.toComplex(this.phi);
+        FieldMatrix<Complex> restoryMatrix = measure.multiply(this.psi
+                .transpose());
 
-            Complex[] transform = fft.transform(unitArray[i],
-                    TransformType.FORWARD);
+        MatrixUtils.printMatrix(restoryMatrix);
 
-            for (int j = 0; j < transform.length; j++) {
-                this.psi.set(i, j, getMod(transform[j]));
-            }
-
-            ComplexMatrix complex = ComplexMatrix.valueOf(transform);
-
-        }
-
-        Matrix restoryMatrix = new Matrix(this.countOfMeasure, this.length);
-        restoryMatrix = this.phi.times(this.psi.transpose());
+        System.out.println("row dim: " + restoryMatrix.getRowDimension());
+        System.out.println("col dim: " + restoryMatrix.getColumnDimension());
 
         Matrix hatOfy = new Matrix(1, this.length);
         this.residual = measureResult.copy();
 
         // start to iterate.
-
         Matrix aug_y = new Matrix(this.countOfMeasure, 1);
 
         Matrix measureY = new Matrix(this.measureResult.getRowDimension(), 1);
-        for (int i = 0; i < this.loopCount; i++) {
+        this.augT = new Array2DRowFieldMatrix<Complex>();
 
-            for (int j = 0; j < this.measurement.getColumnDimension(); j++) {
-                Matrix matrixColumn = MatrixUtils.getMatrixColumn(
-                        this.measurement, j);
-                double d = Math
-                        .abs(matrixColumn.times(this.residual).get(0, 0));
+        new Matrix(this.measurement.getRowDimension(),
+                this.measurement.getColumnDimension());
+
+        for (int i = 0; i < this.loopCount; i++) {
+            for (int j = 0; j < this.length; j++) {
+                Complex[] matrixColumn = MatrixUtils.getMatrixColumn(
+                        restoryMatrix, j);
+                FieldMatrix<Complex> column = new Array2DRowFieldMatrix<Complex>(
+                        matrixColumn);
+
+                FieldMatrix<Complex> innerMultiply = column.transpose()
+                        .multiply(MatrixUtils.toComplex(residual));
+                Complex entry = innerMultiply.getEntry(0, 0);
+                double d = entry.abs();
+
                 measureY.set(j, 0, d);
 
             }
@@ -114,9 +112,6 @@ public class OMP {
                     pos = k;
                 }
             }
-
-            this.augT = new Matrix(this.measurement.getRowDimension(),
-                    this.measurement.getColumnDimension());
 
             MatrixUtils.setMatrixColumn(this.augT,
                     MatrixUtils.getMatrixColumn(this.measurement, pos), i);
@@ -135,8 +130,8 @@ public class OMP {
 
         }
 
-        double[][] array = aug_y.getArray();
-        Complex[] transform = fft.transform(array[0], TransformType.INVERSE);
+        // double[][] array = aug_y.getArray();
+        // Complex[] transform = fft.transform(array[0], TransformType.INVERSE);
 
     }
 
