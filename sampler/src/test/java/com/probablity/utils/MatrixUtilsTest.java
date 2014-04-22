@@ -5,15 +5,18 @@ import static org.junit.Assert.fail;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.linear.FieldMatrix;
+import org.jscience.mathematics.vector.ComplexMatrix;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
-
 import Jama.Matrix;
+
+import com.google.common.collect.Lists;
 
 public class MatrixUtilsTest {
 
@@ -737,6 +740,59 @@ public class MatrixUtilsTest {
         Matrix matrixMean = MatrixUtils.getMatrixMean(new Matrix(a));
         Assert.assertEquals(2, MatrixUtils.getColumnMatrixElementAt(matrixMean, 0), 1e-5);
         Assert.assertEquals(4, MatrixUtils.getColumnMatrixElementAt(matrixMean, 1), 1e-5);
+    }
+
+    @Test
+    public void testComplex() {
+
+        Complex c = Complex.valueOf(1., 1.);
+        double magnitude = c.abs();
+        System.out.println("abs: " + magnitude);
+
+        Assert.assertEquals(Math.sqrt(2.), magnitude, 1e-5);
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRealMatrixToComplexMatrix() {
+
+        // Matrix real = new Matrix(2, 2);
+        Matrix real = null;
+
+        FieldMatrix<Complex> complex = MatrixUtils.toComplex(real);
+        MatrixUtils.printMatrix(complex);
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPrintComplexMatrix() {
+
+        FieldMatrix<Complex> complexMatrix = null;
+        MatrixUtils.printMatrix(complexMatrix);
+
+    }
+
+    @Test
+    public void testMatrixFFT() {
+
+        Matrix data = null;
+        ComplexMatrix comp = MatrixUtils.fft(data);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testgetMatrixColumnAsArray() {
+
+        Matrix data = null;
+        int index = 0;
+        MatrixUtils.getColumnAsArray(data, index);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testgetMatrixRowAsArray() {
+
+        Matrix data = null;
+        int index = 0;
+        MatrixUtils.getRowAsArray(data, index);
     }
 
     @Test

@@ -3,8 +3,15 @@ package com.probablity.utils;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.linear.Array2DRowFieldMatrix;
+import org.apache.commons.math3.linear.FieldMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.stat.correlation.Covariance;
+import org.apache.commons.math3.transform.DftNormalization;
+import org.apache.commons.math3.transform.FastFourierTransformer;
+import org.apache.commons.math3.transform.TransformType;
+import org.jscience.mathematics.vector.ComplexMatrix;
 
 import Jama.Matrix;
 
@@ -362,4 +369,109 @@ public class MatrixUtils {
         return input;
 
     }
+
+    public static FieldMatrix<Complex> toComplex(Matrix real) {
+        
+        Preconditions.checkArgument(real!=null,"the input should not be null");
+        
+        
+        
+        
+        int rowDimension = real.getRowDimension();
+        int columnDimension = real.getColumnDimension();
+
+        Complex[][] comp = new Complex[rowDimension][columnDimension]; 
+        
+        for (int i = 0; i < rowDimension; i++) {
+            for (int j = 0; j < columnDimension; j++) {
+                comp[i][j] = Complex.valueOf(real.get(i, j), 0);
+            }
+        }
+        
+        
+        return new Array2DRowFieldMatrix<Complex>(comp); 
+        
+    }
+
+    public static void printMatrix(FieldMatrix<Complex> complexMatrix) {
+
+        Preconditions.checkArgument(complexMatrix!=null,"input should not be null");
+        
+        
+        int numberOfColumns = complexMatrix.getColumnDimension();
+        int numberOfRows = complexMatrix.getRowDimension();
+        
+        for (int i = 0; i < numberOfRows; i++) {
+            for (int j = 0; j < numberOfColumns; j++) {
+                Complex complex =           complexMatrix.getEntry(i, j);
+                System.out.print(complex.getReal()+" + "+complex.getImaginary()+"i"+"    ");
+            }
+            System.out.println("");
+        }
+        
+    }
+
+    public static ComplexMatrix fft(Matrix data) {
+
+        Preconditions.checkArgument(data!=null,"input should not be null");
+
+        int rowDimension = data.getRowDimension();
+        int columnDimension = data.getColumnDimension();
+        
+        FastFourierTransformer fft = new FastFourierTransformer(
+                DftNormalization.UNITARY);
+        
+
+        Complex[][] fftResult = new Complex[rowDimension][columnDimension]; 
+        
+        
+        for (int j = 0; j < rowDimension; j++) {
+        
+        org.apache.commons.math3.complex.Complex[] transform = fft.transform(MatrixUtils.getRowAsArray(data, j),
+                TransformType.FORWARD);
+
+        
+        
+        }
+        
+        return null;
+        	
+    }
+
+    public static double[] getColumnAsArray(Matrix data, int index) {
+
+        Preconditions.checkArgument(data!=null,"input should not be null");
+        int columnDimension = data.getColumnDimension();
+        int rowDimension = data.getRowDimension();
+        
+        Preconditions.checkArgument( index>=0 && index <columnDimension,"index invalid");
+
+        double[] col = new double[rowDimension];
+        for (int i = 0; i < rowDimension; i++) {
+            col[i] = data.get(i, index);
+        }
+
+        return col;
+    }
+
+    public static double[] getRowAsArray(Matrix data, int index) {
+        
+        Preconditions.checkArgument(data!=null,"input should not be null");
+        int columnDimension = data.getColumnDimension();
+        int rowDimension = data.getRowDimension();
+        
+        Preconditions.checkArgument( index>=0 && index <rowDimension,"index invalid");
+        
+
+        double[] row = new double[columnDimension];
+        for (int i = 0; i < columnDimension; i++) {
+            row[i] = data.get(index,i);
+        }
+
+        return row;
+    }
+    
+    
+    
+    
 }
