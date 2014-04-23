@@ -2,6 +2,7 @@ package com.cs.omp;
 
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.linear.Array2DRowFieldMatrix;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.FieldMatrix;
 import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
@@ -16,8 +17,8 @@ import com.probablity.utils.MatrixUtils;
 public class OMP {
 
     private int sparsity; // k-sparsity
-    private int length; // the length of signal
-    private int countOfMeasure; // the count of measurement.(M>=K*log(N/K)
+    private int dataLength; // the length of signal
+    private int measureTimes; // the count of measurement.(M>=K*log(N/K)
 
     private Matrix phi; // measure matrix
     private FieldMatrix<Complex> psi; // transform matrix for raw signal. here
@@ -40,15 +41,15 @@ public class OMP {
     private int fs = 800;// rate of sample
     private float ts = 1 / ((float) fs);// rate of sample
 
-    private int loopCount;// iterator times
+    private int trainTimes;// iterator times
 
     public OMP() {
 
-        this.length = 256;
+        this.dataLength = 256;
         this.sparsity = 7;
         this.input = getSignal();
-        this.countOfMeasure = 64;
-        this.loopCount = 2 * this.sparsity;
+        this.measureTimes = 64;
+        this.trainTimes = 2 * this.sparsity;
     }
 
     public OMP(Matrix data) {
@@ -58,40 +59,42 @@ public class OMP {
     public void process() {
 
         // step 1. get the random sample
-        this.phi = Matrix.random(countOfMeasure, this.length);
+        this.phi = Matrix.random(measureTimes, this.dataLength);
 
         this.measureValue = this.phi.times(this.input.transpose());
 
         // step 2. orthogonality match pursuit .
 
-        this.psi = MatrixUtils.fft(MatrixUtils.getUnitMatrix(Matrix.random(this.length, this.length)));
+        this.psi = MatrixUtils.fft(MatrixUtils.getUnitMatrix(Matrix.random(
+                this.dataLength, this.dataLength)));
 
         FieldMatrix<Complex> measure = MatrixUtils.toComplex(this.phi);
-        FieldMatrix<Complex> restoryMatrix = measure.multiply(this.psi.transpose());
+        FieldMatrix<Complex> restoryMatrix = measure.multiply(this.psi
+                .transpose());
 
         // MatrixUtils.printMatrix(restoryMatrix);
         // System.out.println("row dim: " + restoryMatrix.getRowDimension());
         // System.out.println("col dim: " + restoryMatrix.getColumnDimension());
 
-        Matrix hatOfy = new Matrix(1, this.length);
+        Matrix hatOfy = new Matrix(1, this.dataLength);
         this.residual = measureValue.copy();
 
         // start to iterate.
-        Matrix aug_y = new Matrix(this.countOfMeasure, 1);
-        Matrix innerProducts = new Matrix(this.restoryMatrix.getRowDimension(), 1);
-
+        Matrix aug_y = new Matrix(this.measureTimes, 1);
+        Matrix innerProducts = new Matrix(this.measureValue.getRowDimension(),
+                1);
         this.augT = this.restoryMatrix.copy();
 
-        // new Matrix(this.measurement.getRowDimension(),
-        // this.measurement.getColumnDimension());
+        for (int i = 0; i < this.trainTimes; i++) {
+            for (int j = 0; j < this.dataLength; j++) {
 
-        for (int i = 0; i < this.loopCount; i++) {
-            for (int j = 0; j < this.length; j++) {
-                Complex[] matrixColumn = MatrixUtils.getMatrixColumn(restoryMatrix, j);
-                FieldMatrix<Complex> columnOfRestore = new Array2DRowFieldMatrix<Complex>(matrixColumn);
+                FieldMatrix<Complex> matrixColumn = MatrixUtils
+                        .getMatrixColumn(restoryMatrix, j);
 
-                FieldMatrix<Complex> innerMultiply = columnOfRestore.transpose().multiply(
-                        MatrixUtils.toComplex(residual));
+                FieldMatrix<Complex> innerMultiply = matrixColumn.transpose()
+                        .multiply(MatrixUtils.toComplex(residual));
+
+                MatrixUtils.printMatrixInfo(innerMultiply, "inner product");
 
                 innerProducts.set(j, 0, innerMultiply.getEntry(0, 0).abs());
 
@@ -107,14 +110,18 @@ public class OMP {
                 }
             }
 
-            MatrixUtils.setMatrixColumn(this.augT, MatrixUtils.getMatrixColumn(this.restoryMatrix, pos), i);
+            MatrixUtils.setMatrixColumn(this.augT,
+                    MatrixUtils.getMatrixColumn(this.restoryMatrix, pos), i);
 
-            // remove T column of row
-            Matrix zero = new Matrix(this.measurement.getRowDimension(), 1);
-            MatrixUtils.setMatrixColumn(this.measurement, zero, pos);
+            FieldMatrix<Complex> zeroColumn = MatrixUtils
+                    .newColumn(this.measureValue.getRowDimension());
 
-            aug_y = this.augT.transpose().times(this.augT).inverse().times(this.augT.transpose())
-                    .times(this.measurement);
+            MatrixUtils.setMatrixColumn(restoryMatrix, zeroColumn, pos);
+
+            augT.
+            
+            aug_y = (this.augT.transpose().multiply(this.augT).inverse()
+                    .times(this.augT.transpose()).times(this.measurement);
 
             this.residual = this.measurement.minus(this.augT.times(aug_y));
 
@@ -173,12 +180,14 @@ public class OMP {
 
     private Matrix getSignal() {
 
-        Matrix signal = new Matrix(1, this.length);
+        Matrix signal = new Matrix(1, this.dataLength);
 
-        for (int i = 0; i < this.length; i++) {
+        for (int i = 0; i < this.dataLength; i++) {
 
-            double s = 0.3 * Math.cos(2 * Math.PI * f1 * i * ts) + 0.6 * Math.cos(2 * Math.PI * f2 * i * ts) + 0.1
-                    * Math.cos(2 * Math.PI * f3 * i * ts) + 0.9 * Math.cos(2 * Math.PI * f4 * i * ts);
+            double s = 0.3 * Math.cos(2 * Math.PI * f1 * i * ts) + 0.6
+                    * Math.cos(2 * Math.PI * f2 * i * ts) + 0.1
+                    * Math.cos(2 * Math.PI * f3 * i * ts) + 0.9
+                    * Math.cos(2 * Math.PI * f4 * i * ts);
             signal.set(0, i, s);
         }
 
