@@ -26,9 +26,10 @@ public class OMP {
     private Matrix input; // the raw signal of input.
     private Matrix measurement; // the matrix for measurement.
 
-    private Matrix measureResult;// result by random sample.
-    private Matrix residual;// result by random sample.
+    private Matrix measureValue;// the value of measure.
+    private FieldMatrix<Complex> restoryMatrix;// result by random sample.
     private FieldMatrix<Complex> augT;// result by random sample.
+    private Matrix residual;// result by random sample.
 
     // frequency
     private int f1 = 50;
@@ -59,69 +60,61 @@ public class OMP {
         // step 1. get the random sample
         this.phi = Matrix.random(countOfMeasure, this.length);
 
-        this.measureResult = this.phi.times(this.input.transpose());
+        this.measureValue = this.phi.times(this.input.transpose());
 
         // step 2. orthogonality match pursuit .
 
-        this.psi = MatrixUtils.fft(MatrixUtils.getUnitMatrix(Matrix.random(
-                this.length, this.length)));
+        this.psi = MatrixUtils.fft(MatrixUtils.getUnitMatrix(Matrix.random(this.length, this.length)));
 
         FieldMatrix<Complex> measure = MatrixUtils.toComplex(this.phi);
-        FieldMatrix<Complex> restoryMatrix = measure.multiply(this.psi
-                .transpose());
+        FieldMatrix<Complex> restoryMatrix = measure.multiply(this.psi.transpose());
 
-        MatrixUtils.printMatrix(restoryMatrix);
-
-        System.out.println("row dim: " + restoryMatrix.getRowDimension());
-        System.out.println("col dim: " + restoryMatrix.getColumnDimension());
+        // MatrixUtils.printMatrix(restoryMatrix);
+        // System.out.println("row dim: " + restoryMatrix.getRowDimension());
+        // System.out.println("col dim: " + restoryMatrix.getColumnDimension());
 
         Matrix hatOfy = new Matrix(1, this.length);
-        this.residual = measureResult.copy();
+        this.residual = measureValue.copy();
 
         // start to iterate.
         Matrix aug_y = new Matrix(this.countOfMeasure, 1);
+        Matrix innerProducts = new Matrix(this.restoryMatrix.getRowDimension(), 1);
 
-        Matrix measureY = new Matrix(this.measureResult.getRowDimension(), 1);
-        this.augT = new Array2DRowFieldMatrix<Complex>();
+        this.augT = this.restoryMatrix.copy();
 
-        new Matrix(this.measurement.getRowDimension(),
-                this.measurement.getColumnDimension());
+        // new Matrix(this.measurement.getRowDimension(),
+        // this.measurement.getColumnDimension());
 
         for (int i = 0; i < this.loopCount; i++) {
             for (int j = 0; j < this.length; j++) {
-                Complex[] matrixColumn = MatrixUtils.getMatrixColumn(
-                        restoryMatrix, j);
-                FieldMatrix<Complex> column = new Array2DRowFieldMatrix<Complex>(
-                        matrixColumn);
+                Complex[] matrixColumn = MatrixUtils.getMatrixColumn(restoryMatrix, j);
+                FieldMatrix<Complex> columnOfRestore = new Array2DRowFieldMatrix<Complex>(matrixColumn);
 
-                FieldMatrix<Complex> innerMultiply = column.transpose()
-                        .multiply(MatrixUtils.toComplex(residual));
-                Complex entry = innerMultiply.getEntry(0, 0);
-                double d = entry.abs();
+                FieldMatrix<Complex> innerMultiply = columnOfRestore.transpose().multiply(
+                        MatrixUtils.toComplex(residual));
 
-                measureY.set(j, 0, d);
+                innerProducts.set(j, 0, innerMultiply.getEntry(0, 0).abs());
 
             }
 
             int pos = 0;
             double maxValue = -1.;
-            for (int k = 0; k < measureY.getRowDimension(); k++) {
-                double d = measureY.get(k, 0);
+            for (int k = 0; k < innerProducts.getRowDimension(); k++) {
+                double d = innerProducts.get(k, 0);
                 if (d > maxValue) {
                     maxValue = d;
                     pos = k;
                 }
             }
 
-            MatrixUtils.setMatrixColumn(this.augT,
-                    MatrixUtils.getMatrixColumn(this.measurement, pos), i);
+            MatrixUtils.setMatrixColumn(this.augT, MatrixUtils.getMatrixColumn(this.restoryMatrix, pos), i);
 
             // remove T column of row
             Matrix zero = new Matrix(this.measurement.getRowDimension(), 1);
             MatrixUtils.setMatrixColumn(this.measurement, zero, pos);
 
-            aug_y = this.augT.transpose().times(this.augT).inverse()
-                    .times(this.augT.transpose()).times(this.measurement);
+            aug_y = this.augT.transpose().times(this.augT).inverse().times(this.augT.transpose())
+                    .times(this.measurement);
 
             this.residual = this.measurement.minus(this.augT.times(aug_y));
 
@@ -184,10 +177,8 @@ public class OMP {
 
         for (int i = 0; i < this.length; i++) {
 
-            double s = 0.3 * Math.cos(2 * Math.PI * f1 * i * ts) + 0.6
-                    * Math.cos(2 * Math.PI * f2 * i * ts) + 0.1
-                    * Math.cos(2 * Math.PI * f3 * i * ts) + 0.9
-                    * Math.cos(2 * Math.PI * f4 * i * ts);
+            double s = 0.3 * Math.cos(2 * Math.PI * f1 * i * ts) + 0.6 * Math.cos(2 * Math.PI * f2 * i * ts) + 0.1
+                    * Math.cos(2 * Math.PI * f3 * i * ts) + 0.9 * Math.cos(2 * Math.PI * f4 * i * ts);
             signal.set(0, i, s);
         }
 
