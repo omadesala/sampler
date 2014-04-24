@@ -5,8 +5,7 @@ import static org.junit.Assert.fail;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.math3.complex.Complex;
-import org.apache.commons.math3.linear.FieldMatrix;
+import org.jscience.mathematics.number.Complex;
 import org.jscience.mathematics.vector.ComplexMatrix;
 import org.junit.After;
 import org.junit.Assert;
@@ -157,6 +156,30 @@ public class MatrixUtilsTest {
     }
 
     @Test
+    public void testGetComplexMatrixColumn() {
+
+        Complex[][] elements = new Complex[3][3];
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                elements[i][j] = Complex.valueOf(i, j);
+            }
+        }
+
+        ComplexMatrix complexMatrix = ComplexMatrix.valueOf(elements);
+
+        ComplexMatrix matrixColumn = MatrixUtils.getMatrixColumn(complexMatrix,
+                0);
+
+        for (int i = 0; i < matrixColumn.getNumberOfRows(); i++) {
+
+            Assert.assertTrue(elements[i][0].equals(matrixColumn.get(i, 0),
+                    1e-5));
+        }
+
+    }
+
+    @Test
     public void testSetMatrixColumn() {
 
         double[][] a = new double[3][3];
@@ -201,6 +224,40 @@ public class MatrixUtilsTest {
         Assert.assertEquals(2.7, matrixColumn.get(1, 2), 0.00001);
         Assert.assertEquals(2.8, matrixColumn.get(2, 2), 0.00001);
 
+    }
+
+    @Test
+    public void testSetComplexMatrixColumn() {
+
+        Complex[][] elements = new Complex[3][3];
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                elements[i][j] = Complex.valueOf(i, j);
+            }
+        }
+        Complex[][] column = new Complex[3][1];
+        for (int i = 0; i < 3; i++) {
+            column[i][0] = Complex.valueOf(i, 3);
+        }
+
+        ComplexMatrix complexMatrix = ComplexMatrix.valueOf(elements);
+        ComplexMatrix columnMatrix = ComplexMatrix.valueOf(column);
+
+        MatrixUtils.printMatrix(complexMatrix);
+        System.out.println("---------------------");
+        MatrixUtils.printMatrix(columnMatrix);
+
+        System.out.println("---------------------");
+        ComplexMatrix matrixColumn = MatrixUtils.setMatrixColumn(complexMatrix,
+                columnMatrix, 0);
+        MatrixUtils.printMatrix(matrixColumn);
+
+        // for (int i = 0; i < matrixColumn.getNumberOfRows(); i++) {
+        //
+        // Assert.assertTrue(elements[i][0].equals(matrixColumn.get(i, 0),
+        // 1e-5));
+        // }
     }
 
     @Test
@@ -391,7 +448,8 @@ public class MatrixUtilsTest {
         a[1][0] = 1.2;
         a[2][0] = 1.3;
 
-        Double sumOfMatrixColumn = MatrixUtils.getSumOfMatrixColumn(new Matrix(a));
+        Double sumOfMatrixColumn = MatrixUtils.getSumOfMatrixColumn(new Matrix(
+                a));
 
         Assert.assertEquals(3.6, sumOfMatrixColumn, 0.00001);
 
@@ -741,15 +799,17 @@ public class MatrixUtilsTest {
         a[1][1] = 6;
 
         Matrix matrixMean = MatrixUtils.getMatrixMean(new Matrix(a));
-        Assert.assertEquals(2, MatrixUtils.getColumnMatrixElementAt(matrixMean, 0), 1e-5);
-        Assert.assertEquals(4, MatrixUtils.getColumnMatrixElementAt(matrixMean, 1), 1e-5);
+        Assert.assertEquals(2,
+                MatrixUtils.getColumnMatrixElementAt(matrixMean, 0), 1e-5);
+        Assert.assertEquals(4,
+                MatrixUtils.getColumnMatrixElementAt(matrixMean, 1), 1e-5);
     }
 
     @Test
     public void testComplex() {
 
         Complex c = Complex.valueOf(1., 1.);
-        double magnitude = c.abs();
+        double magnitude = c.magnitude();
         System.out.println("abs: " + magnitude);
 
         Assert.assertEquals(Math.sqrt(2.), magnitude, 1e-5);
@@ -802,6 +862,20 @@ public class MatrixUtilsTest {
         Matrix data = null;
         int index = 0;
         MatrixUtils.getRowAsArray(data, index);
+    }
+
+    @Test
+    public void testnewColumn() {
+        ComplexMatrix newColumn = MatrixUtils.newColumn(2);
+        Complex complex1 = newColumn.get(0, 0);
+        Complex complex2 = newColumn.get(0, 0);
+
+        Assert.assertEquals(0., complex1.getReal(), 1e-5);
+        Assert.assertEquals(0., complex1.getImaginary(), 1e-5);
+
+        Assert.assertEquals(0., complex2.getReal(), 1e-5);
+        Assert.assertEquals(0., complex2.getImaginary(), 1e-5);
+
     }
 
     @Test
