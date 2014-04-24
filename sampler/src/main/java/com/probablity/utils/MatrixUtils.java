@@ -3,7 +3,6 @@ package com.probablity.utils;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.linear.Array2DRowFieldMatrix;
 import org.apache.commons.math3.linear.FieldMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
@@ -11,6 +10,9 @@ import org.apache.commons.math3.stat.correlation.Covariance;
 import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.apache.commons.math3.transform.TransformType;
+import org.jscience.mathematics.number.Complex;
+import org.jscience.mathematics.vector.ComplexMatrix;
+import org.jscience.mathematics.vector.ComplexVector;
 
 import Jama.Matrix;
 
@@ -25,7 +27,8 @@ public class MatrixUtils {
     /**
      * @Title: getMatrix
      * @Description: get the input point as the column matrix such as N x 1
-     * @param input data point
+     * @param input
+     *            data point
      * @return Matrix Column is one ,and arrow is N, N is the size of input
      * @throws
      */
@@ -66,8 +69,10 @@ public class MatrixUtils {
     /**
      * @Title: getMatrixColumn
      * @Description: get the k-th column form input matrix
-     * @param input input matrix
-     * @param columnIndex column index
+     * @param input
+     *            input matrix
+     * @param columnIndex
+     *            column index
      * @return Matrix 返回类型
      * @throws
      */
@@ -77,8 +82,7 @@ public class MatrixUtils {
         int rowNumber = input.getRowDimension();
 
         Preconditions.checkNotNull(input);
-        Preconditions.checkArgument(columnIndex >= 0
-                && columnIndex < columnNumber);
+        Preconditions.checkArgument(columnIndex >= 0 && columnIndex < columnNumber);
 
         return input.getMatrix(0, rowNumber - 1, columnIndex, columnIndex);
 
@@ -99,8 +103,7 @@ public class MatrixUtils {
     public static Double getSumOfMatrixRow(Matrix row) {
 
         Preconditions.checkNotNull(row);
-        Preconditions.checkArgument(row.getColumnDimension() > 1
-                && row.getRowDimension() == 1);
+        Preconditions.checkArgument(row.getColumnDimension() > 1 && row.getRowDimension() == 1);
 
         Double sum = 0.;
         for (int i = 0; i < row.getColumnDimension(); i++) {
@@ -114,8 +117,7 @@ public class MatrixUtils {
     public static Double getSumOfMatrixColumn(Matrix col) {
 
         Preconditions.checkNotNull(col);
-        Preconditions.checkArgument(col.getRowDimension() > 1
-                && col.getColumnDimension() == 1);
+        Preconditions.checkArgument(col.getRowDimension() > 1 && col.getColumnDimension() == 1);
 
         Double sum = 0.;
         for (int i = 0; i < col.getRowDimension(); i++) {
@@ -129,8 +131,7 @@ public class MatrixUtils {
     public static Double getRowMatrixElementAt(Matrix rowMat, Integer index) {
 
         Preconditions.checkNotNull(rowMat);
-        Preconditions.checkState(rowMat.getRowDimension() == 1
-                && rowMat.getColumnDimension() > 1
+        Preconditions.checkState(rowMat.getRowDimension() == 1 && rowMat.getColumnDimension() > 1
                 && (index >= 0 && index < rowMat.getColumnDimension()));
 
         Double element = rowMat.get(0, index);
@@ -142,8 +143,7 @@ public class MatrixUtils {
     public static Double getColumnMatrixElementAt(Matrix colMat, Integer index) {
 
         Preconditions.checkNotNull(colMat);
-        Preconditions.checkState(colMat.getRowDimension() > 1
-                && colMat.getColumnDimension() == 1
+        Preconditions.checkState(colMat.getRowDimension() > 1 && colMat.getColumnDimension() == 1
                 && (index >= 0 && index < colMat.getRowDimension()));
 
         Double element = colMat.get(index, 0);
@@ -155,8 +155,7 @@ public class MatrixUtils {
     public static void printMatrix(Matrix input) {
 
         Preconditions.checkArgument(input != null, "input shoud not be null");
-        Preconditions.checkArgument(
-                input.getRowDimension() > 0 && input.getColumnDimension() > 0,
+        Preconditions.checkArgument(input.getRowDimension() > 0 && input.getColumnDimension() > 0,
                 "input shoud not be empty");
 
         int row = input.getRowDimension();
@@ -189,8 +188,7 @@ public class MatrixUtils {
 
     public static Double rowMultiColumn(Matrix row, Matrix col) {
 
-        Preconditions.checkArgument(MatrixUtils.isRow(row)
-                && MatrixUtils.isColumn(col));
+        Preconditions.checkArgument(MatrixUtils.isRow(row) && MatrixUtils.isColumn(col));
 
         return row.times(col).get(0, 0);
 
@@ -209,8 +207,7 @@ public class MatrixUtils {
         Matrix resultMatrix = new Matrix(dimension, length);
 
         for (int i = 0; i < length; i++) {
-            Matrix pointOfMatrix = MatrixUtils.getPointOfMatrix(listVector
-                    .get(i));
+            Matrix pointOfMatrix = MatrixUtils.getPointOfMatrix(listVector.get(i));
 
             resultMatrix.setMatrix(0, dimension - 1, i, i, pointOfMatrix);
         }
@@ -234,25 +231,20 @@ public class MatrixUtils {
 
     }
 
-    public static Matrix setMatrixColumn(Matrix input, Matrix column,
-                                         int insetIndex) {
+    public static Matrix setMatrixColumn(Matrix input, Matrix column, int insetIndex) {
 
         Preconditions.checkNotNull(input, "input matrix should not be null");
         Preconditions.checkNotNull(column, "column matrix should not be null");
 
-        Preconditions.checkArgument(MatrixUtils.isColumn(column),
-                "the column is not a column matrix ");
-        Preconditions.checkArgument(
-                input.getRowDimension() == column.getRowDimension(),
+        Preconditions.checkArgument(MatrixUtils.isColumn(column), "the column is not a column matrix ");
+        Preconditions.checkArgument(input.getRowDimension() == column.getRowDimension(),
                 "column row size not equal input matrix row");
-        Preconditions.checkArgument(
-                insetIndex >= 0 && insetIndex < input.getColumnDimension(),
+        Preconditions.checkArgument(insetIndex >= 0 && insetIndex < input.getColumnDimension(),
                 "the index is not correct");
         // Preconditions.checkArgument(insetIndex >= 0 && insetIndex <=
         // column.getRowDimension());
 
-        input.setMatrix(0, input.getRowDimension() - 1, insetIndex, insetIndex,
-                column);
+        input.setMatrix(0, input.getRowDimension() - 1, insetIndex, insetIndex, column);
 
         return input;
 
@@ -271,16 +263,12 @@ public class MatrixUtils {
 
         Preconditions.checkArgument(matrix != null, "input should not be null");
 
-        Preconditions
-                .checkArgument(
-                        matrix.getColumnDimension() > 0
-                                && matrix.getRowDimension() > 0,
-                        "input should not be empty matrix");
+        Preconditions.checkArgument(matrix.getColumnDimension() > 0 && matrix.getRowDimension() > 0,
+                "input should not be empty matrix");
 
         // Covariance covariance = new
         // Covariance(matrix.transpose().getArray());
-        Covariance covariance = new Covariance(matrix.transpose().getArray(),
-                false);
+        Covariance covariance = new Covariance(matrix.transpose().getArray(), false);
 
         RealMatrix covarianceMatrix = covariance.getCovarianceMatrix();
         return new Matrix(covarianceMatrix.getData());
@@ -292,8 +280,7 @@ public class MatrixUtils {
         if (inputMatrix == null) {
             return true;
         }
-        if (inputMatrix.getRowDimension() == 0
-                && inputMatrix.getColumnDimension() == 0) {
+        if (inputMatrix.getRowDimension() == 0 && inputMatrix.getColumnDimension() == 0) {
             return true;
         }
         return false;
@@ -301,8 +288,7 @@ public class MatrixUtils {
 
     public static boolean isSquareMatrix(Matrix input) {
 
-        Preconditions.checkArgument(!MatrixUtils.isEmptyOrNull(input),
-                "input should not be null or empty");
+        Preconditions.checkArgument(!MatrixUtils.isEmptyOrNull(input), "input should not be null or empty");
 
         if (input.getColumnDimension() == input.getRowDimension()) {
             return true;
@@ -326,11 +312,9 @@ public class MatrixUtils {
     public static Matrix getUnitMatrix(Matrix input) {
 
         Preconditions.checkArgument(input != null, "input should not be null");
-        Preconditions.checkArgument(MatrixUtils.isSquareMatrix(input),
-                "input should  be square matrix");
+        Preconditions.checkArgument(MatrixUtils.isSquareMatrix(input), "input should  be square matrix");
 
-        Matrix result = new Matrix(input.getRowDimension(),
-                input.getColumnDimension());
+        Matrix result = new Matrix(input.getRowDimension(), input.getColumnDimension());
 
         for (int i = 0; i < input.getColumnDimension(); i++) {
             result.set(i, i, 1.);
@@ -343,8 +327,7 @@ public class MatrixUtils {
     public static void printMatrixInfo(Matrix input, Object errorMessage) {
 
         Preconditions.checkArgument(input != null, "input  should not be null");
-        Preconditions.checkArgument(errorMessage != null,
-                "msg  should not be null");
+        Preconditions.checkArgument(errorMessage != null, "msg  should not be null");
 
         String valueOf = String.valueOf(errorMessage);
         System.out.println(valueOf);
@@ -355,8 +338,7 @@ public class MatrixUtils {
 
     public static Matrix getMatrixMean(Matrix input) {
 
-        Preconditions.checkArgument(input != null,
-                "the input should not be null");
+        Preconditions.checkArgument(input != null, "the input should not be null");
 
         Matrix result = new Matrix(input.getRowDimension(), 1);
 
@@ -377,26 +359,21 @@ public class MatrixUtils {
         Preconditions.checkNotNull(input, "input matrix should not be null");
         Preconditions.checkNotNull(row, "column matrix should not be null");
 
-        Preconditions.checkArgument(MatrixUtils.isRow(row),
-                "the column is not a column matrix ");
-        Preconditions.checkArgument(
-                input.getColumnDimension() == row.getColumnDimension(),
+        Preconditions.checkArgument(MatrixUtils.isRow(row), "the column is not a column matrix ");
+        Preconditions.checkArgument(input.getColumnDimension() == row.getColumnDimension(),
                 "column row size not equal input matrix row");
-        Preconditions.checkArgument(
-                insertIndex >= 0 && insertIndex < input.getColumnDimension(),
+        Preconditions.checkArgument(insertIndex >= 0 && insertIndex < input.getColumnDimension(),
                 "the index is not correct");
 
-        input.setMatrix(insertIndex, insertIndex, 0,
-                input.getColumnDimension() - 1, row);
+        input.setMatrix(insertIndex, insertIndex, 0, input.getColumnDimension() - 1, row);
 
         return input;
 
     }
 
-    public static FieldMatrix<Complex> toComplex(Matrix real) {
+    public static ComplexMatrix toComplex(Matrix real) {
 
-        Preconditions.checkArgument(real != null,
-                "the input should not be null");
+        Preconditions.checkArgument(real != null, "the input should not be null");
 
         int rowDimension = real.getRowDimension();
         int columnDimension = real.getColumnDimension();
@@ -409,54 +386,57 @@ public class MatrixUtils {
             }
         }
 
-        return new Array2DRowFieldMatrix<Complex>(comp);
+        return ComplexMatrix.valueOf(comp);
 
     }
 
-    public static void printMatrix(FieldMatrix<Complex> complexMatrix) {
+    public static void printMatrix(ComplexMatrix complexMatrix) {
 
-        Preconditions.checkArgument(complexMatrix != null,
-                "input should not be null");
+        Preconditions.checkArgument(complexMatrix != null, "input should not be null");
 
-        int numberOfColumns = complexMatrix.getColumnDimension();
-        int numberOfRows = complexMatrix.getRowDimension();
+        int numberOfColumns = complexMatrix.getNumberOfColumns();
+        int numberOfRows = complexMatrix.getNumberOfRows();
 
         for (int i = 0; i < numberOfRows; i++) {
             for (int j = 0; j < numberOfColumns; j++) {
-                Complex complex = complexMatrix.getEntry(i, j);
-                System.out.print(complex.getReal() + " + "
-                        + complex.getImaginary() + "i" + "    ");
+                org.jscience.mathematics.number.Complex complex = complexMatrix.get(i, j);
+                // Complex complex = complexMatrix.get(i, j);
+                System.out.print(complex.getReal() + " + " + complex.getImaginary() + "i" + "    ");
             }
             System.out.println("");
         }
 
     }
 
-    public static FieldMatrix<Complex> fft(Matrix data) {
+    public static ComplexMatrix fft(Matrix data) {
 
         Preconditions.checkArgument(data != null, "input should not be null");
 
         int rowDimension = data.getRowDimension();
         int columnDimension = data.getColumnDimension();
 
-        FastFourierTransformer fft = new FastFourierTransformer(
-                DftNormalization.UNITARY);
+        FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.UNITARY);
 
         Complex[][] fftResult = new Complex[rowDimension][columnDimension];
 
         for (int j = 0; j < rowDimension; j++) {
 
-            Complex[] transform = fft.transform(
-                    MatrixUtils.getRowAsArray(data, j), TransformType.FORWARD);
-            fftResult[j] = transform;
+            org.apache.commons.math3.complex.Complex[] result = fft.transform(MatrixUtils.getRowAsArray(data, j),
+                    TransformType.FORWARD);
 
+            Complex[] jscienceComplex = new Complex[result.length];
+            for (int i = 0; i < result.length; i++) {
+
+                double real = result[i].getReal();
+                double imaginary = result[i].getImaginary();
+
+                jscienceComplex[i] = Complex.valueOf(real, imaginary);
+            }
+
+            fftResult[j] = jscienceComplex;
         }
 
-        FieldMatrix<Complex> matrix = new Array2DRowFieldMatrix<Complex>(
-                fftResult);
-
-        return matrix;
-
+        return ComplexMatrix.valueOf(fftResult);
     }
 
     public static double[] getColumnAsArray(Matrix data, int index) {
@@ -465,8 +445,7 @@ public class MatrixUtils {
         int columnDimension = data.getColumnDimension();
         int rowDimension = data.getRowDimension();
 
-        Preconditions.checkArgument(index >= 0 && index < columnDimension,
-                "index invalid");
+        Preconditions.checkArgument(index >= 0 && index < columnDimension, "index invalid");
 
         double[] col = new double[rowDimension];
         for (int i = 0; i < rowDimension; i++) {
@@ -482,8 +461,7 @@ public class MatrixUtils {
         int columnDimension = data.getColumnDimension();
         int rowDimension = data.getRowDimension();
 
-        Preconditions.checkArgument(index >= 0 && index < rowDimension,
-                "index invalid");
+        Preconditions.checkArgument(index >= 0 && index < rowDimension, "index invalid");
 
         double[] row = new double[columnDimension];
         for (int i = 0; i < columnDimension; i++) {
@@ -493,85 +471,84 @@ public class MatrixUtils {
         return row;
     }
 
-    public static FieldMatrix<Complex> getMatrixColumn(FieldMatrix<Complex> input,
-                                                       int columnIndex) {
+    public static ComplexMatrix getMatrixColumn(ComplexMatrix input, int columnIndex) {
 
-        Preconditions.checkArgument(input != null,
-                "the input should not be null");
+        Preconditions.checkArgument(input != null, "the input should not be null");
 
-        int columnNumber = input.getColumnDimension();
+        int columnNumber = input.getNumberOfColumns();
 
         Preconditions.checkNotNull(input);
-        Preconditions.checkArgument(columnIndex >= 0
-                && columnIndex < columnNumber);
+        Preconditions.checkArgument(columnIndex >= 0 && columnIndex < columnNumber);
 
-        return new Array2DRowFieldMatrix<Complex>(input.getColumn(columnIndex));
+        return ComplexMatrix.valueOf(input.getColumn(columnIndex));
 
     }
 
-    public static Complex[] getMatrixRow(FieldMatrix<Complex> input,
-                                         int rowIndex) {
+    public static ComplexMatrix getMatrixRow(ComplexMatrix input, int rowIndex) {
 
-        Preconditions.checkArgument(input != null,
-                "the input should not be null");
+        Preconditions.checkArgument(input != null, "the input should not be null");
 
-        int rowNumber = input.getRowDimension();
+        int rowNumber = input.getNumberOfRows();
 
         Preconditions.checkNotNull(input);
         Preconditions.checkArgument(rowIndex >= 0 && rowIndex < rowNumber);
 
-        return input.getColumn(rowIndex);
+        return ComplexMatrix.valueOf(input.getRow(rowNumber));
 
     }
 
-    public static void setMatrixColumn(FieldMatrix<Complex> input,
-                                       FieldMatrix<Complex> column,
-                                       int insertIndex) {
+    public static ComplexMatrix setMatrixColumn(ComplexMatrix input, ComplexMatrix column, int insertIndex) {
 
         Preconditions.checkNotNull(input, "input matrix should not be null");
         Preconditions.checkNotNull(column, "column matrix should not be null");
 
-        Preconditions.checkArgument(MatrixUtils.isColumn(column),
-                "the column is not a column matrix ");
-        Preconditions.checkArgument(
-                input.getRowDimension() == column.getRowDimension(),
+        Preconditions.checkArgument(MatrixUtils.isColumn(column), "the column is not a column matrix ");
+        Preconditions.checkArgument(input.getNumberOfRows() == column.getNumberOfRows(),
                 "column row size not equal input matrix row");
-        Preconditions.checkArgument(
-                insertIndex >= 0 && insertIndex < input.getColumnDimension(),
+        Preconditions.checkArgument(insertIndex >= 0 && insertIndex < input.getNumberOfColumns(),
                 "the index is not correct");
 
-        input.setColumn(insertIndex, column.getRow(0));
+        Complex[][] data = new Complex[input.getNumberOfRows()][input.getNumberOfColumns()];
 
+        for (int i = 0; i < input.getNumberOfRows(); i++) {
+            for (int j = 0; j < input.getNumberOfColumns(); j++) {
+
+                if (j == insertIndex) {
+                    data[i][j] = column.get(i, 1);
+                } else {
+                    data[i][j] = input.get(i, j);
+                }
+            }
+        }
+
+        return ComplexMatrix.valueOf(data);
     }
 
-    public static boolean isColumn(FieldMatrix<Complex> column) {
+    public static boolean isColumn(ComplexMatrix column) {
 
         Preconditions.checkNotNull(column);
 
-        return column.getColumnDimension() == 1
-                && column.getRowDimension() >= 1;
+        return column.getNumberOfColumns() == 1 && column.getNumberOfRows() >= 1;
 
     }
 
-    public static void printMatrixInfo(FieldMatrix<Complex> input,
-                                       Object errorMessage) {
+    public static void printMatrixInfo(ComplexMatrix input, Object errorMessage) {
 
         Preconditions.checkArgument(input != null, "input  should not be null");
-        Preconditions.checkArgument(errorMessage != null,
-                "msg  should not be null");
+        Preconditions.checkArgument(errorMessage != null, "msg  should not be null");
 
         String valueOf = String.valueOf(errorMessage);
         System.out.println(valueOf);
-        System.out.println("row: " + input.getRowDimension());
-        System.out.println("col: " + input.getColumnDimension());
+        System.out.println("row: " + input.getNumberOfRows());
+        System.out.println("col: " + input.getNumberOfColumns());
 
     }
 
-    public static FieldMatrix<Complex> newColumn(int size) {
+    public static ComplexMatrix newColumn(int size) {
 
         Preconditions.checkArgument(size > 0, "input  should not be null");
+        Complex[][] dataComplexs = new Complex[size][1];
 
-        Complex[] dataComplexs = new Complex[size];
-        return new Array2DRowFieldMatrix<Complex>(dataComplexs);
+        return ComplexMatrix.valueOf(dataComplexs);
     }
 }
