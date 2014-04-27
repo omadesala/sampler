@@ -1,14 +1,10 @@
 package com.cs.omp;
 
-import org.apache.commons.math3.complex.Complex;
-import org.apache.commons.math3.linear.Array2DRowFieldMatrix;
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.FieldMatrix;
-import org.apache.commons.math3.transform.DftNormalization;
-import org.apache.commons.math3.transform.FastFourierTransformer;
+// import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.transform.TransformType;
-import org.apache.commons.math3.util.FastMath;
+import org.jscience.mathematics.number.Complex;
 import org.jscience.mathematics.vector.ComplexMatrix;
+import org.jscience.mathematics.vector.ComplexVector;
 
 import Jama.Matrix;
 
@@ -49,8 +45,8 @@ public class OMP {
         this.sparsity = 7;
         this.input = getSignal();
         this.measureTimes = 64;
-        // this.trainTimes = 2 * this.sparsity;
-        this.trainTimes = 1;
+        this.trainTimes = 2 * this.sparsity;
+        // this.trainTimes = 1;
     }
 
     public OMP(Matrix data) {
@@ -63,14 +59,12 @@ public class OMP {
         this.phi = Matrix.random(measureTimes, this.dataLength);
         this.measureValue = this.phi.times(this.input.transpose());
 
-        System.out.println("measure value matrix: ");
-        MatrixUtils.printMatrix(measureValue);
-
         // step 2. orthogonality match pursuit .
-        this.psi = MatrixUtils.fft(MatrixUtils.getUnitMatrix(Matrix.random(this.dataLength, this.dataLength)));
+        this.psi = MatrixUtils.fft(MatrixUtils.getUnitMatrix(Matrix.random(
+                this.dataLength, this.dataLength)), TransformType.FORWARD);
 
-        ComplexMatrix measure = MatrixUtils.toComplex(this.phi);
-        ComplexMatrix restoryMatrix = measure.times(this.psi.transpose());
+        ComplexMatrix restoryMatrix = MatrixUtils.toComplex(this.phi).times(
+                this.psi.transpose());
 
         Matrix hatOfy = new Matrix(1, this.dataLength);
         this.residual = MatrixUtils.toComplex(measureValue.copy());
@@ -80,8 +74,8 @@ public class OMP {
         Matrix innerProducts = new Matrix(this.dataLength, 1);
         this.augT = restoryMatrix.copy();
 
-        System.out.println("print augT");
-        MatrixUtils.printMatrix(this.augT);
+        // System.out.println("print augT");
+        // MatrixUtils.printMatrix(this.augT);
 
         for (int i = 0; i < this.trainTimes; i++) {
 
@@ -89,12 +83,16 @@ public class OMP {
 
             for (int j = 0; j < this.dataLength; j++) {
 
-                ComplexMatrix matrixColumn = MatrixUtils.getMatrixColumn(restoryMatrix, j);
+                ComplexMatrix matrixColumn = MatrixUtils.getMatrixColumn(
+                        restoryMatrix, j);
 
-                ComplexMatrix innerMultiply = matrixColumn.transpose().times(this.residual);
+                ComplexMatrix innerMultiply = matrixColumn.transpose().times(
+                        this.residual);
 
                 innerProducts.set(j, 0, innerMultiply.get(0, 0).magnitude());
             }
+
+            // MatrixUtils.printMatrix(innerProducts);
 
             int pos = 0;
             double maxValue = -1.;
@@ -106,27 +104,37 @@ public class OMP {
                 }
             }
 
-            ComplexMatrix matrixColumn = MatrixUtils.getMatrixColumn(restoryMatrix, pos);
+            ComplexMatrix matrixColumn = MatrixUtils.getMatrixColumn(
+                    restoryMatrix, pos);
 
             this.augT = MatrixUtils.setMatrixColumn(this.augT, matrixColumn, i);
 
-            ComplexMatrix zeroColumn = MatrixUtils.newColumn(this.measureValue.getRowDimension());
+            ComplexMatrix zeroColumn = MatrixUtils.newColumn(this.measureValue
+                    .getRowDimension());
 
-            restoryMatrix = MatrixUtils.setMatrixColumn(restoryMatrix, zeroColumn, pos);
+            restoryMatrix = MatrixUtils.setMatrixColumn(restoryMatrix,
+                    zeroColumn, pos);
 
             // aug_y=(Aug_t'*Aug_t)^(-1)*Aug_t'*s; % 最小二乘,使残差最小
-            aug_y = (this.augT.transpose().times(this.augT)).inverse().times(this.augT.transpose())
+            aug_y = (this.augT.transpose().times(this.augT)).inverse()
+                    .times(this.augT.transpose())
                     .times(MatrixUtils.toComplex(this.measureValue));
 
             // r_n=s-Aug_t*aug_y; % 残差
-            this.residual = MatrixUtils.toComplex(this.measureValue).minus(this.augT.times(aug_y));
+            this.residual = MatrixUtils.toComplex(this.measureValue).minus(
+                    this.augT.times(aug_y));
 
         }
 
-        MatrixUtils.printMatrix(this.augT);
+        ComplexMatrix ifft = MatrixUtils.fft(aug_y, TransformType.INVERSE);
+        ComplexVector row = ifft.getRow(0);
 
-        // double[][] array = aug_y.getArray();
-        // Complex[] transform = fft.transform(array[0], TransformType.INVERSE);
+        for (int k = 0; k < row.getDimension(); k++) {
+            Complex complex = row.get(k);
+            double real = complex.getReal();
+            System.out.println("real : ");
+            System.out.print("  " + real + "  ");
+        }
 
     }
 
@@ -179,8 +187,10 @@ public class OMP {
 
         for (int i = 0; i < this.dataLength; i++) {
 
-            double s = 0.3 * Math.cos(2 * Math.PI * f1 * i * ts) + 0.6 * Math.cos(2 * Math.PI * f2 * i * ts) + 0.1
-                    * Math.cos(2 * Math.PI * f3 * i * ts) + 0.9 * Math.cos(2 * Math.PI * f4 * i * ts);
+            double s = 0.3 * Math.cos(2 * Math.PI * f1 * i * ts) + 0.6
+                    * Math.cos(2 * Math.PI * f2 * i * ts) + 0.1
+                    * Math.cos(2 * Math.PI * f3 * i * ts) + 0.9
+                    * Math.cos(2 * Math.PI * f4 * i * ts);
             signal.set(0, i, s);
         }
 

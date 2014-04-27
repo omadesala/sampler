@@ -39,6 +39,39 @@ public final class GnuPlotDisplay {
         p.plot();
     }
 
+    public static void displaySpecum2D(double[] datas) {
+
+        GNUPlotParameters param = new GNUPlotParameters(false);
+
+        ArrayList<String> preInit = param.getPreInit();
+
+        // preInit.add("set contour base");// draw contour
+        preInit.add("set xrange [0:60]");// draw contour
+        preInit.add("set yrange [-3:5]");// draw contour
+        preInit.add("set size square");// draw contour
+
+        double[][] dataArray = new double[datas.length][2];
+
+        for (int i = 0; i < dataArray.length; i++) {
+            dataArray[i][0] = i * 0.2;
+            dataArray[i][1] = datas[i];
+        }
+
+        JavaPlot p = new JavaPlot(param, Constant.GNUPLOT_PATH, null);
+
+        p.setTitle("two dim gaussian Sample Demo");
+        p.getAxis("x").setLabel("X1 axis", "Arial", 20);
+        p.getAxis("y").setLabel("X2 axis");
+
+        // System.out.println("point num " + datas.length);
+
+        DataSetPlot s = new DataSetPlot(dataArray);
+        p.addPlot(s);
+
+        p.addPlot("0; pause 1000;");
+        p.plot();
+    }
+
     public static void display3D(double[][] samples) {
 
         Preconditions.checkNotNull(samples);

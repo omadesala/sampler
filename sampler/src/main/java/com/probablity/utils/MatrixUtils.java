@@ -436,7 +436,7 @@ public class MatrixUtils {
 
     }
 
-    public static ComplexMatrix fft(Matrix data) {
+    public static ComplexMatrix fft(Matrix data, TransformType type) {
 
         Preconditions.checkArgument(data != null, "input should not be null");
 
@@ -451,7 +451,48 @@ public class MatrixUtils {
         for (int j = 0; j < rowDimension; j++) {
 
             org.apache.commons.math3.complex.Complex[] result = fft.transform(
-                    MatrixUtils.getRowAsArray(data, j), TransformType.FORWARD);
+                    MatrixUtils.getRowAsArray(data, j), type);
+
+            Complex[] jscienceComplex = new Complex[result.length];
+            for (int i = 0; i < result.length; i++) {
+
+                double real = result[i].getReal();
+                double imaginary = result[i].getImaginary();
+
+                jscienceComplex[i] = Complex.valueOf(real, imaginary);
+            }
+
+            fftResult[j] = jscienceComplex;
+        }
+
+        return ComplexMatrix.valueOf(fftResult);
+    }
+
+    public static ComplexMatrix fft(ComplexMatrix data, TransformType type) {
+
+        Preconditions.checkArgument(data != null, "input should not be null");
+
+        int rowDimension = data.getNumberOfRows();
+        int columnDimension = data.getNumberOfColumns();
+
+        FastFourierTransformer fft = new FastFourierTransformer(
+                DftNormalization.UNITARY);
+
+        org.apache.commons.math3.complex.Complex[][] inputData = new org.apache.commons.math3.complex.Complex[rowDimension][columnDimension];
+        Complex[][] fftResult = new Complex[rowDimension][columnDimension];
+
+        for (int i = 0; i < rowDimension; i++) {
+            for (int j = 0; j < columnDimension; j++) {
+                Complex complex = data.get(i, j);
+                inputData[i][j] = org.apache.commons.math3.complex.Complex
+                        .valueOf(complex.getReal(), complex.getImaginary());
+            }
+        }
+
+        for (int j = 0; j < rowDimension; j++) {
+
+            org.apache.commons.math3.complex.Complex[] result = fft.transform(
+                    MatrixUtils.getRowAsArray(data, j), type);
 
             Complex[] jscienceComplex = new Complex[result.length];
             for (int i = 0; i < result.length; i++) {
@@ -499,6 +540,25 @@ public class MatrixUtils {
             row[i] = data.get(index, i);
         }
 
+        return row;
+    }
+
+    public static org.apache.commons.math3.complex.Complex[] getRowAsArray(ComplexMatrix data,
+                                                                           int index) {
+
+        Preconditions.checkArgument(data != null, "input should not be null");
+        int columnDimension = data.getNumberOfColumns();
+        int rowDimension = data.getNumberOfRows();
+
+        Preconditions.checkArgument(index >= 0 && index < rowDimension,
+                "index invalid");
+
+        org.apache.commons.math3.complex.Complex[] row = new org.apache.commons.math3.complex.Complex[columnDimension];
+        for (int i = 0; i < columnDimension; i++) {
+            Complex complex = data.get(index, i);
+            row[i] = org.apache.commons.math3.complex.Complex.valueOf(
+                    complex.getReal(), complex.getImaginary());
+        }
         return row;
     }
 

@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.math3.transform.TransformType;
 import org.jscience.mathematics.number.Complex;
 import org.jscience.mathematics.vector.ComplexMatrix;
 import org.junit.After;
@@ -842,7 +843,7 @@ public class MatrixUtilsTest {
         Matrix data = MatrixUtils.getUnitMatrix(Matrix.random(4, 4));
         MatrixUtils.printMatrix(data);
 
-        ComplexMatrix fft = MatrixUtils.fft(data);
+        ComplexMatrix fft = MatrixUtils.fft(data, TransformType.FORWARD);
 
         MatrixUtils.printMatrix(fft);
 
