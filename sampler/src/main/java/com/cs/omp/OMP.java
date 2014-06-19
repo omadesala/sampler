@@ -66,6 +66,8 @@ public class OMP {
         ComplexMatrix restoryMatrix = MatrixUtils.toComplex(this.phi).times(
                 this.psi.transpose());
 
+        MatrixUtils.printMatrix(this.psi);
+
         Matrix hatOfy = new Matrix(1, this.dataLength);
         this.residual = MatrixUtils.toComplex(measureValue.copy());
 
